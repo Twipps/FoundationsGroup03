@@ -1,8 +1,16 @@
 Foundations software for CSE360 Summer 2026
 
 Authors: <br>
-James Suchovic <br>
-Rob Taylor <br>
-Kyle Kim <br>
-Jacob Chacko <br>
-Aoun Syed <br>
+James Suchovic <br>⠀⠀⠀⠀⠀⠀        ⠀⠀⠀⠀⠀⣠⡇⠀⠀⠀⠀⠀⠀⠀
+Rob Taylor <br>⠀⠀⠀⠀⠀⠀⠀⠀            ⢀⣤⣾⠟⠀⣀⣠⠄⠀⠀⠀⠀
+Kyle Kim <br>⠀⠀⠀⠀⠀⠀             ⢠⣶⣿⠟⠁⢠⣾⠋⠁⠀⠀⠀⠀⠀
+Jacob Chacko <br>⠀⠀        ⠀⠀⠀ ⠀⠹⣿⡇⠀⠀⠸⣿⡄⠀⠀⠀⠀⠀⠀
+Aoun Syed <br>⠀⠀⠀        ⠀     ⠀⠀⠙⠷⡀⠀⠀⢹⠗⠀⠀⠀⠀⠀⠀
+⠀⠀                          ⢀⣤⣴⡖⠒⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠒⢶⣄
+⠀                          ⠀⠈⠙⢛⣻⠿⠿⠿⠟⠛⠛⠛⠋⠉⠀⠀⠀⣸⡿
+⠀⠀⠀                         ⠀⠛⠿⣷⣶⣶⣶⣶⣾⠿⠗⠂⠀⢀⠴⠛⠁
+⠀⠀⠀⠀                         ⠀⢰⣿⣦⣤⣤⣤⣴⣶⣶⠄⠀⠀⠀⠀⠀
+                        ⣀⣤⡤⠄⠀ ⠀⠈⠉⠉⠉⠉⠉⠀⠀⠀⠀⢀⡀⠀⠀
+                         ⠻⣿⣦⣄⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣠⣴⠾⠃⠀⢀
+        ⠀                 ⠀⠈⠉⠛⠛⠛⠛⠛⠛⠛⠛⠋⠉⠁⠀⣀⣤⡶⠋
+                         ⠀⠀⠀⠀⠐⠒⠀⠠⠤⠤⠤⠶⠶⠚⠛⠛⠉⠀⠀⠀
