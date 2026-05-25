@@ -1,13 +1,5 @@
 # Foundations Software for CSE 360 Summer 2026
 
-## Authors
-
-James Suchovic⠀⠀⠀⠀  
-Rob Taylor⠀⠀  
-Kyle Kim⠀⠀⠀⠀⠀  
-Jacob Chacko⠀⠀⠀⠀⠀  
-Aoun Syed
-
 ```text
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡇⠀⠀⠀⠀⠀⠀⠀                                            Yay... java, coffee, and things...
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⠟⠀⣀⣠⠄⠀⠀⠀⠀
@@ -22,3 +14,12 @@ Aoun Syed
 ⠻⣿⣦⣄⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣠⣴⠾⠃⠀⢀
 ⠀⠀⠈⠉⠛⠛⠛⠛⠛⠛⠛⠛⠋⠉⠁⠀⣀⣤⡶⠋
 ⠀⠀⠀⠀⠐⠒⠀⠠⠤⠤⠤⠶⠶⠚⠛⠛⠉⠀⠀⠀
+```
+
+## Authors
+
+James Suchovic⠀⠀⠀⠀  
+Rob Taylor⠀⠀  
+Kyle Kim⠀⠀⠀⠀⠀  
+Jacob Chacko⠀⠀⠀⠀⠀  
+Aoun Syed
