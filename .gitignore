@@ -19,6 +19,15 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Ignoring since everyone sets up dependencies locally;
+# getting confusing since I switch between two machines - JDS
+.classpath
+
+# Eclipse local settings
+.settings/
+*.launch
+bin/
+
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
