@@ -19,6 +19,9 @@
 *.tar.gz
 *.rar
 
+# Ignoring since everyone sets up dependencies locally; Getting confusing since I switch between two machines
+.classpath
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
