@@ -45,7 +45,7 @@ public class ControllerNewAccount {
 	public ControllerNewAccount() {
 	}
 	
-	
+	//Github Test
 	// Reference for the in-memory database so this package has access
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
