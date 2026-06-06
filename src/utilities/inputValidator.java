@@ -1,6 +1,6 @@
 package utilities;
 
-public class inputValidator {
+public final class inputValidator {
 	
 	private inputValidator() {		//There is no need to make an instance of this class
 		
