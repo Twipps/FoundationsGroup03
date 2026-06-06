@@ -3,7 +3,10 @@ package guiFirstAdmin;
 import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
+import guiNewAccount.ViewNewAccount;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import utilities.inputValidator;
 
 /*******
  * <p> Title: ControllerFirstAdmin Class. </p>
@@ -103,6 +106,17 @@ public class ControllerFirstAdmin {
 	 * 
 	 */
 	protected static void doSetupAdmin(Stage ps, int r) {
+		
+		// Make sure the username satisfies the requirements
+		String returnString = inputValidator.verifyUserName(adminUsername);
+		if (returnString.compareTo("") != 0) {
+			ViewFirstAdmin.text_AdminUsername.setText("");
+			Label label = new Label(returnString);
+			label.setWrapText(true);
+			ViewFirstAdmin.alertUsernameError.getDialogPane().setContent(label);	//Handles wrapping text
+			ViewFirstAdmin.alertUsernameError.showAndWait();
+			return;
+		}
 		
 		// Make sure the two passwords are the same
 		if (adminPassword1.compareTo(adminPassword2) == 0) {

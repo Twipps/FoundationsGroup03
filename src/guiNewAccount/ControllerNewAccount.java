@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 import database.Database;
 import entityClasses.User;
+import javafx.scene.control.Label;
+import utilities.inputValidator;
 
 /*******
  * <p> Title: ControllerNewAccount Class. </p>
@@ -45,7 +47,7 @@ public class ControllerNewAccount {
 	public ControllerNewAccount() {
 	}
 	
-	
+	//Github Test
 	// Reference for the in-memory database so this package has access
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
@@ -75,6 +77,17 @@ public class ControllerNewAccount {
 		// Initialize local variables that will be created during this process
 		int roleCode = 0;
 		User user = null;
+		
+		// Make sure the username satisfies the requirements
+		String returnString = inputValidator.verifyUserName(username);
+		if (returnString.compareTo("") != 0) {
+			ViewNewAccount.text_Username.setText("");
+			Label label = new Label(returnString);
+			label.setWrapText(true);
+			ViewNewAccount.alertUsernameError.getDialogPane().setContent(label);	//Handles wrapping text
+			ViewNewAccount.alertUsernameError.showAndWait();
+			return;
+		}
 
 		// Make sure the two passwords are the same.	
 		if (ViewNewAccount.text_Password1.getText().
