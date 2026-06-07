@@ -35,6 +35,16 @@ public class HomeNavBar {
         return rNavigation;
     }
     
+    private static VBox createStudentNavBar(Stage theStage, User user, 
+        	Label titleBar, BorderPane contentPane) {
+    	return null;
+    }
+    
+    private static VBox createInstructorNavBar(Stage theStage, User user, 
+        	Label titleBar, BorderPane contentPane) {
+    	return null;
+    }
+    
     private static VBox createAdminNavBar(Stage theStage, User user, 
     	Label titleBar, BorderPane contentPane) {
         VBox adminBar = new VBox(10);
