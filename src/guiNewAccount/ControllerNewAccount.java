@@ -14,8 +14,8 @@ import utilities.inputValidator;
  * to allow the user to establish a new account after responding to an invitation and the use of a
  * one time code.
  * 
- * The controller deals with the user pressing the "User Step" button widget being click.  If also
- * supports the user click on the "Quit" button widget.
+ * The controller deals with the user pressing the "User Step" button widget being clicked.  It also
+ * supports the user clicking on the "Quit" button widget.
  * 
  * The class has been written assuming that the View or the Model are the only class methods that
  * can invoke these methods.  This is why each has been declared at "protected".  Do not change any
@@ -24,9 +24,10 @@ import utilities.inputValidator;
  * <p> Copyright: Lynn Robert Carter © 2025 </p>
  * 
  * @author Lynn Robert Carter
+ * @author Kyle Kim (Team 3) - Updated role strings to Student/Instructor/Staff
  * 
  * @version 1.00		2025-08-17 Initial version
- *  
+ * @version 1.02		2026-06-06 Updated Role1/Role2 to Student/Instructor (Kyle Kim, Team 3)
  */
 
 public class ControllerNewAccount {
@@ -51,15 +52,14 @@ public class ControllerNewAccount {
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
 	/**********
-	 * <p> Method: public doCreateUser() </p>
+	 * <p> Method: doCreateUser() </p>
 	 * 
 	 * <p> Description: This method is called when the user has clicked on the User Setup
 	 * button.  This method checks the input fields to see that they are valid.  If so, it then
 	 * creates the account by adding information to the database.
 	 * 
-	 * The method reaches batch to the view page and to fetch the information needed rather than
-	 * passing that information as parameters.
-	 * 
+	 * The method reaches back to the view page to fetch the information needed rather than
+	 * passing that information as parameters. </p>
 	 */	
 	protected static void doCreateUser() {
 		
@@ -83,7 +83,7 @@ public class ControllerNewAccount {
 			ViewNewAccount.text_Username.setText("");
 			Label label = new Label(returnString);
 			label.setWrapText(true);
-			ViewNewAccount.alertUsernameError.getDialogPane().setContent(label);	//Handles wrapping text
+			ViewNewAccount.alertUsernameError.getDialogPane().setContent(label);
 			ViewNewAccount.alertUsernameError.showAndWait();
 			return;
 		}
@@ -92,20 +92,32 @@ public class ControllerNewAccount {
 		if (ViewNewAccount.text_Password1.getText().
 				compareTo(ViewNewAccount.text_Password2.getText()) == 0) {
 			
-			// The passwords match so we will set up the role and the User object base on the 
+			// The passwords match so we will set up the role and the User object based on the 
 			// information provided in the invitation
 			if (ViewNewAccount.theRole.compareTo("Admin") == 0) {
 				roleCode = 1;
 				user = new User(username, password, "", "", "", "", "", true, false, false);
+			} else if (ViewNewAccount.theRole.compareTo("Student") == 0) {
+				roleCode = 2;
+				user = new User(username, password, "", "", "", "", "", false, true, false);
+			} else if (ViewNewAccount.theRole.compareTo("Instructor") == 0) {
+			    roleCode = 3;
+			    user = new User(username, password, "", "", "", "", "", false, false, true);
+			} else if (ViewNewAccount.theRole.compareTo("Staff") == 0) {
+			    roleCode = 3;
+			    user = new User(username, password, "", "", "", "", "", false, false, true);
 			} else if (ViewNewAccount.theRole.compareTo("Role1") == 0) {
+				// Legacy support — treat old Role1 invitations as Student
 				roleCode = 2;
 				user = new User(username, password, "", "", "", "", "", false, true, false);
 			} else if (ViewNewAccount.theRole.compareTo("Role2") == 0) {
+				// Legacy support — treat old Role2 invitations as Instructor
 				roleCode = 3;
 				user = new User(username, password, "", "", "", "", "", false, false, true);
 			} else {
 				System.out.println(
-						"**** Trying to create a New Account for a role that does not exist!");
+						"**** Trying to create a New Account for a role that does not exist: "
+						+ ViewNewAccount.theRole);
 				System.exit(0);
 			}
 			
@@ -132,7 +144,7 @@ public class ControllerNewAccount {
             // Set the database so it has this user and the current user
             theDatabase.getUserAccountDetails(username);
 
-            // Navigate to the Welcome Login Page
+            // Navigate to the User Update Page
             guiUserUpdate.ViewUserUpdate.displayUserUpdate(ViewNewAccount.theStage, user);
 		}
 		else {
@@ -146,13 +158,11 @@ public class ControllerNewAccount {
 
 	
 	/**********
-	 * <p> Method: public performQuit() </p>
+	 * <p> Method: performQuit() </p>
 	 * 
-	 * <p> Description: This method is called when the user has clicked on the Quit button.  Doing
+	 * <p> Description: This method is called when the user has clicked on the Quit button. Doing
 	 * this terminates the execution of the application.  All important data must be stored in the
-	 * database, so there is no cleanup required.  (This is important so we can minimize the impact
-	 * of crashed.)
-	 * 
+	 * database, so there is no cleanup required. </p>
 	 */	
 	protected static void performQuit() {
 		System.out.println("Perform Quit");
