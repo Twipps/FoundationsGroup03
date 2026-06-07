@@ -1,5 +1,6 @@
 package CustomGuiComponents;
 
+import database.Database;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -8,6 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class AdminUserList {
+	
+	private static Database theDatabase = applicationMain.FoundationsMain.database;
 
     public static ScrollPane createUserList(BorderPane userModifyPane) {
 
@@ -39,78 +42,7 @@ public class AdminUserList {
     		        "Administrator",
     		        userModifyPane
     		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "asmith",
-    		        "Alice Smith",
-    		        "alice.smith@email.com",
-    		        "Instructor",
-    		        userModifyPane
-    		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "bjohnson",
-    		        "Brian Johnson",
-    		        "brian.johnson@email.com",
-    		        "Student",
-    		        userModifyPane
-    		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "cwilson",
-    		        "Chloe Wilson",
-    		        "chloe.wilson@email.com",
-    		        "Staff",
-    		        userModifyPane
-    		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "dlee",
-    		        "David Lee",
-    		        "david.lee@email.com",
-    		        "Student",
-    		        userModifyPane
-    		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "egarcia",
-    		        "Emma Garcia",
-    		        "emma.garcia@email.com",
-    		        "Instructor",
-    		        userModifyPane
-    		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "fmartin",
-    		        "Frank Martin",
-    		        "frank.martin@email.com",
-    		        "Staff",
-    		        userModifyPane
-    		    )
-    		);
-
-    		container.getChildren().add(
-    		    createUserRow(
-    		        "hnguyen",
-    		        "Hannah Nguyen",
-    		        "hannah.nguyen@email.com",
-    		        "Student",
-    		        userModifyPane
-    		    )
-    		);
-        
+    		);        
     }
 
     private static HBox createUserRow(String username, String fullName, 

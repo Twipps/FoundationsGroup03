@@ -1,5 +1,6 @@
 package CustomGuiComponents;
 
+import database.Database;
 import guiAdminHomeNew.ControllerAdminHomeNew;
 import guiAdminHomeNew.ViewAdminHomeNew;
 import javafx.geometry.Insets;
@@ -10,6 +11,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class AdminInvitationManagementPanel {
+	
+	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
 	public static VBox createInvitationManagementPanel() {
 		VBox rPanel = new VBox(15);
 		
@@ -19,6 +23,10 @@ public class AdminInvitationManagementPanel {
 		ViewAdminHomeNew.text_InvitationEmailAddress = new javafx.scene.control.TextField();
 		
 		HBox emailInputFunctionality = createButtonRow();
+		
+		ViewAdminHomeNew.text_InvitationEmailAddress.setText(""); // for initial page load
+		ViewAdminHomeNew.label_NumberOfInvitations.setText("Number of outstanding invitations: " + 
+				theDatabase.getNumberOfInvitations());
 		
 		rPanel.getChildren().addAll(
 				emailTFTitle,
@@ -42,7 +50,7 @@ public class AdminInvitationManagementPanel {
 	    ViewAdminHomeNew.combobox_SelectRole.getItems().addAll(
 	            "Student",
 	            "Instructor",
-	            "Administrator"
+	            "Admin"
 	    );
 	    
 	    spacer.setPrefWidth(10);
