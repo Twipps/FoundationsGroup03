@@ -5,7 +5,7 @@ import database.Database;
 import entityClasses.User;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import utilities.inputValidator;
+import utilities.InputValidator;
 
 /*******
  * <p> Title: ControllerFirstAdmin Class. </p>
@@ -107,7 +107,7 @@ public class ControllerFirstAdmin {
 	protected static void doSetupAdmin(Stage ps, int r) {
 		
 		// Make sure the username satisfies the requirements
-		String returnString = inputValidator.verifyUserName(adminUsername);
+		String returnString = InputValidator.verifyUsername(adminUsername);
 		if (returnString.compareTo("") != 0) {
 			ViewFirstAdmin.text_AdminUsername.setText("");
 			Label label = new Label(returnString);

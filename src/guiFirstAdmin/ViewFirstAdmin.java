@@ -11,6 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import utilities.InputValidator;
+import javafx.scene.control.TextFormatter;
 
 
 /*******
@@ -57,7 +59,7 @@ public class ViewFirstAdmin {
 					"Setup Admin Account.");
 	
 	protected static Label label_PasswordsDoNotMatch = new Label();
-	protected static TextField text_AdminUsername = new TextField();
+	protected static TextField text_AdminUsername = new TextField();	
 	protected static PasswordField text_AdminPassword1 = new PasswordField();
 	protected static PasswordField text_AdminPassword2 = new PasswordField();
 	private static Button button_AdminSetup = new Button("Setup Admin Account");
@@ -265,5 +267,6 @@ public class ViewFirstAdmin {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	}	
 }

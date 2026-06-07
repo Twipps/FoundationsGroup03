@@ -24,7 +24,7 @@ import javafx.scene.paint.Color;
  * and other ASU courses.
  */
 
-public class Model {
+public class ModelPassPopUp {
 		
 	/*******
 	 * <p> Title: updatePassword - Protected Method </p>

@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -15,6 +16,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import utilities.InputValidator;
 
 /*******
  * <p> Title: View Class - establishes the Graphics User interface, presents information to the
@@ -168,7 +170,7 @@ public class ViewPassPopUp {
 		setupTextWidget(text_Password, 10, 30, "Arial", 18, windowWidth-20, Pos.BASELINE_LEFT, 
 				true);
 		text_Password.textProperty().addListener((_, _, _) 
-				-> {Model.updatePassword(); });
+				-> {ModelPassPopUp.updatePassword(); });
 		
 		// Establish an error message for when there is no input
 		setupLabelWidget(noInputFound, 10, 80, "Arial", 14, windowWidth-10, Pos.BASELINE_LEFT);	
@@ -322,6 +324,7 @@ public class ViewPassPopUp {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	}
 
 	

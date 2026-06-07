@@ -13,6 +13,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import database.Database;
 import entityClasses.User;
+import utilities.InputValidator;
+import javafx.scene.control.TextFormatter;
 
 /*******
  * <p> Title: ViewNewAccount Class. </p>
@@ -253,5 +255,6 @@ public class ViewNewAccount {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	}	
 }

@@ -7,10 +7,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import utilities.InputValidator;
 import entityClasses.User;
 
 /*******
@@ -229,18 +231,23 @@ public class ViewUserUpdate {
 		// Establish the label for each of the dialogs.
 		dialogUpdateFirstName.setTitle("Update First Name");
 		dialogUpdateFirstName.setHeaderText("Update your First Name");
+		dialogUpdateFirstName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdateMiddleName.setTitle("Update Middle Name");
 		dialogUpdateMiddleName.setHeaderText("Update your Middle Name");
+		dialogUpdateMiddleName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdateLastName.setTitle("Update Last Name");
 		dialogUpdateLastName.setHeaderText("Update your Last Name");
+		dialogUpdateLastName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdatePreferredFirstName.setTitle("Update Preferred First Name");
 		dialogUpdatePreferredFirstName.setHeaderText("Update your Preferred First Name");
+		dialogUpdatePreferredFirstName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdateEmailAddresss.setTitle("Update Email Address");
 		dialogUpdateEmailAddresss.setHeaderText("Update your Email Address");
+		dialogUpdateEmailAddresss.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 
 		// Label theScene with the name of the startup screen, centered at the top of the pane
 		setupLabelUI(label_ApplicationTitle, "Arial", 28, width, Pos.CENTER, 0, 5);

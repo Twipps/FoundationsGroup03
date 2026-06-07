@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
 import javafx.scene.control.Label;
-import utilities.inputValidator;
+import utilities.InputValidator;
 
 /*******
  * <p> Title: ControllerNewAccount Class. </p>
@@ -78,7 +78,7 @@ public class ControllerNewAccount {
 		User user = null;
 		
 		// Make sure the username satisfies the requirements
-		String returnString = inputValidator.verifyUserName(username);
+		String returnString = InputValidator.verifyUsername(username);
 		if (returnString.compareTo("") != 0) {
 			ViewNewAccount.text_Username.setText("");
 			Label label = new Label(returnString);
