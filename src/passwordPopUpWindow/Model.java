@@ -37,15 +37,15 @@ public class Model {
 	 */
 
 	protected static void updatePassword() {
-		View.resetAssessments();						// Reset the assessment flags to the
-		String password = View.text_Password.getText();	// initial state and fetch the input
+		ViewPassPopUp.resetAssessments();						// Reset the assessment flags to the
+		String password = ViewPassPopUp.text_Password.getText();	// initial state and fetch the input
 		
 		// If the input is empty, clear the aspects of the user interface having to do with the
 		// user input and tell the user that the input is empty.
 		if (password.isEmpty()) {
-			View.errPasswordPart1.setText("");
-			View.errPasswordPart2.setText("");
-			View.noInputFound.setText("No input text found!");
+			ViewPassPopUp.errPasswordPart1.setText("");
+			ViewPassPopUp.errPasswordPart2.setText("");
+			ViewPassPopUp.noInputFound.setText("No input text found!");
 		}
 		else
 		{
@@ -61,41 +61,41 @@ public class Model {
 				// Since the output is not empty, at least one requirement have not been satisfied.
 				System.out.println(errMessage);			// Display the message to the console
 				
-				View.noInputFound.setText("");			// There was input, so no error message
+				ViewPassPopUp.noInputFound.setText("");			// There was input, so no error message
 				
 				// Extract the input up to the point of the error and place it in Part 1
-				View.errPasswordPart1.setText(password.substring(0, passwordIndexofError));
+				ViewPassPopUp.errPasswordPart1.setText(password.substring(0, passwordIndexofError));
 				
 				// Place the red up arrow into Part 2
-				View.errPasswordPart2.setText("\u21EB");
+				ViewPassPopUp.errPasswordPart2.setText("\u21EB");
 				
 				// Tell the user about the meaning of the red up arrow
-				View.errPasswordPart3.setText(
+				ViewPassPopUp.errPasswordPart3.setText(
 						"The red arrow points at the character causing the error!");
 				
 				// Tell the user that the password is not valid with a red message
-				View.validPassword.setTextFill(Color.RED);
-				View.validPassword.setText("Failure! The password is not valid.");
+				ViewPassPopUp.validPassword.setTextFill(Color.RED);
+				ViewPassPopUp.validPassword.setText("Failure! The password is not valid.");
 				
 				// Ensure the button is disabled
-				View.button_Finish.setDisable(true);
+				ViewPassPopUp.button_Finish.setDisable(true);
 			}
 			else {
 				// All the requirements were satisfied - the password is valid
 				System.out.println("Success! The password satisfies the requirements.");
 				
 				// Hide all of the error messages elements
-				View.errPasswordPart1.setText("");
-				View.errPasswordPart2.setText("");
-				View.errPasswordPart3.setText("");
+				ViewPassPopUp.errPasswordPart1.setText("");
+				ViewPassPopUp.errPasswordPart2.setText("");
+				ViewPassPopUp.errPasswordPart3.setText("");
 				
 				// Tell the user that the password is valid with a green message
-				View.validPassword.setTextFill(Color.GREEN);
-				View.validPassword.setText("Success! The password satisfies the requirements.");
+				ViewPassPopUp.validPassword.setTextFill(Color.GREEN);
+				ViewPassPopUp.validPassword.setText("Success! The password satisfies the requirements.");
 				
 				// Enable the button so the user can accept this password or continue to add
 				// more characters to the password and make it longer.
-				View.button_Finish.setDisable(false);
+				ViewPassPopUp.button_Finish.setDisable(false);
 			} 
 		}
 	}
@@ -147,28 +147,28 @@ public class Model {
 	
 	private static void updateFlags() {
 		if (foundUpperCase) {
-			View.label_UpperCase.setText("At least one upper case letter - Satisfied");
-			View.label_UpperCase.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_UpperCase.setText("At least one upper case letter - Satisfied");
+			ViewPassPopUp.label_UpperCase.setTextFill(Color.GREEN);
 		}
 
 		if (foundLowerCase) {
-			View.label_LowerCase.setText("At least one lower case letter - Satisfied");
-			View.label_LowerCase.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_LowerCase.setText("At least one lower case letter - Satisfied");
+			ViewPassPopUp.label_LowerCase.setTextFill(Color.GREEN);
 		}
 
 		if (foundNumericDigit) {
-			View.label_NumericDigit.setText("At least one numeric digit - Satisfied");
-			View.label_NumericDigit.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_NumericDigit.setText("At least one numeric digit - Satisfied");
+			ViewPassPopUp.label_NumericDigit.setTextFill(Color.GREEN);
 		}
 
 		if (foundSpecialChar) {
-			View.label_SpecialChar.setText("At least one special character - Satisfied");
-			View.label_SpecialChar.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_SpecialChar.setText("At least one special character - Satisfied");
+			ViewPassPopUp.label_SpecialChar.setTextFill(Color.GREEN);
 		}
 
 		if (foundLongEnough) {
-			View.label_LongEnough.setText("At least eight characters - Satisfied");
-			View.label_LongEnough.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_LongEnough.setText("At least eight characters - Satisfied");
+			ViewPassPopUp.label_LongEnough.setTextFill(Color.GREEN);
 		}
 	}
 	

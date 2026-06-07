@@ -155,6 +155,16 @@ public class ViewUserUpdate {
 		// singleton instance of this class
 		if (theView == null) theView = new ViewUserUpdate();
 		
+		updateFields(user);
+
+		// Set the title for the window, display the page, and wait for the Admin to do something
+    	theStage.setTitle("CSE 360 Foundation Code: Update User Account Details");
+        theStage.setScene(theUserUpdateScene);
+		theStage.show();
+	}
+	
+	public static void updateFields(User theUser) {
+		
 		// Set the widget values that change from use of page to another use of the page.
 		String s = "";
 		
@@ -188,11 +198,6 @@ public class ViewUserUpdate {
 		s = theUser.getEmailAddress();
     	if (s == null || s.length() < 1)label_CurrentEmailAddress.setText("<none>");
     	else label_CurrentEmailAddress.setText(s);
-
-		// Set the title for the window, display the page, and wait for the Admin to do something
-    	theStage.setTitle("CSE 360 Foundation Code: Update User Account Details");
-        theStage.setScene(theUserUpdateScene);
-		theStage.show();
 	}
 
 	
@@ -255,6 +260,7 @@ public class ViewUserUpdate {
         setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
         setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
+        button_UpdatePassword.setOnAction((_) -> {ControllerUserUpdate.displayPassPopUp(theUser); });
         
         // First Name
         setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);

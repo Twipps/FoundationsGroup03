@@ -1,9 +1,13 @@
 package utilities;
 
-public class inputValidator {
+public final class inputValidator {
 	
 	private inputValidator() {		//There is no need to make an instance of this class
 		
+	}
+	
+	public static String verifyPassword(String password) {
+		return "";
 	}
 	
 	public static String verifyUserName(String username) {
