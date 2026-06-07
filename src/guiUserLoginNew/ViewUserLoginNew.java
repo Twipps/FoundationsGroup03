@@ -24,7 +24,7 @@ public class ViewUserLoginNew {
 		VBox welcomeBox = new VBox(10);
 
 		Label welc = new Label("Welcome Back");
-		Label footer = new Label("Enter Credentials to continue.");
+		Label footer = new Label("Enter Credentials to continue");
 		Label noAcct = new Label("No Account?");
 
 		Button signIn = new Button("Sign in");
