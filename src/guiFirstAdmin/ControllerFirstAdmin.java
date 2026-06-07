@@ -3,7 +3,6 @@ package guiFirstAdmin;
 import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
-import guiNewAccount.ViewNewAccount;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import utilities.inputValidator;

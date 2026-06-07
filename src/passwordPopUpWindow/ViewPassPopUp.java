@@ -157,6 +157,9 @@ public class ViewPassPopUp {
 		theRoot = new Pane();
 		theStage = new Stage();
 		
+		thePassPopUpScene = new Scene(theRoot, windowWidth, windowHeight);
+		theStage.setScene(thePassPopUpScene);
+		
 		// Label the password input field with a title just above it, left aligned
 		setupLabelWidget(label_Password, 10, 10, "Arial", 14, windowWidth-10, Pos.BASELINE_LEFT);
 		
@@ -237,8 +240,6 @@ public class ViewPassPopUp {
 		//There should only be one instance of this class
 		if (theView == null) theView = new ViewPassPopUp();
 		
-		thePassPopUpScene = new Scene(theRoot, windowWidth, windowHeight);
-
 		text_Password.setText("");	// Clear the input fields so previously entered values do not carry over
 		resetAssessments();
 		
@@ -250,7 +251,6 @@ public class ViewPassPopUp {
 				label_Requirements, label_UpperCase, label_LowerCase, label_NumericDigit,
 				label_SpecialChar, label_LongEnough, button_Finish);
 		
-		theStage.setScene(thePassPopUpScene);
 		theStage.show();
 	}
 	
