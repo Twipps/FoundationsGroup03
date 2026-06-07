@@ -1,10 +1,10 @@
 package CustomGuiComponents;
 
+import guiAdminHomeNew.ControllerAdminHomeNew;
+import guiAdminHomeNew.ViewAdminHomeNew;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -16,11 +16,16 @@ public class AdminInvitationManagementPanel {
 		rPanel.setPadding(new Insets(15));
 		
 		Label emailTFTitle = new Label("Email Address");
-		TextField userEmailInput = new TextField();
+		ViewAdminHomeNew.text_InvitationEmailAddress = new javafx.scene.control.TextField();
 		
 		HBox emailInputFunctionality = createButtonRow();
 		
-		rPanel.getChildren().addAll(emailTFTitle, userEmailInput, emailInputFunctionality);
+		rPanel.getChildren().addAll(
+				emailTFTitle,
+				ViewAdminHomeNew.text_InvitationEmailAddress,
+				emailInputFunctionality,
+				ViewAdminHomeNew.label_NumberOfInvitations
+		);
 		
 		return rPanel;
 	}
@@ -28,13 +33,13 @@ public class AdminInvitationManagementPanel {
 	private static HBox createButtonRow() {
 		HBox rRow = new HBox();
 		
-		ComboBox<String> roleSelector = new ComboBox<>();
+		ViewAdminHomeNew.combobox_SelectRole = new javafx.scene.control.ComboBox<>();
 		Region spacer = new Region();
 		Button sendEmail = new Button("Send Invitation");
 		
-		roleSelector.setPromptText("Choose Role");
+		ViewAdminHomeNew.combobox_SelectRole.setPromptText("Choose Role");
 		
-	    roleSelector.getItems().addAll(
+	    ViewAdminHomeNew.combobox_SelectRole.getItems().addAll(
 	            "Student",
 	            "Instructor",
 	            "Administrator"
@@ -42,9 +47,11 @@ public class AdminInvitationManagementPanel {
 	    
 	    spacer.setPrefWidth(10);
 		
-		rRow.getChildren().addAll(roleSelector, spacer, sendEmail);
+		rRow.getChildren().addAll(ViewAdminHomeNew.combobox_SelectRole, spacer, sendEmail);
 		
-		sendEmail.setOnAction((_) -> {}); // to do
+		sendEmail.setOnAction((e) -> {
+			ControllerAdminHomeNew.performInvitation();
+		});
 		
 		return rRow;
 	}

@@ -134,7 +134,6 @@ public class ViewUserLogin {
 
 
 		// Existing user log in portion of the page
-
 		setupLabelUI(label_LogInInsrtuctions, "Arial", 18, width, Pos.BASELINE_LEFT, 20, 120);
 
 		// Establish the text input operand field for the username
@@ -151,11 +150,6 @@ public class ViewUserLogin {
 
 		alertUsernamePasswordError.setTitle("Invalid username/password!");
 		alertUsernamePasswordError.setHeaderText(null);
-		
-		
-		// TEMP FOR DEVELOPMENT
-//		setupButtonUI(devAdminButton, "Arial", 10, 100, Pos.BOTTOM_CENTER, 1, 1);
-		//devAdminButton.setOnAction((_) -> {ControllerAdminHomeNew.doAdminHomeNew(theStage, user); });
 		
 
 		// The invitation to setup an account portion of the page

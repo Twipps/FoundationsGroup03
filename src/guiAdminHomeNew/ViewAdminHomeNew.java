@@ -4,9 +4,11 @@ import CustomGuiComponents.AdminUserList;
 import CustomGuiComponents.HomeNavBar;
 import entityClasses.User;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,6 +17,12 @@ import javafx.stage.Stage;
 public class ViewAdminHomeNew {
 	
 	protected static final int theRole = 1; // copying how the professor keeps a consistent role
+	
+	public static TextField text_InvitationEmailAddress;
+	public static ComboBox<String> combobox_SelectRole;
+	public static Label label_NumberOfInvitations = new Label();
+	public static Alert alertEmailError = new Alert(Alert.AlertType.ERROR);
+	public static Alert alertEmailSent = new Alert(Alert.AlertType.INFORMATION);
 	
 	// declare all leaf nodes elements we new to draw the page
 	 private ViewAdminHomeNew() {

@@ -36,7 +36,7 @@ public class HomeNavBar {
     }
     
     private static VBox createAdminNavBar(Stage theStage, User user, 
-    		Label titleBar, BorderPane contentPane) {
+    	Label titleBar, BorderPane contentPane) {
         VBox adminBar = new VBox(10);
         
         Button users = createNavBarButton(theStage,"Users");

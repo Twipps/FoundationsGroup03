@@ -104,7 +104,7 @@ public class FoundationsMain extends Application {
 		}
 		else
 			// This is not a first use, so set up for the user to log in or create a new account
-			guiUserLogin.ViewUserLogin.displayUserLogin(theStage);
+			guiUserLoginNew.ViewUserLoginNew.DisplayUserLoginNew(theStage);
 		
 		// With the JavaFX pages set up, this thread of the execution comes to an end.
 	}

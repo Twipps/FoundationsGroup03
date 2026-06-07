@@ -43,7 +43,7 @@ public class ControllerUserUpdate {
 		// Use that role to proceed to that role's home page
 		switch (theRole) {
 		case 1:
-			guiAdminHome.ViewAdminHome.displayAdminHome(theStage, theUser);
+			guiAdminHomeNew.ViewAdminHomeNew.displayAdminHomeNew(theStage, theUser);
 			break;
 		case 2:
 			guiStudent.ViewStudentHome.displayRole1Home(theStage, theUser);
