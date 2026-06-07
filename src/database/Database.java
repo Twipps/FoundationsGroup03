@@ -58,8 +58,8 @@ public class Database {
 	private String currentPreferredFirstName;
 	private String currentEmailAddress;
 	private boolean currentAdminRole;
-	private boolean currentNewRole1;
-	private boolean currentNewRole2;
+	private boolean currentStudentRole;
+	private boolean currentInstructorRole;
 
 	/*******
 	 * <p> Method: Database </p>
@@ -210,11 +210,11 @@ public class Database {
 			currentAdminRole = user.getAdminRole();
 			pstmt.setBoolean(8, currentAdminRole);
 			
-			currentNewRole1 = user.getNewRole1();
-			pstmt.setBoolean(9, currentNewRole1);
+			currentStudentRole = user.getNewStudent();
+			pstmt.setBoolean(9, currentStudentRole);
 			
-			currentNewRole2 = user.getNewRole2();
-			pstmt.setBoolean(10, currentNewRole2);
+			currentInstructorRole = user.getNewInstructor();
+			pstmt.setBoolean(10, currentInstructorRole);
 			
 			pstmt.executeUpdate();
 		}
@@ -368,8 +368,8 @@ public class Database {
 	public int getNumberOfRoles (User user) {
 		int numberOfRoles = 0;
 		if (user.getAdminRole()) numberOfRoles++;
-		if (user.getNewRole1()) numberOfRoles++;
-		if (user.getNewRole2()) numberOfRoles++;
+		if (user.getNewStudent()) numberOfRoles++;
+		if (user.getNewInstructor()) numberOfRoles++;
 		return numberOfRoles;
 	}	
 
@@ -831,8 +831,8 @@ public class Database {
 	    	currentPreferredFirstName = rs.getString(7);
 	    	currentEmailAddress = rs.getString(8);
 	    	currentAdminRole = rs.getBoolean(9);
-	    	currentNewRole1 = rs.getBoolean(10);
-	    	currentNewRole2 = rs.getBoolean(11);
+	    	currentStudentRole = rs.getBoolean(10);
+	    	currentInstructorRole = rs.getBoolean(11);
 			return true;
 	    } catch (SQLException e) {
 			return false;
@@ -879,9 +879,9 @@ public class Database {
 				pstmt.setString(2, username);
 				pstmt.executeUpdate();
 				if (value.compareTo("true") == 0)
-					currentNewRole1 = true;
+					currentStudentRole = true;
 				else
-					currentNewRole1 = false;
+					currentStudentRole = false;
 				return true;
 			} catch (SQLException e) {
 				return false;
@@ -894,9 +894,9 @@ public class Database {
 				pstmt.setString(2, username);
 				pstmt.executeUpdate();
 				if (value.compareTo("true") == 0)
-					currentNewRole2 = true;
+					currentStudentRole = true;
 				else
-					currentNewRole2 = false;
+					currentInstructorRole = false;
 				return true;
 			} catch (SQLException e) {
 				return false;
@@ -1003,7 +1003,7 @@ public class Database {
 	 * @return true if this user plays a Student role, else false
 	 *  
 	 */
-	public boolean getCurrentNewRole1() { return currentNewRole1;};
+	public boolean getCurrentNewRole1() { return currentStudentRole;};
 
 	
 	/*******
@@ -1014,7 +1014,7 @@ public class Database {
 	 * @return true if this user plays a Reviewer role, else false
 	 *  
 	 */
-	public boolean getCurrentNewRole2() { return currentNewRole2;};
+	public boolean getCurrentNewRole2() { return currentInstructorRole;};
 
 	
 	/*******

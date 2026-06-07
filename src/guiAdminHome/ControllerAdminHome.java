@@ -195,7 +195,7 @@ public class ControllerAdminHome {
 	 * <p> Description: Protected method that logs this user out of the system and returns to the
 	 * login page for future use.</p>
 	 */
-	protected static void performLogout() {
+	public static void performLogout() {
 		guiUserLogin.ViewUserLogin.displayUserLogin(ViewAdminHome.theStage);
 	}
 	

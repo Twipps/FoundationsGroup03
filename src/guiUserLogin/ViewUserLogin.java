@@ -1,5 +1,6 @@
 package guiUserLogin;
 
+import guiAdminHomeNew.ControllerAdminHomeNew;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -63,6 +64,10 @@ public class ViewUserLogin {
 	private static Stage theStage;	
 	private static Pane theRootPane;
 	public static Scene theUserLoginScene = null;	
+	
+	
+	// TEMP FOR DEVELOPMENT
+	//public static Button devAdminButton = new Button("dev admin");
 
 
 	private static ViewUserLogin theView = null;	//	private static guiUserLogin.ControllerUserLogin theController;
@@ -146,7 +151,12 @@ public class ViewUserLogin {
 
 		alertUsernamePasswordError.setTitle("Invalid username/password!");
 		alertUsernamePasswordError.setHeaderText(null);
-
+		
+		
+		// TEMP FOR DEVELOPMENT
+//		setupButtonUI(devAdminButton, "Arial", 10, 100, Pos.BOTTOM_CENTER, 1, 1);
+		//devAdminButton.setOnAction((_) -> {ControllerAdminHomeNew.doAdminHomeNew(theStage, user); });
+		
 
 		// The invitation to setup an account portion of the page
 
@@ -174,6 +184,9 @@ public class ViewUserLogin {
 				label_OperationalStartTitle,
 				label_LogInInsrtuctions, label_AccountSetupInsrtuctions, text_Username,
 				button_Login, text_Password, text_Invitation, button_SetupAccount,
+				
+				//devAdminButton, // development
+				
 				button_Quit);
 	}
 

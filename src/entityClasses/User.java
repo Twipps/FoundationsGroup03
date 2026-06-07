@@ -26,8 +26,8 @@ public class User {
     private String preferredFirstName;
     private String emailAddress;
     private boolean adminRole;
-    private boolean role1;
-    private boolean role2;
+    private boolean studentRole;
+    private boolean instructorRole;
     
     
     /*****
@@ -68,8 +68,8 @@ public class User {
         this.preferredFirstName = pfn;
         this.emailAddress = ea;
         this.adminRole = r1;
-        this.role1 = r2;
-        this.role2 = r3;
+        this.studentRole = r2;
+        this.instructorRole = r3;
     }
 
     
@@ -96,8 +96,8 @@ public class User {
      * 
      */
     // Sets the role1 user.
-    public void setRole1User(boolean role) {
-    	this.role1=role;
+    public void setStudentUser(boolean role) {
+    	this.studentRole=role;
     }
 
     
@@ -110,8 +110,8 @@ public class User {
      * 
      */
     // Sets the role2 user.
-    public void setRole2User(boolean role) {
-    	this.role2=role;
+    public void setInstructorUser(boolean role) {
+    	this.instructorRole=role;
     }
 
     
@@ -228,7 +228,7 @@ public class User {
 	 *
      */
     // Gets the current value of the role1 attribute.
-	public boolean getNewRole1() { return role1; }
+	public boolean getNewStudent() { return studentRole; }
 
     
     /*****
@@ -240,7 +240,7 @@ public class User {
 	 *
      */
     // Gets the current value of the role2 attribute.
-    public boolean getNewRole2() { return role2; }
+    public boolean getNewInstructor() { return instructorRole; }
 
         
     /*****
@@ -255,8 +255,8 @@ public class User {
     public int getNumRoles() {
     	int numRoles = 0;
     	if (adminRole) numRoles++;
-    	if (role1) numRoles++;
-    	if (role2) numRoles++;
+    	if (studentRole) numRoles++;
+    	if (instructorRole) numRoles++;
     	return numRoles;
     }
 }
