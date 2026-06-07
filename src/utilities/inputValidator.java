@@ -6,6 +6,10 @@ public final class inputValidator {
 		
 	}
 	
+	public static String verifyPassword(String password) {
+		return "";
+	}
+	
 	public static String verifyUserName(String username) {
 		String userNameRecognizerErrorMessage = "";
 		int state = 0;
