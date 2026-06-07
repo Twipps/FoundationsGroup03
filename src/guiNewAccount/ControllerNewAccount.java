@@ -87,6 +87,15 @@ public class ControllerNewAccount {
 			ViewNewAccount.alertUsernameError.showAndWait();
 			return;
 		}
+		
+		// Check that the invitation code has not expired before processing
+		if (theDatabase.isInvitationExpired(ViewNewAccount.theInvitationCode)) {
+		    ViewNewAccount.alertInvitationCodeIsInvalid.setHeaderText("Invitation Code Expired");
+		    ViewNewAccount.alertInvitationCodeIsInvalid.setContentText(
+		            "This invitation code has expired. Please contact an admin for a new invitation.");
+		    ViewNewAccount.alertInvitationCodeIsInvalid.showAndWait();
+		    return;
+		}
 
 		// Make sure the two passwords are the same.	
 		if (ViewNewAccount.text_Password1.getText().

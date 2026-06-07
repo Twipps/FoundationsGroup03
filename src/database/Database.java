@@ -91,7 +91,7 @@ public class Database {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			statement.execute("DROP ALL OBJECTS");
+			// statement.execute("DROP ALL OBJECTS");
 
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
@@ -124,11 +124,12 @@ public class Database {
 		statement.execute(userTable);
 		
 		// Create the invitation codes table
-	    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
-	            + "code VARCHAR(10) PRIMARY KEY, "
-	    		+ "emailAddress VARCHAR(255), "
-	            + "role VARCHAR(10))";
-	    statement.execute(invitationCodesTable);
+		String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
+		        + "code VARCHAR(10) PRIMARY KEY, "
+		        + "emailAddress VARCHAR(255), "
+		        + "role VARCHAR(10), "
+		        + "expiryDate TIMESTAMP DEFAULT NULL)";
+		statement.execute(invitationCodesTable);
 	}
 
 
@@ -391,12 +392,19 @@ public class Database {
 	 */
 	public String generateInvitationCode(String emailAddress, String role) {
 	    String code = UUID.randomUUID().toString().substring(0, 6);
-	    String query = "INSERT INTO InvitationCodes (code, emailaddress, role) VALUES (?, ?, ?)";
+	    
+	    // Set expiry to 7 days from now
+	    java.sql.Timestamp expiryDate = new java.sql.Timestamp(
+	        System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000));
+	    
+	    String query = "INSERT INTO InvitationCodes (code, emailaddress, role, expiryDate) "
+	        + "VALUES (?, ?, ?, ?)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
 	        pstmt.setString(2, emailAddress);
 	        pstmt.setString(3, role);
+	        pstmt.setTimestamp(4, expiryDate);
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -533,6 +541,76 @@ public class Database {
 		return;
 	}
 	
+	/*******
+	 * <p> Method: void removeExpiredInvitations() </p>
+	 * 
+	 * <p> Description: Removes all invitation codes whose expiry date has passed.
+	 * This method should be called each time the Admin Home page loads to ensure
+	 * expired invitations are cleaned up automatically. </p>
+	 * 
+	 */
+	public void removeExpiredInvitations() {
+	    String query = "DELETE FROM InvitationCodes WHERE expiryDate < ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setTimestamp(1, new java.sql.Timestamp(System.currentTimeMillis()));
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	/*******
+	 * <p> Method: boolean isInvitationExpired(String code) </p>
+	 * 
+	 * <p> Description: Checks whether a specific invitation code has expired.</p>
+	 * 
+	 * @param code is the 6 character String invitation code
+	 * 
+	 * @return true if the invitation has expired or does not exist, false if still valid
+	 * 
+	 */
+	public boolean isInvitationExpired(String code) {
+	    String query = "SELECT expiryDate FROM InvitationCodes WHERE code = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, code);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            java.sql.Timestamp expiry = rs.getTimestamp("expiryDate");
+	            if (expiry == null) return false;
+	            return expiry.before(new java.sql.Timestamp(System.currentTimeMillis()));
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return true; // If not found, treat as expired
+	}
+
+
+	/*******
+	 * <p> Method: java.sql.Timestamp getInvitationExpiry(String code) </p>
+	 * 
+	 * <p> Description: Returns the expiry date of an invitation code so it can
+	 * be displayed to the admin when managing invitations.</p>
+	 * 
+	 * @param code is the 6 character String invitation code
+	 * 
+	 * @return the expiry Timestamp, or null if not found
+	 * 
+	 */
+	public java.sql.Timestamp getInvitationExpiry(String code) {
+	    String query = "SELECT expiryDate FROM InvitationCodes WHERE code = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, code);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getTimestamp("expiryDate");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
 	
 	/*******
 	 * <p> Method: void deleteUser(String username) </p>
