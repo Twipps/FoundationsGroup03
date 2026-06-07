@@ -4,7 +4,7 @@ import database.Database;
 import entityClasses.User;
 import javafx.stage.Stage;
 
-public class ControllerAdminHomeNew {
+public class ControllerAdminHomeNew { // alot of this is from the old controller
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
