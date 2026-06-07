@@ -41,7 +41,7 @@ public class HomeNavBar {
         
         Button users = createNavBarButton(theStage,"Users");
         Button invitations = createNavBarButton(theStage, "Invitations");
-        Button accountSettings = createUserSettingsButton(theStage, user);
+        Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
         Button logout = createLogOutButton(theStage);
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
@@ -105,9 +105,15 @@ public class HomeNavBar {
         return adminBar;
     }
     
-    private static Button createUserSettingsButton(Stage theStage, User theUser) {
+    private static Button createUserSettingsButton(Stage theStage, BorderPane contentPane, Label titleBar,User theUser) {
     	Button rAccountSettingsButton = createNavBarButton(theStage,"Account Settings");
-    	rAccountSettingsButton.setOnAction((_) -> {ViewUserUpdate.displayUserUpdate(theStage, theUser);});
+    	rAccountSettingsButton.setOnAction((_) -> {
+    		//ViewUserUpdate.displayUserUpdate(theStage, theUser);
+    		titleBar.setText("User Account Settings");
+    		contentPane.setRight(null);
+    		contentPane.setCenter(UserSettingsPanel.createSettingsPanel(theStage));
+    		}
+    	);
     	return rAccountSettingsButton;
     }
     
