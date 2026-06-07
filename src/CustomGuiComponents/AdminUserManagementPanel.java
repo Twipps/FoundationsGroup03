@@ -33,7 +33,7 @@ public class AdminUserManagementPanel {
 	    roleSelectorAdd.setPromptText("Choose Role");
 	    roleSelectorRemove.setPromptText("Choose Role");
 
-	    roleSelectorAdd.getItems().addAll("Admin", "Student", "Instructor");
+	    roleSelectorAdd.getItems().addAll("Admin", "Student", "Instructor"); // STILL NEED TO ADD PREVIOUS FUNCTIONALITY
 	    roleSelectorRemove.getItems().addAll("Admin", "Student", "Instructor");
 
 	    Button setOneTime = new Button("Set One-Time Password");
