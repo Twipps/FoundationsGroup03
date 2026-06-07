@@ -7,7 +7,7 @@ public final class InputValidator {
 	
 	private InputValidator() {		//There is no need to make an instance of this class
 	}
-	
+		
 	public static final int MAX_INPUT_LENGTH = 32;  			// No input can exceed 32 chars
 	
 	//apply this filter to each input field using:
@@ -22,31 +22,152 @@ public final class InputValidator {
         return change; // Accept the change
     };
     	
+	
+	//Attributes used by finite state machines to keep track of character input on the inputline
+	private static String inputLine = "";				// The input line
+	private static char currentChar;					// The current character in the line
+	private static int currentCharNdx;					// The index of the current character
+	private static boolean running;						// The flag that specifies if the FSM is 
+														// running
+    
+    //verifyPassword attributes 
+	private static boolean foundUpperCase = false;
+	private static boolean foundLowerCase = false;
+	private static boolean foundNumericDigit = false;
+	private static boolean foundSpecialChar = false;
+	private static boolean foundLongEnough = false;
+    
+	/**********
+	 * <p> Title: verifyPassword - Public Method </p>
+	 * 
+	 * <p> Description: This method is a mechanical transformation of a Directed Graph diagram 
+	 * into a Java method. This method is used by both the GUI version of the application as well
+	 * as the testing automation version.
+	 * 
+	 * @param input		The input string evaluated by the directed graph processing
+	 * @return			An output string that is empty if every things is okay or it will be
+	 * 						a string with a helpful description of the error follow by two lines
+	 * 						that shows the input line follow by a line with an up arrow at the
+	 *						point where the error was found.
+	 */
+    
+	public static String verifyPassword(String input) {
+		// The following are the local variable used to perform the Directed Graph simulation
+		inputLine = input;					// Save the reference to the input line as a global
+		currentCharNdx = 0;					// The index of the current character
+		
+		if(input.length() <= 0) {
+			return "*** Error *** The password is empty!";
+		}
+		
+		// The input is not empty, so we can access the first character
+		currentChar = input.charAt(0);		// The current character from the above indexed position
+
+		// The Directed Graph simulation continues until the end of the input is reached or at some 
+		// state the current character does not match any valid transition to a next state.  This
+		// local variable is a working copy of the input.
+		
+		// The following are the attributes associated with each of the requirements
+		foundUpperCase = false;				// Reset the Boolean flag
+		foundLowerCase = false;				// Reset the Boolean flag
+		foundNumericDigit = false;			// Reset the Boolean flag
+		foundSpecialChar = false;			// Reset the Boolean flag
+		foundNumericDigit = false;			// Reset the Boolean flag
+		foundLongEnough = false;			// Reset the Boolean flag
+		
+		// This flag determines whether the directed graph (FSM) loop is operating or not
+		running = true;						// Start the loop
+
+		// The Directed Graph simulation continues until the end of the input is reached or at some
+		// state the current character does not match any valid transition
+		while (running) {
+			helperMethods.displayInputState();
+			// The cascading if statement sequentially tries the current character against all of
+			// the valid transitions, each associated with one of the requirements
+			if (currentChar >= 'A' && currentChar <= 'Z') {
+				System.out.println("Upper case letter found");
+				foundUpperCase = true;
+			} else if (currentChar >= 'a' && currentChar <= 'z') {
+				System.out.println("Lower case letter found");
+				foundLowerCase = true;
+			} else if (currentChar >= '0' && currentChar <= '9') {
+				System.out.println("Digit found");
+				foundNumericDigit = true;
+			} else if ("~`!@#$%^&*()_-+={}[]|\\:;\"'<>,.?/".indexOf(currentChar) >= 0) {
+				System.out.println("Special character found");
+				foundSpecialChar = true;
+			} else {
+				return "*** Error *** An invalid character has been found!";
+			}
+			if (currentCharNdx >= 7) {
+				System.out.println("At least 8 characters found");
+				foundLongEnough = true;
+			}
+			
+			// Go to the next character if there is one
+			currentCharNdx++;
+			if (currentCharNdx >= inputLine.length())
+				running = false;
+			else
+				currentChar = input.charAt(currentCharNdx);
+			
+			System.out.println();
+		}
+		
+		// Construct a String with a list of the requirement elements that were found.
+		String errMessage = "";
+		if (!foundUpperCase)
+			errMessage += "Upper case; ";
+		
+		if (!foundLowerCase)
+			errMessage += "Lower case; ";
+		
+		if (!foundNumericDigit)
+			errMessage += "Numeric digits; ";
+			
+		if (!foundSpecialChar)
+			errMessage += "Special character; ";
+			
+		if (!foundLongEnough)
+			errMessage += "Long Enough; ";
+		
+		if (errMessage == "")
+			return "";
+		
+		// If it gets here, there something was not found, so return an appropriate message
+		return errMessage + "conditions were not satisfied";
+	}
+	
+	
+
 	//verifyUserName variables
 	private static String userNameRecognizerErrorMessage = "";  // The error message text
-	private static int userNameRecognizerIndexofError = -1;     // The index of error location
 	private static int state = 0;
 	private static int nextState = 0;
-	private static char currentChar;
-	private static int currentCharNdx = 0;
-	private static boolean running;
 	private static int userNameSize = 0;
-	private static String inputLine = "";    // The input line
 	private static boolean finalState = false; // Is this state a final state?
 	
-	public static boolean verifyInputLength(String input) {
-		return input.length() <= MAX_INPUT_LENGTH;
-	}
-	
-	public static String verifyPassword(String password) {
-		return "";
-	}
+	/**********
+	 * This method is a mechanical transformation of the UserName Finite State Machine diagram
+	 * into a Java method.
+	 *
+	 * <p>State summary:</p>
+	 * <p> • State 0 – start state.  Expects the first character to be alphabetic (AlphaChar).</p>
+	 * <p> • State 1 – inside a valid alphanumeric run; this is the only final state.
+	 *       From here the FSM may stay in state 1 on another UNChar, or move to state 2
+	 *       on a SepChar.</p>
+	 * <p> • State 2 – just consumed a SepChar.  The FSM must see a UNChar next; another
+	 *       SepChar or end-of-input here is an error.</p>
+	 *
+	 * @param input  The string to validate
+	 * @return       An empty string when the username is valid, or a non-empty error message
+	 *               that describes the first problem found
+	 */
 	
 	public static String verifyUsername(String input) {
 
 		// Reject empty input immediately; there is no meaningful character to point at.
 		if (input.length() <= 0) {
-			userNameRecognizerIndexofError = 0;
 			return "\n*** ERROR *** The input is empty";
 		}
 
@@ -165,7 +286,6 @@ public final class InputValidator {
 		// the entire input was accepted (state 1, all input consumed, valid length) or
 		// because of a specific error.  Each state can produce a targeted message.
 		// ---------------------------------------------------------------------------------
-		userNameRecognizerIndexofError = currentCharNdx; // Position of the problem character.
 		userNameRecognizerErrorMessage = "\n*** ERROR *** ";
 
 		switch (state) {
@@ -200,7 +320,6 @@ public final class InputValidator {
 				return userNameRecognizerErrorMessage;
 			} else {
 				// All characters consumed, length valid: the username is accepted.
-				userNameRecognizerIndexofError = -1;
 				userNameRecognizerErrorMessage = "";
 				return userNameRecognizerErrorMessage;
 			}
@@ -296,6 +415,22 @@ public final class InputValidator {
 		 */
 		private static boolean isSepChar(char ch) {
 			return ch == '-' || ch == '_' || ch == '.' || ch == '&';
+		}
+		
+		/*
+		 * This private method displays the input line and then on a line under it displays the input
+		 * up to the point of the error.  At that point, a question mark is place and the rest of the 
+		 * input is ignored. This method is designed to be used to display information to make it clear
+		 * to the user where the error in the input can be found, and show that on the console 
+		 * terminal.
+		 * 
+		 */
+		private static void displayInputState() {
+			// Display the entire input line
+			System.out.println(inputLine);
+			System.out.println(inputLine.substring(0,currentCharNdx) + "?");
+			System.out.println("The password size: " + inputLine.length() + "  |  The currentCharNdx: " + 
+					currentCharNdx + "  |  The currentChar: \"" + currentChar + "\"");
 		}
 	}
 	

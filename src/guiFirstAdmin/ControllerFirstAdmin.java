@@ -119,6 +119,19 @@ public class ControllerFirstAdmin {
 		
 		// Make sure the two passwords are the same
 		if (adminPassword1.compareTo(adminPassword2) == 0) {
+			
+			//Then verify that the password meets the requirements
+			returnString = InputValidator.verifyPassword(adminPassword1);
+			if (returnString.compareTo("") != 0) {
+				ViewFirstAdmin.text_AdminPassword1.setText("");
+				ViewFirstAdmin.text_AdminPassword2.setText("");
+				Label label = new Label(returnString);
+				label.setWrapText(true);
+				ViewFirstAdmin.alertUsernamePasswordError.getDialogPane().setContent(label);	//Handles wrapping text
+				ViewFirstAdmin.alertUsernamePasswordError.showAndWait();
+				return;	
+			}
+			
         	// Create the passwords and proceed to the user home page
         	User user = new User(adminUsername, adminPassword1, "", "", "", "", "", true, false, 
         			false);

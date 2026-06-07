@@ -87,13 +87,26 @@ public class ControllerNewAccount {
 			ViewNewAccount.alertUsernameError.showAndWait();
 			return;
 		}
+		
 
 		// Make sure the two passwords are the same.	
 		if (ViewNewAccount.text_Password1.getText().
 				compareTo(ViewNewAccount.text_Password2.getText()) == 0) {
 			
-			// The passwords match so we will set up the role and the User object base on the 
-			// information provided in the invitation
+			//Then verify that the password meets the requirements
+			returnString = InputValidator.verifyPassword(password);
+			if (returnString.compareTo("") != 0) {
+				ViewNewAccount.text_Password1.setText("");
+				ViewNewAccount.text_Password2.setText("");
+				Label label = new Label(returnString);
+				label.setWrapText(true);
+				ViewNewAccount.alertUsernamePasswordError.getDialogPane().setContent(label);	//Handles wrapping text
+				ViewNewAccount.alertUsernamePasswordError.showAndWait();
+				return;	
+			}
+			
+			// The passwords match and meet the requirements, so we will set up the role and the  
+			// User object base on the information provided in the invitation
 			if (ViewNewAccount.theRole.compareTo("Admin") == 0) {
 				roleCode = 1;
 				user = new User(username, password, "", "", "", "", "", true, false, false);
@@ -140,7 +153,7 @@ public class ControllerNewAccount {
 			// must be the same, and clear the message as soon as the first character is typed.
 			ViewNewAccount.text_Password1.setText("");
 			ViewNewAccount.text_Password2.setText("");
-			ViewNewAccount.alertUsernamePasswordError.showAndWait();
+			ViewNewAccount.alertPasswordMatchError.showAndWait();
 		}
 	}
 

@@ -60,8 +60,11 @@ public class ViewNewAccount {
 	// This alert is used should the invitation code be invalid
     protected static Alert alertInvitationCodeIsInvalid = new Alert(AlertType.INFORMATION);
 
-	// This alert is used should the user enter two passwords that do not match
+	// This alert is used should the user enter a password that does not meet the requirements
 	protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
+	
+	// This alert is used should the user enter two passwords that do not match
+	protected static Alert alertPasswordMatchError = new Alert(AlertType.INFORMATION);
 	
 	// This alert is used should the user enter a username that does not satisfy the requirements
 	protected static Alert alertUsernameError = new Alert(AlertType.INFORMATION);
@@ -192,8 +195,13 @@ public class ViewNewAccount {
 		alertInvitationCodeIsInvalid.setContentText("Correct the code and try again.");
 
 		// If the passwords do not match, this alert dialog will tell the user
-		alertUsernamePasswordError.setTitle("Passwords Do Not Match");
-		alertUsernamePasswordError.setHeaderText("The two passwords must be identical.");
+		alertPasswordMatchError.setTitle("Passwords Do Not Match");
+		alertPasswordMatchError.setHeaderText("The two passwords must be identical.");
+		alertPasswordMatchError.setContentText("Correct the passwords and try again.");
+		
+		// If the password does not meet the requirements, this alert dialog will tell the user
+		alertUsernamePasswordError.setTitle("Invalid Password");
+		alertUsernamePasswordError.setHeaderText("The Password must satisfy the following requirements:");
 		alertUsernamePasswordError.setContentText("Correct the passwords and try again.");
 
         // Set up the account creation and login
