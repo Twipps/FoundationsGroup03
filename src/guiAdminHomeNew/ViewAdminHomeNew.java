@@ -3,9 +3,12 @@ package guiAdminHomeNew;
 import CustomGuiComponents.AdminUserList;
 import CustomGuiComponents.HomeNavBar;
 import entityClasses.User;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -29,11 +32,16 @@ public class ViewAdminHomeNew {
 		    Label titleBar = new Label("Users");
 		    titleBar.setStyle(
 		        "-fx-font-size: 28px;" +
-		        "-fx-font-weight: bold;" +
-		        "-fx-padding: 20;"
+		        "-fx-text-fill: #9c3535;" +
+		        "-fx-font-weight: bold;"
 		    );
+		    
+		    HBox header = new HBox(titleBar);
+		    
+		    header.setStyle("-fx-background-color: #FFCCCC;");
+		    header.setPadding(new Insets(15)); // padding
 
-		    contentPane.setTop(titleBar);
+		    contentPane.setTop(header);
 		    contentPane.setCenter(AdminUserList.createUserList(userModifyPane));
 		    contentPane.setRight(userModifyPane);
 

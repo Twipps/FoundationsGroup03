@@ -13,6 +13,7 @@ public class AdminUserList {
 
         VBox container = createUserContainer();
         refreshUsers(container, userModifyPane);
+        userModifyPane.setRight(null); // refresh
 
         ScrollPane scrollPane = new ScrollPane(container);
         scrollPane.setFitToWidth(true);
@@ -137,7 +138,7 @@ public class AdminUserList {
         );
         
         row.setOnMouseClicked(e -> {
-            userModifyPane.setRight(
+        	userModifyPane.setRight(
                 AdminUserManagementPanel.createUserManagementPanel(
                     username,
                     fullName,

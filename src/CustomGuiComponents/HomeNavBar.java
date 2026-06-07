@@ -4,7 +4,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import entityClasses.User;
 import guiAdminHomeNew.ControllerAdminHomeNew;
@@ -13,6 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 
 // This will be a reusable navigation bar with different 
 // options depending on the role that it is given
@@ -53,13 +56,28 @@ public class HomeNavBar {
                 
         userName.setStyle (
         		"-fx-font-size: 15px;" +
-        		"-fx-text-fill: #dddddd;"
+//        		"-fx-font-weight: bold;" +
+        		"-fx-text-fill: white;"
         );
         
         roleLabel.setStyle (
-            	"-fx-font-size: 15px;" +
-            	"-fx-text-fill: #dddddd;"
+            	"-fx-font-size: 12px;" +
+            	"-fx-text-fill: white;"
             );
+        
+        String navButtonStyle =
+        	    "-fx-background-color: transparent;" +
+        	    "-fx-border-color: transparent;" +
+        	    "-fx-text-fill: white;" +
+        	    "-fx-font-size: 14px;" +
+        	    "-fx-font-weight: bold;" +
+        	    "-fx-focus-color: transparent;" +
+        	    "-fx-faint-focus-color: transparent;";
+
+        users.setStyle(navButtonStyle);
+        invitations.setStyle(navButtonStyle);
+        accountSettings.setStyle(navButtonStyle);
+        logout.setStyle(navButtonStyle);
         
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
@@ -81,8 +99,8 @@ public class HomeNavBar {
         adminBar.setAlignment(Pos.TOP_CENTER);
         
         adminBar.setStyle(brandColorNav);
-        adminBar.getChildren().addAll(users, invitations, 
-        		spacer, placeHolderIcon, userName, roleLabel, accountSettings, logout);
+        adminBar.getChildren().addAll(users, createSeparator(), invitations, createSeparator(),
+        		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), accountSettings, createSeparator(), logout);
         
         return adminBar;
     }
@@ -107,5 +125,11 @@ public class HomeNavBar {
     	rButton.setAlignment(Pos.CENTER);
     	
     	return rButton;
+    }
+    
+    private static Separator createSeparator() {
+        Separator sep = new Separator();
+        sep.setOpacity(0.5);
+        return sep;
     }
 }
