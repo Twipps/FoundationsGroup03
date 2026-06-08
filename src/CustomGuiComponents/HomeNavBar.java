@@ -3,6 +3,7 @@ package CustomGuiComponents;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -121,7 +122,7 @@ public class HomeNavBar {
     		//ViewUserUpdate.displayUserUpdate(theStage, theUser);
     		titleBar.setText("User Account Settings");
     		contentPane.setRight(null);
-    		contentPane.setCenter(UserSettingsPanel.createSettingsPanel(theStage));
+    		contentPane.setCenter(UserSettingsPanel.createSettingsPanel(theStage, theUser));
     		}
     	);
     	return rAccountSettingsButton;

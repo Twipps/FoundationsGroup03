@@ -29,8 +29,7 @@ public class ViewAdminHomeNew {
 		 
 	 }
 	
-	 public static void displayAdminHomeNew(Stage theStage, User user) {
-		 	
+	 public static void displayAdminHomeNew(Stage theStage, User user) {		 	
 		    applicationMain.FoundationsMain.activeHomePage = theRole;
 		 	
 		    BorderPane root = new BorderPane();

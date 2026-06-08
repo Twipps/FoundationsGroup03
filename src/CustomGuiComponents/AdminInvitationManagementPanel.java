@@ -54,6 +54,7 @@ public class AdminInvitationManagementPanel {
 		rRow.getChildren().addAll(ViewAdminHomeNew.combobox_SelectRole, spacer, sendEmail);
 		
 		sendEmail.setOnAction((e) -> {
+			if (ViewAdminHomeNew.combobox_SelectRole.getValue() == null) { return; } // dont send it selector is empty
 			ControllerAdminHomeNew.performInvitation();
 			contentPane.setCenter(AdminInvitationList.createInvitationList(contentPane));
 			contentPane.setRight(AdminInvitationManagementPanel.createInvitationManagementPanel(contentPane));

@@ -1,6 +1,7 @@
-// new panel to replace guiUserUpdate
 package CustomGuiComponents;
 
+import database.Database;
+import entityClasses.User;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -11,8 +12,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class UserSettingsPanel {
+	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
 	// this will get applied to the center of any user home page
-	public static VBox createSettingsPanel(Stage theStage) {
+	public static VBox createSettingsPanel(Stage theStage, User theUser) {
 		VBox settingsBox = new VBox(15);
 
 		VBox userNameRow = new VBox(5);
@@ -23,15 +26,14 @@ public class UserSettingsPanel {
 		VBox preferredNameRow = new VBox(5);
 		VBox emailRow = new VBox(5);
 
-		Label currentUsername = new Label("Username:");
-		Label currentPassword = new Label("Password:");
-		Label currentFirstName = new Label("First Name:");
-		Label currentMiddleName = new Label("Middle Name:");
-		Label currentLastName = new Label("Last Name:");
-		Label currentPreferredName = new Label("Preferred Name:");
-		Label currentEmailAddr = new Label("Email:");
+		Label currentUsername = new Label("Username: " + displayValue(theUser.getUserName()));
+		Label currentPassword = new Label("Password: " + displayValue(theUser.getPassword()));
+		Label currentFirstName = new Label("First Name: " + displayValue(theUser.getFirstName()));
+		Label currentMiddleName = new Label("Middle Name: " + displayValue(theUser.getMiddleName()));
+		Label currentLastName = new Label("Last Name: " + displayValue(theUser.getLastName()));
+		Label currentPreferredName = new Label("Preferred Name: " + displayValue(theUser.getPreferredFirstName()));
+		Label currentEmailAddr = new Label("Email: " + displayValue(theUser.getEmailAddress()));
 
-		TextField newUsername = new TextField();
 		TextField newPassword = new TextField();
 		TextField newFirstName = new TextField();
 		TextField newMiddleName = new TextField();
@@ -39,15 +41,61 @@ public class UserSettingsPanel {
 		TextField newPreferredName = new TextField();
 		TextField newEmailAddr = new TextField();
 
-		Button updateUsername = new Button("Update");
 		Button updatePassword = new Button("Update");
 		Button updateFirstName = new Button("Update");
 		Button updateMiddleName = new Button("Update");
 		Button updateLastName = new Button("Update");
 		Button updatePreferredName = new Button("Update");
 		Button updateEmail = new Button("Update");
+		
+		updatePassword.setDisable(true); // ROB WILL NEED TO CHANGE
 
-		userNameRow.getChildren().addAll(currentUsername, new HBox(10, newUsername, updateUsername));
+		updateFirstName.setOnAction((_) -> {
+			if (newFirstName.getText().trim().isEmpty()) {return;}
+			theDatabase.updateFirstName(theUser.getUserName(), newFirstName.getText());
+			theDatabase.getUserAccountDetails(theUser.getUserName());
+			theUser.setFirstName(theDatabase.getCurrentFirstName());
+			currentFirstName.setText("First Name: " + displayValue(theUser.getFirstName()));
+			newFirstName.setText("");
+		});
+
+		updateMiddleName.setOnAction((_) -> {
+			if (newMiddleName.getText().trim().isEmpty()) {return;}
+			theDatabase.updateMiddleName(theUser.getUserName(), newMiddleName.getText());
+			theDatabase.getUserAccountDetails(theUser.getUserName());
+			theUser.setMiddleName(theDatabase.getCurrentMiddleName());
+			currentMiddleName.setText("Middle Name: " + displayValue(theUser.getMiddleName()));
+			newMiddleName.setText("");
+		});
+
+		updateLastName.setOnAction((_) -> {
+			if (newLastName.getText().trim().isEmpty()) {return;}
+			theDatabase.updateLastName(theUser.getUserName(), newLastName.getText());
+			theDatabase.getUserAccountDetails(theUser.getUserName());
+			theUser.setLastName(theDatabase.getCurrentLastName());
+			currentLastName.setText("Last Name: " + displayValue(theUser.getLastName()));
+			newLastName.setText("");
+		});
+
+		updatePreferredName.setOnAction((_) -> {
+			if (newPreferredName.getText().trim().isEmpty()) {return;}
+			theDatabase.updatePreferredFirstName(theUser.getUserName(), newPreferredName.getText());
+			theDatabase.getUserAccountDetails(theUser.getUserName());
+			theUser.setPreferredFirstName(theDatabase.getCurrentPreferredFirstName());
+			currentPreferredName.setText("Preferred Name: " + displayValue(theUser.getPreferredFirstName()));
+			newPreferredName.setText("");
+		});
+
+		updateEmail.setOnAction((_) -> {
+			if (newEmailAddr.getText().trim().isEmpty()) {return;}
+			theDatabase.updateEmailAddress(theUser.getUserName(), newEmailAddr.getText());
+			theDatabase.getUserAccountDetails(theUser.getUserName());
+			theUser.setEmailAddress(theDatabase.getCurrentEmailAddress());
+			currentEmailAddr.setText("Email: " + displayValue(theUser.getEmailAddress()));
+			newEmailAddr.setText("");
+		});
+
+		userNameRow.getChildren().addAll(currentUsername);
 		passwordRow.getChildren().addAll(currentPassword, new HBox(10, newPassword, updatePassword));
 		firstNameRow.getChildren().addAll(currentFirstName, new HBox(10, newFirstName, updateFirstName));
 		middleNameRow.getChildren().addAll(currentMiddleName, new HBox(10, newMiddleName, updateMiddleName));
@@ -69,5 +117,10 @@ public class UserSettingsPanel {
 		);
 
 		return settingsBox;
+	}
+	
+	private static String displayValue(String value) {
+		if (value == null || value.length() < 1) return "<none>";
+		return value;
 	}
 }
