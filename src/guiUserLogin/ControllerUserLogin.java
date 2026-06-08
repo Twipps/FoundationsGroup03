@@ -23,9 +23,11 @@ import javafx.stage.Stage;
  * <p> Copyright: Lynn Robert Carter © 2025 </p>
  * 
  * @author Lynn Robert Carter
+ * @author Kyle Kim (Team 3) - Added one-time password detection and forced reset flow
  * 
  * @version 1.00		2025-08-17 Initial version
- * @version 1.01		2025-09-16 Update Javadoc documentation *  
+ * @version 1.01		2025-09-16 Update Javadoc documentation
+ * @version 1.02		2026-06-06 Added one-time password check on login (Kyle Kim, Team 3)
  */
 
 public class ControllerUserLogin {
@@ -52,15 +54,18 @@ public class ControllerUserLogin {
 	private static Stage theStage;	
 	
 	/**********
-	 * <p> Method: public doLogin() </p>
+	 * <p> Method: doLogin(Stage ts) </p>
 	 * 
 	 * <p> Description: This method is called when the user has clicked on the Login button. This
 	 * method checks the username and password to see if they are valid.  If so, it then logs that
-	 * user in my determining which role to use.
+	 * user in by determining which role to use.
 	 * 
-	 * The method reaches batch to the view page and to fetch the information needed rather than
-	 * passing that information as parameters.
+	 * If the user's password matches a stored one-time password, the user is redirected to the
+	 * account update page to set a new password.  The one-time password is then cleared so it
+	 * cannot be used again.
 	 * 
+	 * The method reaches back to the view page to fetch the information needed rather than
+	 * passing that information as parameters. </p>
 	 */	
 	protected static void doLogin(Stage ts) {
 		theStage = ts;
@@ -77,18 +82,49 @@ public class ControllerUserLogin {
     		ViewUserLogin.alertUsernamePasswordError.showAndWait();
     		return;
     	}
-		// System.out.println("*** Username is valid");
 		
 		// Check to see that the login password matches the account password
     	String actualPassword = theDatabase.getCurrentPassword();
     	
+    	// Check if the entered password matches the one-time password
+    	String oneTimePassword = theDatabase.getOneTimePassword(username);
+    	if (oneTimePassword != null && password.compareTo(oneTimePassword) == 0) {
+    		// User is logging in with a one-time password — clear it and force a reset
+    		theDatabase.clearOneTimePassword(username);
+    		
+    		// Build the user object so we can navigate to the update page
+    		User user = new User(username, password,
+    				theDatabase.getCurrentFirstName(),
+    				theDatabase.getCurrentMiddleName(),
+    				theDatabase.getCurrentLastName(),
+    				theDatabase.getCurrentPreferredFirstName(),
+    				theDatabase.getCurrentEmailAddress(),
+    				theDatabase.getCurrentAdminRole(),
+    				theDatabase.getCurrentNewRole1(),
+    				theDatabase.getCurrentNewRole2());
+    		
+    		// Inform the user they must set a new password
+    		ViewUserLogin.alertUsernamePasswordError.setTitle("Password Reset Required");
+    		ViewUserLogin.alertUsernamePasswordError.setHeaderText("One-Time Password Accepted");
+    		ViewUserLogin.alertUsernamePasswordError.setContentText(
+    				"Your one-time password has been accepted. "
+    				+ "You must now set a new password on the next screen.");
+    		ViewUserLogin.alertUsernamePasswordError.showAndWait();
+    		
+    		// Navigate to the account update page to force a new password
+    		guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, user);
+    		return;
+    	}
+    	
+    	// Normal login — check the regular password
     	if (password.compareTo(actualPassword) != 0) {
+    		ViewUserLogin.alertUsernamePasswordError.setTitle("Invalid username/password!");
+    		ViewUserLogin.alertUsernamePasswordError.setHeaderText(null);
     		ViewUserLogin.alertUsernamePasswordError.setContentText(
     				"Incorrect username/password. Try again!");
     		ViewUserLogin.alertUsernamePasswordError.showAndWait();
     		return;
     	}
-		// System.out.println("*** Password is valid for this user");
 		
 		// Establish this user's details
     	User user = new User(username, password, theDatabase.getCurrentFirstName(), 
@@ -99,7 +135,6 @@ public class ControllerUserLogin {
     	
     	// See which home page dispatch to use
 		int numberOfRoles = theDatabase.getNumberOfRoles(user);		
-		// System.out.println("*** The number of roles: "+ numberOfRoles);
 		if (numberOfRoles == 1) {
 			// Single Account Home Page - The user has no choice here
 			
@@ -119,13 +154,11 @@ public class ControllerUserLogin {
 				if (loginResult) {
 					guiRole2.ViewRole2Home.displayRole2Home(theStage, user);
 				}
-				// Other roles
 			} else {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");
 			}
 		} else if (numberOfRoles > 1) {
 			// Multiple Account Home Page - The user chooses which role to play
-			// System.out.println("*** Going to displayMultipleRoleDispatch");
 			guiMultipleRoleDispatch.ViewMultipleRoleDispatch.
 				displayMultipleRoleDispatch(theStage, user);
 		}
@@ -133,7 +166,7 @@ public class ControllerUserLogin {
 	
 		
 	/**********
-	 * <p> Method: setup() </p>
+	 * <p> Method: doSetupAccount(Stage theStage, String invitationCode) </p>
 	 * 
 	 * <p> Description: This method is called to reset the page and then populate it with new
 	 * content for the new user.</p>
@@ -145,13 +178,11 @@ public class ControllerUserLogin {
 
 	
 	/**********
-	 * <p> Method: public performQuit() </p>
+	 * <p> Method: performQuit() </p>
 	 * 
-	 * <p> Description: This method is called when the user has clicked on the Quit button.  Doing
+	 * <p> Description: This method is called when the user has clicked on the Quit button. Doing
 	 * this terminates the execution of the application.  All important data must be stored in the
-	 * database, so there is no cleanup required.  (This is important so we can minimize the impact
-	 * of crashed.)
-	 * 
+	 * database, so there is no cleanup required. </p>
 	 */	
 	protected static void performQuit() {
 		System.out.println("Perform Quit");

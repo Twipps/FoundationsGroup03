@@ -8,7 +8,7 @@ import database.Database;
  * <p> Description: The Java/FX-based Admin Home Page.  This class provides the controller actions
  * basic on the user's use of the JavaFX GUI widgets defined by the View class.
  * 
- * This page contains a number of buttons that have not yet been implemented.  WHen those buttons
+ * This page contains a number of buttons that have not yet been implemented.  When those buttons
  * are pressed, an alert pops up to tell the user that the function associated with the button has
  * not been implemented. Also, be aware that What has been implemented may not work the way the
  * final product requires and there maybe defects in this code.
@@ -20,9 +20,11 @@ import database.Database;
  * <p> Copyright: Lynn Robert Carter © 2025 </p>
  * 
  * @author Lynn Robert Carter
+ * @author Kyle Kim (Team 3) - Implemented listUsers, improved invalidEmailAddress
  * 
  * @version 1.00		2025-08-17 Initial version
- * @version 1.01		2025-09-16 Update Javadoc documentation *  
+ * @version 1.01		2025-09-16 Update Javadoc documentation
+ * @version 1.02		2026-06-06 Implemented listUsers and email validation (Kyle Kim, Team 3)
  */
 
 public class ControllerAdminHome {
@@ -47,9 +49,7 @@ public class ControllerAdminHome {
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 
 	/**********
-	 * <p> 
-	 * 
-	 * Title: performInvitation () Method. </p>
+	 * <p> Title: performInvitation () Method. </p>
 	 * 
 	 * <p> Description: Protected method to send an email inviting a potential user to establish
 	 * an account and a specific role. </p>
@@ -80,16 +80,14 @@ public class ControllerAdminHome {
 		ViewAdminHome.alertEmailSent.setContentText(msg);
 		ViewAdminHome.alertEmailSent.showAndWait();
 		
-		// Update the Admin Home pages status
+		// Update the Admin Home page status
 		ViewAdminHome.text_InvitationEmailAddress.setText("");
 		ViewAdminHome.label_NumberOfInvitations.setText("Number of outstanding invitations: " + 
 				theDatabase.getNumberOfInvitations());
 	}
 	
 	/**********
-	 * <p> 
-	 * 
-	 * Title: manageInvitations () Method. </p>
+	 * <p> Title: manageInvitations () Method. </p>
 	 * 
 	 * <p> Description: Protected method that is currently a stub informing the user that
 	 * this function has not yet been implemented. </p>
@@ -103,9 +101,7 @@ public class ControllerAdminHome {
 	}
 	
 	/**********
-	 * <p> 
-	 * 
-	 * Title: setOnetimePassword () Method. </p>
+	 * <p> Title: setOnetimePassword () Method. </p>
 	 * 
 	 * <p> Description: Protected method that is currently a stub informing the user that
 	 * this function has not yet been implemented. </p>
@@ -119,12 +115,11 @@ public class ControllerAdminHome {
 	}
 	
 	/**********
-	 * <p> 
-	 * 
-	 * Title: deleteUser () Method. </p>
+	 * <p> Title: deleteUser () Method. </p>
 	 * 
 	 * <p> Description: Protected method that is currently a stub informing the user that
-	 * this function has not yet been implemented. </p>
+	 * this function has not yet been implemented. Requires UI changes from James before
+	 * full implementation can proceed. </p>
 	 */
 	protected static void deleteUser() {
 		System.out.println("\n*** WARNING ***: Delete User Not Yet Implemented");
@@ -135,30 +130,62 @@ public class ControllerAdminHome {
 	}
 	
 	/**********
-	 * <p> 
+	 * <p> Title: listUsers () Method. </p>
 	 * 
-	 * Title: listUsers () Method. </p>
-	 * 
-	 * <p> Description: Protected method that is currently a stub informing the user that
-	 * this function has not yet been implemented. </p>
+	 * <p> Description: Protected method that lists all users currently in the system.
+	 * For each user, the list displays the username, full name, email address, and the
+	 * roles that user plays. </p>
 	 */
 	protected static void listUsers() {
-		System.out.println("\n*** WARNING ***: List Users Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("List User Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("List Users Not Yet Implemented");
+		// Build a formatted string of all users in the system
+		StringBuilder userList = new StringBuilder();
+		
+		for (String username : theDatabase.getUserList()) {
+			// Skip the placeholder entry at the top of the list
+			if (username.equals("<Select a User>")) continue;
+			
+			// Fetch full details for this user
+			theDatabase.getUserAccountDetails(username);
+			
+			// Build the name string
+			String firstName = theDatabase.getCurrentFirstName();
+			String lastName = theDatabase.getCurrentLastName();
+			String fullName = (firstName + " " + lastName).trim();
+			if (fullName.isEmpty()) fullName = "(no name set)";
+			
+			// Get email
+			String email = theDatabase.getCurrentEmailAddress();
+			if (email == null || email.isEmpty()) email = "(no email set)";
+			
+			// Build roles string
+			String roles = "";
+			if (theDatabase.getCurrentAdminRole()) roles += "Admin ";
+			if (theDatabase.getCurrentNewRole1()) roles += "Student ";
+			if (theDatabase.getCurrentNewRole2()) roles += "Instructor ";
+			if (roles.isEmpty()) roles = "(no roles)";
+			
+			// Append this user's info as one line
+			userList.append("User: ").append(username)
+					.append("\n  Name:  ").append(fullName)
+					.append("\n  Email: ").append(email)
+					.append("\n  Roles: ").append(roles.trim())
+					.append("\n\n");
+		}
+		
+		// Display the list in an alert dialog
+		ViewAdminHome.alertNotImplemented.setTitle("User List");
+		ViewAdminHome.alertNotImplemented.setHeaderText("All Users in the System " +
+				"(" + theDatabase.getNumberOfUsers() + " total)");
+		ViewAdminHome.alertNotImplemented.setContentText(
+				userList.length() == 0 ? "No users found." : userList.toString());
 		ViewAdminHome.alertNotImplemented.showAndWait();
 	}
 	
 	/**********
-	 * <p> 
-	 * 
-	 * Title: addRemoveRoles () Method. </p>
+	 * <p> Title: addRemoveRoles () Method. </p>
 	 * 
 	 * <p> Description: Protected method that allows an admin to add and remove roles for any of
-	 * the users currently in the system.  This is done by invoking the AddRemoveRoles Page. There
-	 * is no need to specify the home page for the return as this can only be initiated by and
-	 * Admin.</p>
+	 * the users currently in the system. </p>
 	 */
 	protected static void addRemoveRoles() {
 		guiAddRemoveRoles.ViewAddRemoveRoles.displayAddRemoveRoles(ViewAdminHome.theStage, 
@@ -166,31 +193,58 @@ public class ControllerAdminHome {
 	}
 	
 	/**********
-	 * <p> 
+	 * <p> Title: invalidEmailAddress () Method. </p>
 	 * 
-	 * Title: invalidEmailAddress () Method. </p>
-	 * 
-	 * <p> Description: Protected method that is intended to check an email address before it is
-	 * used to reduce errors.  The code currently only checks to see that the email address is not
-	 * empty.  In the future, a syntactic check must be performed and maybe there is a way to check
-	 * if a properly email address is active.</p>
+	 * <p> Description: Protected method that validates an email address before it is used.
+	 * Checks that the address does not exceed the maximum length, is not empty, contains
+	 * exactly one '@' character, and has a valid domain with at least one '.' that is not
+	 * at the start or end of the domain. </p>
 	 * 
 	 * @param emailAddress	This String holds what is expected to be an email address
+	 * @return true if the email address is invalid, false if it is valid
 	 */
 	protected static boolean invalidEmailAddress(String emailAddress) {
+		// Check max length before anything else (prevents crash-based attacks)
+		if (emailAddress.length() > 254) {
+			ViewAdminHome.alertEmailError.setContentText(
+					"The email address is too long. Maximum length is 254 characters.");
+			ViewAdminHome.alertEmailError.showAndWait();
+			return true;
+		}
+		
+		// Check that the field is not empty
 		if (emailAddress.length() == 0) {
 			ViewAdminHome.alertEmailError.setContentText(
 					"Correct the email address and try again.");
 			ViewAdminHome.alertEmailError.showAndWait();
 			return true;
 		}
+		
+		// Check that there is exactly one '@' character and it is not at position 0
+		int atIndex = emailAddress.indexOf('@');
+		if (atIndex <= 0 || atIndex != emailAddress.lastIndexOf('@')) {
+			ViewAdminHome.alertEmailError.setContentText(
+					"The email address must contain exactly one '@' character.");
+			ViewAdminHome.alertEmailError.showAndWait();
+			return true;
+		}
+		
+		// Check that the domain part (after '@') contains at least one '.'
+		// and that '.' is not the first or last character of the domain
+		String domain = emailAddress.substring(atIndex + 1);
+		if (!domain.contains(".") || domain.startsWith(".") || domain.endsWith(".")) {
+			ViewAdminHome.alertEmailError.setContentText(
+					"The email address must have a valid domain (e.g. example.com).");
+			ViewAdminHome.alertEmailError.showAndWait();
+			return true;
+		}
+		
+		// Email address passed all checks
 		return false;
 	}
 	
 	/**********
-	 * <p> 
-	 * 
-	 * Title: performLogout () Method. </p>
+	 * <p> Title: performLogout () Method. </p>
 	 * 
 	 * <p> Description: Protected method that logs this user out of the system and returns to the
 	 * login page for future use.</p>
@@ -200,9 +254,7 @@ public class ControllerAdminHome {
 	}
 	
 	/**********
-	 * <p> 
-	 * 
-	 * Title: performQuit () Method. </p>
+	 * <p> Title: performQuit () Method. </p>
 	 * 
 	 * <p> Description: Protected method that gracefully terminates the execution of the program.
 	 * </p>
