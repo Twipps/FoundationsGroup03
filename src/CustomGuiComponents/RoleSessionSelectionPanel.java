@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 public class RoleSessionSelectionPanel {
-	// this may be too much effort for a visual thing
 	public static VBox createRoleSessionSelectionPanel(User user) {
 		VBox rBox = new VBox();
 		
@@ -24,6 +23,8 @@ public class RoleSessionSelectionPanel {
 		
 		rButton.setOnAction((_) -> {
 			// set to launch to one of the home pages depending on the given roles
+			
+			
 			}
 		);
 		

@@ -114,16 +114,16 @@ public class AdminUserManagementPanel {
 		if (!theDatabase.getCurrentAdminRole())
 			roleSelectorAdd.getItems().add("Admin");
 		if (!theDatabase.getCurrentNewRole1())
-			roleSelectorAdd.getItems().add("Role1"); // leaving roles for no to indicate i gotta change them
+			roleSelectorAdd.getItems().add("Student");
 		if (!theDatabase.getCurrentNewRole2())
-			roleSelectorAdd.getItems().add("Role2");
+			roleSelectorAdd.getItems().add("Instructor");
 
 		if (theDatabase.getCurrentAdminRole())
 			roleSelectorRemove.getItems().add("Admin");
 		if (theDatabase.getCurrentNewRole1())
-			roleSelectorRemove.getItems().add("Role1");
+			roleSelectorRemove.getItems().add("Student");
 		if (theDatabase.getCurrentNewRole2())
-			roleSelectorRemove.getItems().add("Role2");
+			roleSelectorRemove.getItems().add("Instructor");
 		
 		roleSelectorAdd.getSelectionModel().select(0);
 		roleSelectorRemove.getSelectionModel().select(0);
