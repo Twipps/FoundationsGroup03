@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
 import javafx.scene.control.Label;
-import utilities.inputValidator;
+import utilities.InputValidator;
 
 /*******
  * <p> Title: ControllerNewAccount Class. </p>
@@ -78,7 +78,7 @@ public class ControllerNewAccount {
 		User user = null;
 		
 		// Make sure the username satisfies the requirements
-		String returnString = inputValidator.verifyUserName(username);
+		String returnString = InputValidator.verifyUsername(username);
 		if (returnString.compareTo("") != 0) {
 			ViewNewAccount.text_Username.setText("");
 			Label label = new Label(returnString);
@@ -88,6 +88,7 @@ public class ControllerNewAccount {
 			return;
 		}
 		
+		
 		// Check that the invitation code has not expired before processing
 		if (theDatabase.isInvitationExpired(ViewNewAccount.theInvitationCode)) {
 		    ViewNewAccount.alertInvitationCodeIsInvalid.setHeaderText("Invitation Code Expired");
@@ -96,13 +97,26 @@ public class ControllerNewAccount {
 		    ViewNewAccount.alertInvitationCodeIsInvalid.showAndWait();
 		    return;
 		}
-
+		
+		
 		// Make sure the two passwords are the same.	
 		if (ViewNewAccount.text_Password1.getText().
 				compareTo(ViewNewAccount.text_Password2.getText()) == 0) {
 			
-			// The passwords match so we will set up the role and the User object based on the 
-			// information provided in the invitation
+			//Then verify that the password meets the requirements
+			returnString = ModelNewAccount.evaluatePassword(password);
+			if (returnString.compareTo("") != 0) {
+				ViewNewAccount.text_Password1.setText("");
+				ViewNewAccount.text_Password2.setText("");
+				Label label = new Label(returnString);
+				label.setWrapText(true);
+				ViewNewAccount.alertUsernamePasswordError.getDialogPane().setContent(label);	//Handles wrapping text
+				ViewNewAccount.alertUsernamePasswordError.showAndWait();
+				return;	
+			}
+			
+			// The passwords match and meet the requirements, so we will set up the role and the  
+			// User object based on the information provided in the invitation
 			if (ViewNewAccount.theRole.compareTo("Admin") == 0) {
 				roleCode = 1;
 				user = new User(username, password, "", "", "", "", "", true, false, false);
@@ -161,7 +175,7 @@ public class ControllerNewAccount {
 			// must be the same, and clear the message as soon as the first character is typed.
 			ViewNewAccount.text_Password1.setText("");
 			ViewNewAccount.text_Password2.setText("");
-			ViewNewAccount.alertUsernamePasswordError.showAndWait();
+			ViewNewAccount.alertPasswordMatchError.showAndWait();
 		}
 	}
 

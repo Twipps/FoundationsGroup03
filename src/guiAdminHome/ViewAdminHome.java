@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import database.Database;
 import entityClasses.User;
 import guiUserUpdate.ViewUserUpdate;
+import utilities.InputValidator;
+import javafx.scene.control.TextFormatter;
 
 /*******
  * <p> Title: GUIAdminHomePage Class. </p>
@@ -358,6 +360,8 @@ public class ViewAdminHome {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
+
 	}	
 
 	

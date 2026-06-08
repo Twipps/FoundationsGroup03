@@ -11,6 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import utilities.InputValidator;
+import javafx.scene.control.TextFormatter;
 
 
 /*******
@@ -57,12 +59,12 @@ public class ViewFirstAdmin {
 					"Setup Admin Account.");
 	
 	protected static Label label_PasswordsDoNotMatch = new Label();
-	protected static TextField text_AdminUsername = new TextField();
+	protected static TextField text_AdminUsername = new TextField();	
 	protected static PasswordField text_AdminPassword1 = new PasswordField();
 	protected static PasswordField text_AdminPassword2 = new PasswordField();
 	private static Button button_AdminSetup = new Button("Setup Admin Account");
 
-	// This alert is used should the user enter two passwords that do not match
+	// This alert is used should the user enter a password that does not meet the requirements
 	protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
 	
 	// This alert is used should the user enter a username that does not satisfy the requirements
@@ -185,6 +187,11 @@ public class ViewFirstAdmin {
 
 		// Label to display the Passwords do not match error message
 		setupLabelUI(label_PasswordsDoNotMatch, "Arial", 18, width, Pos.CENTER, 0, 300);
+		
+		// If the password does not meet the requirements, this alert dialog will tell the user
+		alertUsernamePasswordError.setTitle("Invalid Password");
+		alertUsernamePasswordError.setHeaderText("The Password must satisfy the following requirements:");
+		alertUsernamePasswordError.setContentText("Correct the passwords and try again.");
 
 		setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 520);
 		button_Quit.setOnAction((_) -> {ControllerFirstAdmin.performQuit(); });
@@ -265,5 +272,6 @@ public class ViewFirstAdmin {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	}	
 }
