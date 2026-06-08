@@ -13,13 +13,13 @@ public class ViewMultipleRoleDispatchNew {
 	
 	public static void displayMRDP(Stage theStage, User user) {
 		BorderPane root = new BorderPane();
-		// VBox thinBox = createRoleSelectionBox
-		
-		
+		VBox selectionBox = 
+				CustomGuiComponents.RoleSessionSelectionPanel.
+				createRoleSessionSelectionPanel(theStage, user);
 		
 		root.setStyle("-fx-background-color: #9c3535;");
 		
-		Label pickRole = new Label("Choose Session Role");
+		root.setCenter(selectionBox);
 		
 		Scene scene = new Scene(
 				root,
