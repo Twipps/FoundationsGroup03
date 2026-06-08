@@ -35,8 +35,8 @@ public class CreateAccountPanel {
 		
 		createAccount.setOnAction((_) -> {
 			// this button will pass role (theRole) //TODO LINK THIS TO NEWACCOUTSETUP
-		});
-													//TODO ADD CHECK LOGIC FOR PASSWD
+		});											//TODO ADD CHECK LOGIC FOR PASSWD
+													
 		rBox.setStyle(
 				"-fx-background-color: rgba(255,255,255,0.5);" +
 				"-fx-padding: 30;" +
