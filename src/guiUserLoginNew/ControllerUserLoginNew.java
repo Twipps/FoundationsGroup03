@@ -70,7 +70,7 @@ public class ControllerUserLoginNew {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");
 			}
 		} else if (numberOfRoles > 1) {
-			guiMultipleRoleDispatch.ViewMultipleRoleDispatch.displayMultipleRoleDispatch(theStage, user);
+			guiMultipleRoleDispatchNew.ViewMultipleRoleDispatchNew.displayMRDP(theStage, user);
 		}
 	}
 
