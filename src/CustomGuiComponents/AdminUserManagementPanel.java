@@ -16,7 +16,7 @@ public class AdminUserManagementPanel {
 	
 	// Given the user that's selected from the scroll panel
 	public static VBox createUserManagementPanel(String username, String fullName, 
-    	String email,String roles) { 
+    	String email,String roles, Runnable refreshUsers) { // runnable brings back memories
 
 	    VBox rBox = new VBox(15);
 	    rBox.setPadding(new Insets(20));
@@ -64,6 +64,7 @@ public class AdminUserManagementPanel {
 	    		if (theDatabase.updateUserRole(username, role, "true")) {
 	    			setupRoleBoxes(username, roleSelectorAdd, roleSelectorRemove);
 	    		}
+	    		refreshUsers.run();
 	    	}
 	    });
 	    
@@ -73,6 +74,7 @@ public class AdminUserManagementPanel {
 	    		if (theDatabase.updateUserRole(username, role, "false")) {
 	    			setupRoleBoxes(username, roleSelectorAdd, roleSelectorRemove);
 	    		}
+	    		refreshUsers.run();
 	    	}
 	    });
 	    

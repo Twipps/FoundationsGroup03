@@ -872,7 +872,8 @@ public class Database {
 				return false;
 			}
 		}
-		if (role.compareTo("Role1") == 0) {
+		
+		if (role.compareTo("Student") == 0 || role.compareTo("Role1") == 0) { // temporary fix
 			String query = "UPDATE userDB SET newRole1 = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 				pstmt.setString(1, value);
@@ -887,14 +888,15 @@ public class Database {
 				return false;
 			}
 		}
-		if (role.compareTo("Role2") == 0) {
+		
+		if (role.compareTo("Instructor") == 0 || role.compareTo("Role2") == 0) {
 			String query = "UPDATE userDB SET newRole2 = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 				pstmt.setString(1, value);
 				pstmt.setString(2, username);
 				pstmt.executeUpdate();
 				if (value.compareTo("true") == 0)
-					currentStudentRole = true;
+					currentInstructorRole = true;
 				else
 					currentInstructorRole = false;
 				return true;
@@ -1014,7 +1016,41 @@ public class Database {
 	 * @return true if this user plays a Reviewer role, else false
 	 *  
 	 */
-	public boolean getCurrentNewRole2() { return currentInstructorRole;};
+	public boolean getCurrentNewRole2() { return currentInstructorRole;};	
+	
+	// Adding for new ui functionalities
+	public List<User> getAllUsers() {
+	    List<User> users = new ArrayList<>();
+
+	    String query = "SELECT * FROM userDB";
+
+	    try (PreparedStatement statement =
+	            connection.prepareStatement(query)) {
+
+	        ResultSet result = statement.executeQuery();
+
+	        while (result.next()) {
+	            User user = new User(
+	                result.getString("userName"),
+	                result.getString("password"),
+	                result.getString("firstName"),
+	                result.getString("middleName"),
+	                result.getString("lastName"),
+	                result.getString("preferredFirstName"),
+	                result.getString("emailAddress"),
+	                result.getBoolean("adminRole"),
+	                result.getBoolean("newRole1"),
+	                result.getBoolean("newRole2") // REMEMBER TO ADD NEW ROLE AND STUFF
+	            );
+
+	            users.add(user);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return users;
+	}
 
 	
 	/*******

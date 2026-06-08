@@ -1,6 +1,9 @@
 package CustomGuiComponents;
 
+import java.util.List;
+
 import database.Database;
+import entityClasses.User;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -13,7 +16,6 @@ public class AdminUserList {
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 
     public static ScrollPane createUserList(BorderPane userModifyPane) {
-
         VBox container = createUserContainer();
         refreshUsers(container, userModifyPane);
         userModifyPane.setRight(null); // refresh
@@ -25,7 +27,6 @@ public class AdminUserList {
     }
 
     private static VBox createUserContainer() {
-
         VBox container = new VBox(10);
         container.setPadding(new Insets(20));
 
@@ -33,20 +34,49 @@ public class AdminUserList {
     }
 
     public static void refreshUsers(VBox container, BorderPane userModifyPane) {
-        // Pull users from database
-    	container.getChildren().add(
-    		    createUserRow(
-    		        "jsuchovic",
-    		        "James Suchovic",
-    		        "jsuchovic@gmail.com",
-    		        "Administrator",
-    		        userModifyPane
-    		    )
-    		);        
+
+        List<User> allUsers = theDatabase.getAllUsers();
+
+        for (int i = 0; i < allUsers.size(); i++) {
+            User user = allUsers.get(i);
+
+            container.getChildren().add(
+                createUserRow(
+                    user.getUserName(),
+                    user.getFirstName() + " " + user.getLastName(),
+                    user.getEmailAddress(), getRoles(user), container,
+                    userModifyPane
+                )
+            );
+        }
+    }
+    
+    private static String getRoles(User user) {
+        String roles = "";
+
+        if (user.getAdminRole()) {
+            roles += "Admin";
+        }
+
+        if (user.getNewStudent()) {
+            if (!roles.isEmpty()) {
+                roles += ", ";
+            }
+            roles += "Student";
+        }
+
+        if (user.getNewInstructor()) {
+            if (!roles.isEmpty()) {
+                roles += ", ";
+            }
+            roles += "Instructor";
+        }
+
+        return roles;
     }
 
     private static HBox createUserRow(String username, String fullName, 
-    		String email,String roles, BorderPane userModifyPane ) {
+    		String email,String roles, VBox container, BorderPane userModifyPane ) {
 
         HBox row = new HBox(15);
 
@@ -70,12 +100,16 @@ public class AdminUserList {
         );
         
         row.setOnMouseClicked(e -> {
-        	userModifyPane.setRight(
+            userModifyPane.setRight(
                 AdminUserManagementPanel.createUserManagementPanel(
                     username,
                     fullName,
                     email,
-                    roles
+                    roles,
+                    () -> {
+                        container.getChildren().clear();
+                        refreshUsers(container, userModifyPane);
+                    }
                 )
             );
         });
