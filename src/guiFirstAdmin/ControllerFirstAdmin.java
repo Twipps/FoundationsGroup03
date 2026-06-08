@@ -121,7 +121,7 @@ public class ControllerFirstAdmin {
 		if (adminPassword1.compareTo(adminPassword2) == 0) {
 			
 			//Then verify that the password meets the requirements
-			returnString = InputValidator.verifyPassword(adminPassword1);
+			returnString = ModelFirstAdmin.evaluatePassword(adminPassword1);
 			if (returnString.compareTo("") != 0) {
 				ViewFirstAdmin.text_AdminPassword1.setText("");
 				ViewFirstAdmin.text_AdminPassword2.setText("");

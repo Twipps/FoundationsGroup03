@@ -2,6 +2,7 @@ package utilities;
 
 import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
+import entityClasses.PasswordDTO;
 
 public final class InputValidator {
 	
@@ -22,20 +23,13 @@ public final class InputValidator {
         return change; // Accept the change
     };
     	
-	
-	//Attributes used by finite state machines to keep track of character input on the inputline
+
+    //Fields used by FSM methods
 	private static String inputLine = "";				// The input line
 	private static char currentChar;					// The current character in the line
 	private static int currentCharNdx;					// The index of the current character
 	private static boolean running;						// The flag that specifies if the FSM is 
 														// running
-    
-    //verifyPassword attributes 
-	private static boolean foundUpperCase = false;
-	private static boolean foundLowerCase = false;
-	private static boolean foundNumericDigit = false;
-	private static boolean foundSpecialChar = false;
-	private static boolean foundLongEnough = false;
     
 	/**********
 	 * <p> Title: verifyPassword - Public Method </p>
@@ -45,35 +39,28 @@ public final class InputValidator {
 	 * as the testing automation version.
 	 * 
 	 * @param input		The input string evaluated by the directed graph processing
-	 * @return			An output string that is empty if every things is okay or it will be
-	 * 						a string with a helpful description of the error follow by two lines
-	 * 						that shows the input line follow by a line with an up arrow at the
-	 *						point where the error was found.
+	 * @return			A PasswordDTO object that contains flags that represent
+	 * 						whether it has passed all necessary requirements.
+	 * 						
 	 */
     
-	public static String verifyPassword(String input) {
+	public static PasswordDTO verifyPassword(String input) {
+		//Create a PasswordResult object to store the return values for testing
+		PasswordDTO result = new PasswordDTO();
+		
 		// The following are the local variable used to perform the Directed Graph simulation
 		inputLine = input;					// Save the reference to the input line as a global
 		currentCharNdx = 0;					// The index of the current character
 		
 		if(input.length() <= 0) {
-			return "*** Error *** The password is empty!";
+			return null;
 		}
 		
 		// The input is not empty, so we can access the first character
 		currentChar = input.charAt(0);		// The current character from the above indexed position
 
 		// The Directed Graph simulation continues until the end of the input is reached or at some 
-		// state the current character does not match any valid transition to a next state.  This
-		// local variable is a working copy of the input.
-		
-		// The following are the attributes associated with each of the requirements
-		foundUpperCase = false;				// Reset the Boolean flag
-		foundLowerCase = false;				// Reset the Boolean flag
-		foundNumericDigit = false;			// Reset the Boolean flag
-		foundSpecialChar = false;			// Reset the Boolean flag
-		foundNumericDigit = false;			// Reset the Boolean flag
-		foundLongEnough = false;			// Reset the Boolean flag
+		// state the current character does not match any valid transition to a next state.
 		
 		// This flag determines whether the directed graph (FSM) loop is operating or not
 		running = true;						// Start the loop
@@ -81,71 +68,45 @@ public final class InputValidator {
 		// The Directed Graph simulation continues until the end of the input is reached or at some
 		// state the current character does not match any valid transition
 		while (running) {
-			helperMethods.displayInputState();
+			HelperMethods.displayInputState();
 			// The cascading if statement sequentially tries the current character against all of
 			// the valid transitions, each associated with one of the requirements
 			if (currentChar >= 'A' && currentChar <= 'Z') {
 				System.out.println("Upper case letter found");
-				foundUpperCase = true;
+				result.setFoundUpperCase(true);
 			} else if (currentChar >= 'a' && currentChar <= 'z') {
 				System.out.println("Lower case letter found");
-				foundLowerCase = true;
+				result.setFoundLowerCase(true);
 			} else if (currentChar >= '0' && currentChar <= '9') {
 				System.out.println("Digit found");
-				foundNumericDigit = true;
+				result.setFoundNumericDigit(true);
 			} else if ("~`!@#$%^&*()_-+={}[]|\\:;\"'<>,.?/".indexOf(currentChar) >= 0) {
 				System.out.println("Special character found");
-				foundSpecialChar = true;
+				result.setFoundSpecialChar(true);
 			} else {
-				return "*** Error *** An invalid character has been found!";
+				result.setIndexOfError(currentCharNdx);
+				return result;
 			}
 			if (currentCharNdx >= 7) {
 				System.out.println("At least 8 characters found");
-				foundLongEnough = true;
+				result.setFoundLongEnough(true);
 			}
 			
 			// Go to the next character if there is one
-			currentCharNdx++;
-			if (currentCharNdx >= inputLine.length())
-				running = false;
-			else
-				currentChar = input.charAt(currentCharNdx);
+			HelperMethods.moveToNextCharacter();
 			
 			System.out.println();
 		}
 		
-		// Construct a String with a list of the requirement elements that were found.
-		String errMessage = "";
-		if (!foundUpperCase)
-			errMessage += "Upper case; ";
-		
-		if (!foundLowerCase)
-			errMessage += "Lower case; ";
-		
-		if (!foundNumericDigit)
-			errMessage += "Numeric digits; ";
-			
-		if (!foundSpecialChar)
-			errMessage += "Special character; ";
-			
-		if (!foundLongEnough)
-			errMessage += "Long Enough; ";
-		
-		if (errMessage == "")
-			return "";
-		
-		// If it gets here, there something was not found, so return an appropriate message
-		return errMessage + "conditions were not satisfied";
+		return result;
 	}
 	
 	
-
-	//verifyUserName variables
-	private static String userNameRecognizerErrorMessage = "";  // The error message text
+	//Attributes used by Username FSM
+	private static boolean finalState = false;
 	private static int state = 0;
-	private static int nextState = 0;
+	private static int nextState = -1;
 	private static int userNameSize = 0;
-	private static boolean finalState = false; // Is this state a final state?
 	
 	/**********
 	 * This method is a mechanical transformation of the UserName Finite State Machine diagram
@@ -165,7 +126,7 @@ public final class InputValidator {
 	 */
 	
 	public static String verifyUsername(String input) {
-
+		
 		// Reject empty input immediately; there is no meaningful character to point at.
 		if (input.length() <= 0) {
 			return "\n*** ERROR *** The input is empty";
@@ -176,6 +137,7 @@ public final class InputValidator {
 		inputLine = input;
 		currentCharNdx = 0;
 		currentChar = input.charAt(0);
+		String userNameRecognizerErrorMessage = "";
 
 		running = true;
 		nextState = -1;
@@ -201,7 +163,7 @@ public final class InputValidator {
 			// first character of a username, per the updated requirements.
 			// -----------------------------------------------------------------
 			case 0:
-				if (helperMethods.isAlphaChar(currentChar)) {
+				if (HelperMethods.isAlphaChar(currentChar)) {
 					nextState = 1;
 					// Semantic action [1]: count the character and update tooShort / tooLong.
 					userNameSize++;
@@ -220,11 +182,11 @@ public final class InputValidator {
 			//   SepChar (- _ . &)       → move to state 2
 			// -----------------------------------------------------------------
 			case 1:
-				if (helperMethods.isUNChar(currentChar)) {
+				if (HelperMethods.isUNChar(currentChar)) {
 					nextState = 1;
 					// Semantic action [1]: count the character and check bounds.
 					userNameSize++;
-				} else if (helperMethods.isSepChar(currentChar)) {
+				} else if (HelperMethods.isSepChar(currentChar)) {
 					nextState = 2;
 					// Separator characters still count toward the total length.
 					userNameSize++;
@@ -246,7 +208,7 @@ public final class InputValidator {
 			// switch below).
 			// -----------------------------------------------------------------
 			case 2:
-				if (helperMethods.isUNChar(currentChar)) {
+				if (HelperMethods.isUNChar(currentChar)) {
 					nextState = 1;
 					// Semantic action [1]: count the character and check bounds.
 					userNameSize++;
@@ -262,10 +224,10 @@ public final class InputValidator {
 			} // end switch
 
 			if (running) {
-				helperMethods.displayDebuggingInfo();
+				HelperMethods.displayDebuggingInfo();
 				// Advance to the next character.  If the input is exhausted,
 				// moveToNextCharacter clears the running flag for us.
-				helperMethods.moveToNextCharacter();
+				HelperMethods.moveToNextCharacter();
 
 				// Commit the transition.
 				state = nextState;
@@ -278,7 +240,7 @@ public final class InputValidator {
 			}
 		} // end while
 
-		helperMethods.displayDebuggingInfo();
+		HelperMethods.displayDebuggingInfo();
 		System.out.println("The loop has ended.");
 
 		// ---------------------------------------------------------------------------------
@@ -342,7 +304,7 @@ public final class InputValidator {
 		}
 	}
 	
-	private class helperMethods {
+	private class HelperMethods {
 		/*****
 		 * Private helper: advance currentCharNdx by one.  If the new index is still within the
 		 * input string, currentChar is updated to the character at that position.  Otherwise,

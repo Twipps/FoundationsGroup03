@@ -104,7 +104,7 @@ public class ControllerNewAccount {
 				compareTo(ViewNewAccount.text_Password2.getText()) == 0) {
 			
 			//Then verify that the password meets the requirements
-			returnString = InputValidator.verifyPassword(password);
+			returnString = ModelNewAccount.evaluatePassword(password);
 			if (returnString.compareTo("") != 0) {
 				ViewNewAccount.text_Password1.setText("");
 				ViewNewAccount.text_Password2.setText("");
