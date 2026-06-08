@@ -101,7 +101,7 @@ public class HomeNavBar {
         invitations.setOnAction(e -> {
             titleBar.setText("Invitations");
             contentPane.setCenter(AdminInvitationList.createInvitationList(contentPane));
-            contentPane.setRight(AdminInvitationManagementPanel.createInvitationManagementPanel()); //doesn't need info from the invitation list so it can be done here
+            contentPane.setRight(AdminInvitationManagementPanel.createInvitationManagementPanel(contentPane)); //doesn't need info from the invitation list so it can be done here
         });
         
         adminBar.setSpacing(10);

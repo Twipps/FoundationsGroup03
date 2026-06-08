@@ -1019,7 +1019,7 @@ public class Database {
 	public boolean getCurrentNewRole2() { return currentInstructorRole;};	
 	
 	// Adding for new ui functionalities
-	public List<User> getAllUsers() {
+	public List<User> getAllUsers() { // admin home relies on this
 	    List<User> users = new ArrayList<>();
 
 	    String query = "SELECT * FROM userDB";
@@ -1051,7 +1051,16 @@ public class Database {
 
 	    return users;
 	}
-
+	
+	public ResultSet getInvitationCodes() { // admin home relies on
+		String query = "SELECT code, role, emailAddress FROM InvitationCodes";
+		try {
+			return statement.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	/*******
 	 * <p> Debugging method</p>
