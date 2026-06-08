@@ -70,7 +70,7 @@ public class ControllerNewAccount {
 		// Display key information to the log
 		System.out.println("** Account for Username: " + username + "; theInvitationCode: "+
 				ViewNewAccount.theInvitationCode + "; email address: " + 
-				ViewNewAccount.emailAddress + "; Role: " + ViewNewAccount.theRole);
+				ViewNewAccount.emailAddress + "; Role: " + ViewNewAccount.theRole); // DOES A CHECK FOR ONLY INVITE USERS
 		
 		// Initialize local variables that will be created during this process
 		int roleCode = 0;
@@ -85,10 +85,10 @@ public class ControllerNewAccount {
 			if (ViewNewAccount.theRole.compareTo("Admin") == 0) {
 				roleCode = 1;
 				user = new User(username, password, "", "", "", "", "", true, false, false);
-			} else if (ViewNewAccount.theRole.compareTo("Role1") == 0) {
+			} else if (ViewNewAccount.theRole.compareTo("Student") == 0) {
 				roleCode = 2;
 				user = new User(username, password, "", "", "", "", "", false, true, false);
-			} else if (ViewNewAccount.theRole.compareTo("Role2") == 0) {
+			} else if (ViewNewAccount.theRole.compareTo("Instructor") == 0) {
 				roleCode = 3;
 				user = new User(username, password, "", "", "", "", "", false, false, true);
 			} else {

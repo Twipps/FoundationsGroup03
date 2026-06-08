@@ -36,7 +36,7 @@ public class ViewUserLoginNew {
 		text_Password.setText("");
 		text_Invitation.setText("");
 
-		text_Username.setPromptText("Enter username");
+		text_Username.setPromptText("Enter Username");
 		text_Password.setPromptText("Enter Password");
 		text_Invitation.setPromptText("Enter invite code");
 
