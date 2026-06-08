@@ -3,7 +3,9 @@ package guiFirstAdmin;
 import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import utilities.InputValidator;
 
 /*******
  * <p> Title: ControllerFirstAdmin Class. </p>
@@ -104,8 +106,32 @@ public class ControllerFirstAdmin {
 	 */
 	protected static void doSetupAdmin(Stage ps, int r) {
 		
+		// Make sure the username satisfies the requirements
+		String returnString = InputValidator.verifyUsername(adminUsername);
+		if (returnString.compareTo("") != 0) {
+			ViewFirstAdmin.text_AdminUsername.setText("");
+			Label label = new Label(returnString);
+			label.setWrapText(true);
+			ViewFirstAdmin.alertUsernameError.getDialogPane().setContent(label);	//Handles wrapping text
+			ViewFirstAdmin.alertUsernameError.showAndWait();
+			return;
+		}
+		
 		// Make sure the two passwords are the same
 		if (adminPassword1.compareTo(adminPassword2) == 0) {
+			
+			//Then verify that the password meets the requirements
+			returnString = ModelFirstAdmin.evaluatePassword(adminPassword1);
+			if (returnString.compareTo("") != 0) {
+				ViewFirstAdmin.text_AdminPassword1.setText("");
+				ViewFirstAdmin.text_AdminPassword2.setText("");
+				Label label = new Label(returnString);
+				label.setWrapText(true);
+				ViewFirstAdmin.alertUsernamePasswordError.getDialogPane().setContent(label);	//Handles wrapping text
+				ViewFirstAdmin.alertUsernamePasswordError.showAndWait();
+				return;	
+			}
+			
         	// Create the passwords and proceed to the user home page
         	User user = new User(adminUsername, adminPassword1, "", "", "", "", "", true, false, 
         			false);

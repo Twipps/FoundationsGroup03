@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import database.Database;
 import entityClasses.User;
 import guiUserUpdate.ViewUserUpdate;
+import utilities.InputValidator;
+import javafx.scene.control.TextFormatter;
 
 /*******
  * <p> Title: GUIAdminHomePage Class. </p>
@@ -87,7 +89,9 @@ public class ViewAdminHome {
 	protected static Label label_InvitationEmailAddress = new Label("Email Address");
 	protected static TextField text_InvitationEmailAddress = new TextField();
 	protected static ComboBox <String> combobox_SelectRole = new ComboBox <String>();
-	protected static String [] roles = {"Admin", "Student", "Instructor"};
+
+	protected static String [] roles = {"Admin", "Student", "Instructor", "Staff"};
+
 	protected static Button button_SendInvitation = new Button("Send Invitation");
 	protected static Alert alertEmailError = new Alert(AlertType.INFORMATION);
 	protected static Alert alertEmailSent = new Alert(AlertType.INFORMATION);
@@ -170,6 +174,7 @@ public class ViewAdminHome {
 		// Populate the dynamic aspects of the GUI with the data from the user and the current
 		// state of the system.
 		theDatabase.getUserAccountDetails(user.getUserName());		// Fetch this user's data
+		theDatabase.removeExpiredInvitations();
 		applicationMain.FoundationsMain.activeHomePage = theRole;	// Set this as the active Home																	// UserUpdate page
 
 		// Set the role for potential users to the default (No role selected)
@@ -358,6 +363,8 @@ public class ViewAdminHome {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
+
 	}	
 
 	

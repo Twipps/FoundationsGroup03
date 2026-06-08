@@ -1,6 +1,8 @@
 package passwordPopUpWindow;
 
+import entityClasses.PasswordDTO;
 import javafx.scene.paint.Color;
+import utilities.InputValidator;
 
 /*******
  * <p> Title: Model Class - establishes the required GUI data and the computations.
@@ -24,7 +26,7 @@ import javafx.scene.paint.Color;
  * and other ASU courses.
  */
 
-public class Model {
+public class ModelPassPopUp {
 		
 	/*******
 	 * <p> Title: updatePassword - Protected Method </p>
@@ -37,15 +39,15 @@ public class Model {
 	 */
 
 	protected static void updatePassword() {
-		View.resetAssessments();						// Reset the assessment flags to the
-		String password = View.text_Password.getText();	// initial state and fetch the input
+		ViewPassPopUp.resetAssessments();						// Reset the assessment flags to the
+		String password = ViewPassPopUp.text_Password.getText();	// initial state and fetch the input
 		
 		// If the input is empty, clear the aspects of the user interface having to do with the
 		// user input and tell the user that the input is empty.
 		if (password.isEmpty()) {
-			View.errPasswordPart1.setText("");
-			View.errPasswordPart2.setText("");
-			View.noInputFound.setText("No input text found!");
+			ViewPassPopUp.errPasswordPart1.setText("");
+			ViewPassPopUp.errPasswordPart2.setText("");
+			ViewPassPopUp.noInputFound.setText("No input text found!");
 		}
 		else
 		{
@@ -61,41 +63,41 @@ public class Model {
 				// Since the output is not empty, at least one requirement have not been satisfied.
 				System.out.println(errMessage);			// Display the message to the console
 				
-				View.noInputFound.setText("");			// There was input, so no error message
+				ViewPassPopUp.noInputFound.setText("");			// There was input, so no error message
 				
 				// Extract the input up to the point of the error and place it in Part 1
-				View.errPasswordPart1.setText(password.substring(0, passwordIndexofError));
+				ViewPassPopUp.errPasswordPart1.setText(password.substring(0, passwordIndexofError));
 				
 				// Place the red up arrow into Part 2
-				View.errPasswordPart2.setText("\u21EB");
+				ViewPassPopUp.errPasswordPart2.setText("\u21EB");
 				
 				// Tell the user about the meaning of the red up arrow
-				View.errPasswordPart3.setText(
+				ViewPassPopUp.errPasswordPart3.setText(
 						"The red arrow points at the character causing the error!");
 				
 				// Tell the user that the password is not valid with a red message
-				View.validPassword.setTextFill(Color.RED);
-				View.validPassword.setText("Failure! The password is not valid.");
+				ViewPassPopUp.validPassword.setTextFill(Color.RED);
+				ViewPassPopUp.validPassword.setText("Failure! The password is not valid.");
 				
 				// Ensure the button is disabled
-				View.button_Finish.setDisable(true);
+				ViewPassPopUp.button_Finish.setDisable(true);
 			}
 			else {
 				// All the requirements were satisfied - the password is valid
 				System.out.println("Success! The password satisfies the requirements.");
 				
 				// Hide all of the error messages elements
-				View.errPasswordPart1.setText("");
-				View.errPasswordPart2.setText("");
-				View.errPasswordPart3.setText("");
+				ViewPassPopUp.errPasswordPart1.setText("");
+				ViewPassPopUp.errPasswordPart2.setText("");
+				ViewPassPopUp.errPasswordPart3.setText("");
 				
 				// Tell the user that the password is valid with a green message
-				View.validPassword.setTextFill(Color.GREEN);
-				View.validPassword.setText("Success! The password satisfies the requirements.");
+				ViewPassPopUp.validPassword.setTextFill(Color.GREEN);
+				ViewPassPopUp.validPassword.setText("Success! The password satisfies the requirements.");
 				
 				// Enable the button so the user can accept this password or continue to add
 				// more characters to the password and make it longer.
-				View.button_Finish.setDisable(false);
+				ViewPassPopUp.button_Finish.setDisable(false);
 			} 
 		}
 	}
@@ -107,7 +109,6 @@ public class Model {
 	 * 
 	 */
 
-	public static String passwordErrorMessage = "";		// The error message text
 	public static String passwordInput = "";			// The input being processed
 	public static int passwordIndexofError = -1;		// The index where the error was located
 	public static boolean foundUpperCase = false;
@@ -115,28 +116,7 @@ public class Model {
 	public static boolean foundNumericDigit = false;
 	public static boolean foundSpecialChar = false;
 	public static boolean foundLongEnough = false;
-	private static String inputLine = "";				// The input line
-	private static char currentChar;					// The current character in the line
-	private static int currentCharNdx;					// The index of the current character
-	private static boolean running;						// The flag that specifies if the FSM is 
-														// running
 
-	/*
-	 * This private method displays the input line and then on a line under it displays the input
-	 * up to the point of the error.  At that point, a question mark is place and the rest of the 
-	 * input is ignored. This method is designed to be used to display information to make it clear
-	 * to the user where the error in the input can be found, and show that on the console 
-	 * terminal.
-	 * 
-	 */
-
-	private static void displayInputState() {
-		// Display the entire input line
-		System.out.println(inputLine);
-		System.out.println(inputLine.substring(0,currentCharNdx) + "?");
-		System.out.println("The password size: " + inputLine.length() + "  |  The currentCharNdx: " + 
-				currentCharNdx + "  |  The currentChar: \"" + currentChar + "\"");
-	}
 	
 	
 	/*
@@ -147,28 +127,28 @@ public class Model {
 	
 	private static void updateFlags() {
 		if (foundUpperCase) {
-			View.label_UpperCase.setText("At least one upper case letter - Satisfied");
-			View.label_UpperCase.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_UpperCase.setText("At least one upper case letter - Satisfied");
+			ViewPassPopUp.label_UpperCase.setTextFill(Color.GREEN);
 		}
 
 		if (foundLowerCase) {
-			View.label_LowerCase.setText("At least one lower case letter - Satisfied");
-			View.label_LowerCase.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_LowerCase.setText("At least one lower case letter - Satisfied");
+			ViewPassPopUp.label_LowerCase.setTextFill(Color.GREEN);
 		}
 
 		if (foundNumericDigit) {
-			View.label_NumericDigit.setText("At least one numeric digit - Satisfied");
-			View.label_NumericDigit.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_NumericDigit.setText("At least one numeric digit - Satisfied");
+			ViewPassPopUp.label_NumericDigit.setTextFill(Color.GREEN);
 		}
 
 		if (foundSpecialChar) {
-			View.label_SpecialChar.setText("At least one special character - Satisfied");
-			View.label_SpecialChar.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_SpecialChar.setText("At least one special character - Satisfied");
+			ViewPassPopUp.label_SpecialChar.setTextFill(Color.GREEN);
 		}
 
 		if (foundLongEnough) {
-			View.label_LongEnough.setText("At least eight characters - Satisfied");
-			View.label_LongEnough.setTextFill(Color.GREEN);
+			ViewPassPopUp.label_LongEnough.setText("At least eight characters - Satisfied");
+			ViewPassPopUp.label_LongEnough.setTextFill(Color.GREEN);
 		}
 	}
 	
@@ -189,69 +169,23 @@ public class Model {
 	
 	public static String evaluatePassword(String input) {
 		// The following are the local variable used to perform the Directed Graph simulation
-		passwordErrorMessage = "";
 		passwordIndexofError = 0;			// Initialize the IndexofError
-		inputLine = input;					// Save the reference to the input line as a global
-		currentCharNdx = 0;					// The index of the current character
-		
-		if(input.length() <= 0) {
-			return "*** Error *** The password is empty!";
-		}
-		
-		// The input is not empty, so we can access the first character
-		currentChar = input.charAt(0);		// The current character from the above indexed position
 
 		// The Directed Graph simulation continues until the end of the input is reached or at some 
 		// state the current character does not match any valid transition to a next state.  This
 		// local variable is a working copy of the input.
 		passwordInput = input;				// Save a copy of the input
 		
-		// The following are the attributes associated with each of the requirements
-		foundUpperCase = false;				// Reset the Boolean flag
-		foundLowerCase = false;				// Reset the Boolean flag
-		foundNumericDigit = false;			// Reset the Boolean flag
-		foundSpecialChar = false;			// Reset the Boolean flag
-		foundNumericDigit = false;			// Reset the Boolean flag
-		foundLongEnough = false;			// Reset the Boolean flag
+		PasswordDTO result = InputValidator.verifyPassword(input);
+		foundUpperCase = result.getFoundUpperCase();
+		foundLowerCase = result.getFoundLowerCase();
+		foundNumericDigit = result.getFoundNumericDigit();
+		foundSpecialChar = result.getFoundSpecialChar();
+		foundLongEnough = result.getFoundLongEnough();
+		passwordIndexofError = result.getIndexOfError();
 		
-		// This flag determines whether the directed graph (FSM) loop is operating or not
-		running = true;						// Start the loop
-
-		// The Directed Graph simulation continues until the end of the input is reached or at some
-		// state the current character does not match any valid transition
-		while (running) {
-			displayInputState();
-			// The cascading if statement sequentially tries the current character against all of
-			// the valid transitions, each associated with one of the requirements
-			if (currentChar >= 'A' && currentChar <= 'Z') {
-				System.out.println("Upper case letter found");
-				foundUpperCase = true;
-			} else if (currentChar >= 'a' && currentChar <= 'z') {
-				System.out.println("Lower case letter found");
-				foundLowerCase = true;
-			} else if (currentChar >= '0' && currentChar <= '9') {
-				System.out.println("Digit found");
-				foundNumericDigit = true;
-			} else if ("~`!@#$%^&*()_-+={}[]|\\:;\"'<>,.?/".indexOf(currentChar) >= 0) {
-				System.out.println("Special character found");
-				foundSpecialChar = true;
-			} else {
-				passwordIndexofError = currentCharNdx;
-				return "*** Error *** An invalid character has been found!";
-			}
-			if (currentCharNdx >= 7) {
-				System.out.println("At least 8 characters found");
-				foundLongEnough = true;
-			}
-			
-			// Go to the next character if there is one
-			currentCharNdx++;
-			if (currentCharNdx >= inputLine.length())
-				running = false;
-			else
-				currentChar = input.charAt(currentCharNdx);
-			
-			System.out.println();
+		if (passwordIndexofError != -1) {
+			return "***Error*** " + input.charAt(passwordIndexofError) + " is an invalid character";
 		}
 		
 		// Construct a String with a list of the requirement elements that were found.
@@ -275,7 +209,7 @@ public class Model {
 			return "";
 		
 		// If it gets here, there something was not found, so return an appropriate message
-		passwordIndexofError = currentCharNdx;
+		passwordIndexofError = input.length();
 		return errMessage + "conditions were not satisfied";
 	}
 }

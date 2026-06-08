@@ -70,6 +70,7 @@ public class FoundationsMain extends Application {
 	// access these constants to provide a uniform window size.	
 	public final static double WINDOW_WIDTH = 800;
 	public final static double WINDOW_HEIGHT = 600;
+	
 
 	// These attributes establish the database and the fixed reference to it for the rest of the
 	// application so we do not need to keep passing the reference in parameters to the rest of the

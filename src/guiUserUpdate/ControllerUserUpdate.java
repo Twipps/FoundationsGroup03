@@ -57,4 +57,8 @@ public class ControllerUserUpdate {
 			System.exit(0);
 		}
  	}
+	
+	protected static void displayPassPopUp(User theUser) {
+		passwordPopUpWindow.ViewPassPopUp.view(theUser);
+	}
 }

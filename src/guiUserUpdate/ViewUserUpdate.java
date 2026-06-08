@@ -7,10 +7,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import utilities.InputValidator;
 import entityClasses.User;
 
 /*******
@@ -155,6 +157,16 @@ public class ViewUserUpdate {
 		// singleton instance of this class
 		if (theView == null) theView = new ViewUserUpdate();
 		
+		updateFields(user);
+
+		// Set the title for the window, display the page, and wait for the Admin to do something
+    	theStage.setTitle("CSE 360 Foundation Code: Update User Account Details");
+        theStage.setScene(theUserUpdateScene);
+		theStage.show();
+	}
+	
+	public static void updateFields(User theUser) {
+		
 		// Set the widget values that change from use of page to another use of the page.
 		String s = "";
 		
@@ -188,11 +200,6 @@ public class ViewUserUpdate {
 		s = theUser.getEmailAddress();
     	if (s == null || s.length() < 1)label_CurrentEmailAddress.setText("<none>");
     	else label_CurrentEmailAddress.setText(s);
-
-		// Set the title for the window, display the page, and wait for the Admin to do something
-    	theStage.setTitle("CSE 360 Foundation Code: Update User Account Details");
-        theStage.setScene(theUserUpdateScene);
-		theStage.show();
 	}
 
 	
@@ -224,18 +231,23 @@ public class ViewUserUpdate {
 		// Establish the label for each of the dialogs.
 		dialogUpdateFirstName.setTitle("Update First Name");
 		dialogUpdateFirstName.setHeaderText("Update your First Name");
+		dialogUpdateFirstName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdateMiddleName.setTitle("Update Middle Name");
 		dialogUpdateMiddleName.setHeaderText("Update your Middle Name");
+		dialogUpdateMiddleName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdateLastName.setTitle("Update Last Name");
 		dialogUpdateLastName.setHeaderText("Update your Last Name");
+		dialogUpdateLastName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdatePreferredFirstName.setTitle("Update Preferred First Name");
 		dialogUpdatePreferredFirstName.setHeaderText("Update your Preferred First Name");
+		dialogUpdatePreferredFirstName.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 		
 		dialogUpdateEmailAddresss.setTitle("Update Email Address");
 		dialogUpdateEmailAddresss.setHeaderText("Update your Email Address");
+		dialogUpdateEmailAddresss.getEditor().setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 
 		// Label theScene with the name of the startup screen, centered at the top of the pane
 		setupLabelUI(label_ApplicationTitle, "Arial", 28, width, Pos.CENTER, 0, 5);
@@ -255,6 +267,7 @@ public class ViewUserUpdate {
         setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
         setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
+        button_UpdatePassword.setOnAction((_) -> {ControllerUserUpdate.displayPassPopUp(theUser); });
         
         // First Name
         setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);

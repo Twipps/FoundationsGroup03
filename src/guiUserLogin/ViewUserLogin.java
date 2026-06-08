@@ -8,10 +8,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import utilities.InputValidator;
 
 
 /*******
@@ -234,5 +236,6 @@ public class ViewUserLogin {
 		t.setLayoutX(x);
 		t.setLayoutY(y);		
 		t.setEditable(e);
+		t.setTextFormatter(new TextFormatter<String>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	}		
 }
