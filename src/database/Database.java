@@ -61,8 +61,8 @@ public class Database {
 	private String currentPreferredFirstName;
 	private String currentEmailAddress;
 	private boolean currentAdminRole;
-	private boolean currentNewRole1;
-	private boolean currentNewRole2;
+	private boolean currentStudentRole;
+	private boolean currentInstructorRole;
 
 	/*******
 	 * <p> Method: Database </p>
@@ -215,11 +215,11 @@ public class Database {
 			currentAdminRole = user.getAdminRole();
 			pstmt.setBoolean(8, currentAdminRole);
 			
-			currentNewRole1 = user.getNewRole1();
-			pstmt.setBoolean(9, currentNewRole1);
+			currentStudentRole = user.getNewStudent();
+			pstmt.setBoolean(9, currentStudentRole);
 			
-			currentNewRole2 = user.getNewRole2();
-			pstmt.setBoolean(10, currentNewRole2);
+			currentInstructorRole = user.getNewInstructor();
+			pstmt.setBoolean(10, currentInstructorRole);
 			
 			pstmt.executeUpdate();
 		}
@@ -369,8 +369,8 @@ public class Database {
 	public int getNumberOfRoles (User user) {
 		int numberOfRoles = 0;
 		if (user.getAdminRole()) numberOfRoles++;
-		if (user.getNewRole1()) numberOfRoles++;
-		if (user.getNewRole2()) numberOfRoles++;
+		if (user.getNewStudent()) numberOfRoles++;
+		if (user.getNewInstructor()) numberOfRoles++;
 		return numberOfRoles;
 	}	
 
@@ -992,8 +992,8 @@ public class Database {
 	    	currentPreferredFirstName = rs.getString(7);
 	    	currentEmailAddress = rs.getString(8);
 	    	currentAdminRole = rs.getBoolean(9);
-	    	currentNewRole1 = rs.getBoolean(10);
-	    	currentNewRole2 = rs.getBoolean(11);
+	    	currentStudentRole = rs.getBoolean(10);
+	    	currentInstructorRole = rs.getBoolean(11);
 			return true;
 	    } catch (SQLException e) {
 			return false;
@@ -1030,6 +1030,7 @@ public class Database {
 				return false;
 			}
 		}
+
 		if (role.compareTo("Role1") == 0 || role.compareTo("Student") == 0) {
 			String query = "UPDATE userDB SET newRole1 = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -1037,25 +1038,26 @@ public class Database {
 				pstmt.setString(2, username);
 				pstmt.executeUpdate();
 				if (value.compareTo("true") == 0)
-					currentNewRole1 = true;
+					currentStudentRole = true;
 				else
-					currentNewRole1 = false;
+					currentStudentRole = false;
 				return true;
 			} catch (SQLException e) {
 				return false;
 			}
 		}
+
 		if (role.compareTo("Role2") == 0 || role.compareTo("Instructor") == 0 
-				|| role.compareTo("Staff") == 0) {
+				|| role.compareTo("Staff") == 0) { // instuctor and staff are same for now
 			String query = "UPDATE userDB SET newRole2 = ? WHERE username = ?";
 			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 				pstmt.setString(1, value);
 				pstmt.setString(2, username);
 				pstmt.executeUpdate();
 				if (value.compareTo("true") == 0)
-					currentNewRole2 = true;
+					currentInstructorRole = true;
 				else
-					currentNewRole2 = false;
+					currentInstructorRole = false;
 				return true;
 			} catch (SQLException e) {
 				return false;
@@ -1127,15 +1129,58 @@ public class Database {
 	 * <p> Description: Get the current user's Student role attribute.</p>
 	 * @return true if this user plays a Student role, else false
 	 */
-	public boolean getCurrentNewRole1() { return currentNewRole1;};
+	public boolean getCurrentNewRole1() { return currentStudentRole;};
 
 	/*******
 	 * <p> Method: boolean getCurrentNewRole2() </p>
 	 * <p> Description: Get the current user's Instructor/Staff role attribute.</p>
 	 * @return true if this user plays an Instructor or Staff role, else false
 	 */
-	public boolean getCurrentNewRole2() { return currentNewRole2;};
+	public boolean getCurrentNewRole2() { return currentInstructorRole;};	
+	
+	// Adding for new ui functionalities
+	public List<User> getAllUsers() { // admin home relies on this
+	    List<User> users = new ArrayList<>();
 
+	    String query = "SELECT * FROM userDB";
+
+	    try (PreparedStatement statement =
+	            connection.prepareStatement(query)) {
+
+	        ResultSet result = statement.executeQuery();
+
+	        while (result.next()) {
+	            User user = new User(
+	                result.getString("userName"),
+	                result.getString("password"),
+	                result.getString("firstName"),
+	                result.getString("middleName"),
+	                result.getString("lastName"),
+	                result.getString("preferredFirstName"),
+	                result.getString("emailAddress"),
+	                result.getBoolean("adminRole"),
+	                result.getBoolean("newRole1"),
+	                result.getBoolean("newRole2") // REMEMBER TO ADD NEW ROLE AND STUFF
+	            );
+
+	            users.add(user);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return users;
+	}
+	
+	public ResultSet getInvitationCodes() { // admin home relies on
+		String query = "SELECT code, role, emailAddress FROM InvitationCodes";
+		try {
+			return statement.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	/*******
 	 * <p> Debugging method</p>

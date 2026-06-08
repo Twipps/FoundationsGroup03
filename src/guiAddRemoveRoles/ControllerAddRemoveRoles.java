@@ -207,7 +207,6 @@ public class ControllerAddRemoveRoles {
 	 * 
 	 */
 	protected static void performAddRole() {
-		
 		// Determine which item in the ComboBox list was selected
 		ViewAddRemoveRoles.theAddRole =
 				(String) ViewAddRemoveRoles.combobox_SelectRoleToAdd.getValue();

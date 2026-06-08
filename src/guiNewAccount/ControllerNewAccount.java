@@ -71,7 +71,7 @@ public class ControllerNewAccount {
 		// Display key information to the log
 		System.out.println("** Account for Username: " + username + "; theInvitationCode: "+
 				ViewNewAccount.theInvitationCode + "; email address: " + 
-				ViewNewAccount.emailAddress + "; Role: " + ViewNewAccount.theRole);
+				ViewNewAccount.emailAddress + "; Role: " + ViewNewAccount.theRole); // DOES A CHECK FOR ONLY INVITE USERS
 		
 		// Initialize local variables that will be created during this process
 		int roleCode = 0;

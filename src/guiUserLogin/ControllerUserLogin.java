@@ -142,17 +142,17 @@ public class ControllerUserLogin {
 			if (user.getAdminRole()) {
 				loginResult = theDatabase.loginAdmin(user);
 				if (loginResult) {
-					guiAdminHome.ViewAdminHome.displayAdminHome(theStage, user);
+					guiAdminHomeNew.ViewAdminHomeNew.displayAdminHomeNew(theStage, user); // CHANGE HERE TO HOP
 				}
-			} else if (user.getNewRole1()) {
+			} else if (user.getNewStudent()) {
 				loginResult = theDatabase.loginRole1(user);
 				if (loginResult) {
-					guiRole1.ViewRole1Home.displayRole1Home(theStage, user);
+					guiStudent.ViewStudentHome.displayRole1Home(theStage, user);
 				}
-			} else if (user.getNewRole2()) {
+			} else if (user.getNewInstructor()) {
 				loginResult = theDatabase.loginRole2(user);
 				if (loginResult) {
-					guiRole2.ViewRole2Home.displayRole2Home(theStage, user);
+					guiInstructor.ViewInstructorHome.displayRole2Home(theStage, user);
 				}
 			} else {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");

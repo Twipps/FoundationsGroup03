@@ -43,13 +43,13 @@ public class ControllerUserUpdate {
 		// Use that role to proceed to that role's home page
 		switch (theRole) {
 		case 1:
-			guiAdminHome.ViewAdminHome.displayAdminHome(theStage, theUser);
+			guiAdminHomeNew.ViewAdminHomeNew.displayAdminHomeNew(theStage, theUser);
 			break;
 		case 2:
-			guiRole1.ViewRole1Home.displayRole1Home(theStage, theUser);
+			guiStudent.ViewStudentHome.displayRole1Home(theStage, theUser);
 			break;
 		case 3:
-			guiRole2.ViewRole2Home.displayRole2Home(theStage, theUser);
+			guiInstructor.ViewInstructorHome.displayRole2Home(theStage, theUser);
 			break;
 		default: 
 			System.out.println("*** ERROR *** UserUpdate goToUserHome has an invalid role: " + 

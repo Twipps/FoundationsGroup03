@@ -1,4 +1,4 @@
-package guiRole2;
+package guiInstructor;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -28,7 +28,7 @@ import entityClasses.User;
  *  
  */
 
-public class ViewRole2Home {
+public class ViewInstructorHome {
 	
 	/*-*******************************************************************************************
 
@@ -69,7 +69,7 @@ public class ViewRole2Home {
 	// This is the end of the GUI objects for the page.
 	
 	// These attributes are used to configure the page and populate it with this user's information
-	private static ViewRole2Home theView;		// Used to determine if instantiation of the class
+	private static ViewInstructorHome theView;		// Used to determine if instantiation of the class
 												// is needed
 
 	// Reference for the in-memory database so this package has access
@@ -116,7 +116,7 @@ public class ViewRole2Home {
 		theUser = user;
 		
 		// If not yet established, populate the static aspects of the GUI
-		if (theView == null) theView = new ViewRole2Home();		// Instantiate singleton if needed
+		if (theView == null) theView = new ViewInstructorHome();		// Instantiate singleton if needed
 		
 		// Populate the dynamic aspects of the GUI with the data from the user and the current
 		// state of the system.
@@ -142,7 +142,7 @@ public class ViewRole2Home {
 	 * fields using the displayRole2Home method.</p>
 	 * 
 	 */
-	private ViewRole2Home() {
+	private ViewInstructorHome() {
 		
 		// Create the Pane for the list of widgets and the Scene for the window
 		theRootPane = new Pane();
@@ -160,7 +160,7 @@ public class ViewRole2Home {
 		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 55);
 		
 		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
-		button_UpdateThisUser.setOnAction((_) -> {ControllerRole2Home.performUpdate(); });
+		button_UpdateThisUser.setOnAction((_) -> {ControllerInstructorHome.performUpdate(); });
 		
 		// GUI Area 2
 		
@@ -169,10 +169,10 @@ public class ViewRole2Home {
 		
 		// GUI Area 3
         setupButtonUI(button_Logout, "Dialog", 18, 250, Pos.CENTER, 20, 540);
-        button_Logout.setOnAction((_) -> {ControllerRole2Home.performLogout(); });
+        button_Logout.setOnAction((_) -> {ControllerInstructorHome.performLogout(); });
         
         setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 540);
-        button_Quit.setOnAction((_) -> {ControllerRole2Home.performQuit(); });
+        button_Quit.setOnAction((_) -> {ControllerInstructorHome.performQuit(); });
 
 		// This is the end of the GUI initialization code
 		
