@@ -254,8 +254,8 @@ public class CreateAccountPanel {
 			);
 		
 		rBox.setPrefSize(380, 300);
-		rBox.setMaxSize(380, 300);
-		rBox.setAlignment(Pos.CENTER);
+		rBox.setMaxSize(380, 350);
+		rBox.setAlignment(Pos.TOP_CENTER);
 		
 		return rBox;
 	}
