@@ -15,7 +15,7 @@ public final class InputValidator {
 	//myTextField.setTextFormatter(new TextFormatter<Type>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	//or:
 	//myTextInputDialog.getEditor().setTextFormatter(new TextFormatter<Type>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
-	//to restrict max length to the universal max input length
+	//to restrict max length to the universal max input lengt
 	public static UnaryOperator<TextFormatter.Change> maxLengthFilter = change -> {
         if (change.getControlNewText().length() > MAX_INPUT_LENGTH) {
             return null; // Reject the change
@@ -37,6 +37,8 @@ public final class InputValidator {
 	 * <p> Description: This method is a mechanical transformation of a Directed Graph diagram 
 	 * into a Java method. This method is used by both the GUI version of the application as well
 	 * as the testing automation version.
+	 * 
+	 * @author added and modified by (Rob Taylor group 03)
 	 * 
 	 * @param input		The input string evaluated by the directed graph processing
 	 * @return			A PasswordDTO object that contains flags that represent
