@@ -6,63 +6,81 @@ import utilities.InputValidator;
 /*******
  * <p> Title: ModelNewAccount Class. </p>
  * 
- * <p> Description: The NewAccount Page Model.  This class is not used as there is no
- * data manipulated by this MVC beyond accepting role information and saving it in the
- * database.</p>
+ * <p> Description: The NewAccount Page Model. This class evaluates password strength
+ * using the InputValidator FSM and returns a human-readable error message listing
+ * any unmet requirements. </p>
  * 
  * <p> Copyright: Lynn Robert Carter © 2025 </p>
  * 
  * @author Lynn Robert Carter
  * @author Rob Taylor
+ * @author Kyle Kim (Team 3) - Improved error messages and fixed String comparison bug
  * 
- * @version 1.00		2025-08-15 Initial version
- * @version 1.01		2026-06-08 added password validation logic
- *  
+ * @version 1.00    2025-08-15 Initial version
+ * @version 1.01    2026-06-08 Added password validation logic (Rob Taylor)
+ * @version 1.02    2026-06-08 Improved error messages; fixed == vs .equals() bug (Kyle Kim)
  */
 public class ModelNewAccount {
 
-	public static String passwordInput = "";			// The input being processed
-	public static int passwordIndexofError = -1;		// The index where the error was located
+	public static String passwordInput = "";
+	public static int passwordIndexofError = -1;
 	
+	/**********
+	 * <p> Method: evaluatePassword(String input) </p>
+	 * 
+	 * <p> Description: Evaluates a password string against the required strength
+	 * criteria using the InputValidator FSM. Returns an empty string if the password
+	 * meets all requirements, or a descriptive error message listing what is missing.
+	 * 
+	 * Requirements: at least one uppercase letter, one lowercase letter, one digit,
+	 * one special character, and a minimum length of 8 characters. </p>
+	 * 
+	 * @param input the password string to evaluate
+	 * @return empty string if valid, or error message describing missing requirements
+	 */
 	public static String evaluatePassword(String input) {
-		// The following are the local variable used to perform the Directed Graph simulation
-		passwordIndexofError = 0;			// Initialize the IndexofError
-
-		// The Directed Graph simulation continues until the end of the input is reached or at some 
-		// state the current character does not match any valid transition to a next state.  This
-		// local variable is a working copy of the input.
-		passwordInput = input;				// Save a copy of the input
+		passwordIndexofError = 0;
+		passwordInput = input;
 		
 		PasswordDTO result = InputValidator.verifyPassword(input);
+		
+		if (result == null) {
+			return "Password must contain:\n  • At least one uppercase letter (A-Z)"
+					+ "\n  • At least one lowercase letter (a-z)"
+					+ "\n  • At least one number (0-9)"
+					+ "\n  • At least one special character (!@#$%...)"
+					+ "\n  • At least 8 characters long";
+		}
+		
 		passwordIndexofError = result.getIndexOfError();
 		
 		if (passwordIndexofError != -1) {
-			return "***Error*** " + input.charAt(passwordIndexofError) + " is an invalid character";
+			return "Invalid character found: '" + input.charAt(passwordIndexofError) + "'";
 		}
 		
-		// Construct a String with a list of the requirement elements that were found.
+		// Build a descriptive message listing any unmet requirements
 		String errMessage = "";
+		
 		if (!result.getFoundUpperCase())
-			errMessage += "Upper case; ";
+			errMessage += "\n  • At least one uppercase letter (A-Z)";
 		
 		if (!result.getFoundLowerCase())
-			errMessage += "Lower case; ";
+			errMessage += "\n  • At least one lowercase letter (a-z)";
 		
 		if (!result.getFoundNumericDigit())
-			errMessage += "Numeric digits; ";
+			errMessage += "\n  • At least one number (0-9)";
 			
 		if (!result.getFoundSpecialChar())
-			errMessage += "Special character; ";
+			errMessage += "\n  • At least one special character (!@#$%...)";
 			
 		if (!result.getFoundLongEnough())
-			errMessage += "Long Enough; ";
+			errMessage += "\n  • At least 8 characters long";
 		
-		if (errMessage == "")
+		// Fixed: use .equals() not == for String comparison
+		if (errMessage.equals(""))
 			return "";
 		
-		// If it gets here, there something was not found, so return an appropriate message
 		passwordIndexofError = input.length();
-		return errMessage + "conditions were not satisfied";
+		return "Password must contain:" + errMessage;
 	}
-	
 }

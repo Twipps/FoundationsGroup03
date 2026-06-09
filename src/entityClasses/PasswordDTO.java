@@ -3,14 +3,14 @@ package entityClasses;
 public class PasswordDTO {
     
     //verifyPassword flags 
-	private static boolean foundUpperCase = false;
-	private static boolean foundLowerCase = false;
-	private static boolean foundNumericDigit = false;
-	private static boolean foundSpecialChar = false;
-	private static boolean foundLongEnough = false;
-	private static boolean containsData = false;
-	private static boolean containsInvalidCharacter = false;
-	private static int indexOfError = -1;
+	private boolean foundUpperCase = false;
+	private boolean foundLowerCase = false;
+	private boolean foundNumericDigit = false;
+	private boolean foundSpecialChar = false;
+	private boolean foundLongEnough = false;
+	private boolean containsData = false;
+	private boolean containsInvalidCharacter = false;
+	private int indexOfError = -1;
 		
 	public boolean getFoundUpperCase() { return foundUpperCase; }
 	public boolean getFoundLowerCase() { return foundLowerCase; }
