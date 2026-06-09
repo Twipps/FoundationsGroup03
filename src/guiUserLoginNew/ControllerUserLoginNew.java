@@ -2,6 +2,7 @@ package guiUserLoginNew;
 
 // @author James Suchovic (Team 3) - Designed and implemented account setup UI,
 // navigation flow, layout structure, and functionality
+// @author Kyle Kim (Team 3) - Added trim to invitation code to prevent whitespace issues
 
 import database.Database;
 import entityClasses.User;
@@ -16,7 +17,7 @@ public class ControllerUserLoginNew {
 	}
 
 	protected static void doLogin(Stage theStage) {
-		String username = ViewUserLoginNew.text_Username.getText();
+		String username = ViewUserLoginNew.text_Username.getText().trim();
 		String password = ViewUserLoginNew.text_Password.getText();
 		boolean loginResult = false;
 
@@ -29,6 +30,36 @@ public class ControllerUserLoginNew {
 		}
 
 		String actualPassword = theDatabase.getCurrentPassword();
+
+		// Check if the entered password matches the one-time password
+		String oneTimePassword = theDatabase.getOneTimePassword(username);
+		if (oneTimePassword != null && password.compareTo(oneTimePassword) == 0) {
+			// User is logging in with a one-time password — clear it and force a reset
+			theDatabase.clearOneTimePassword(username);
+
+			User user = new User(
+				username, password,
+				theDatabase.getCurrentFirstName(),
+				theDatabase.getCurrentMiddleName(),
+				theDatabase.getCurrentLastName(),
+				theDatabase.getCurrentPreferredFirstName(),
+				theDatabase.getCurrentEmailAddress(),
+				theDatabase.getCurrentAdminRole(),
+				theDatabase.getCurrentNewRole1(),
+				theDatabase.getCurrentNewRole2()
+			);
+
+			ViewUserLoginNew.alertUsernamePasswordError.setTitle("Password Reset Required");
+			ViewUserLoginNew.alertUsernamePasswordError.setHeaderText("One-Time Password Accepted");
+			ViewUserLoginNew.alertUsernamePasswordError.setContentText(
+				"Your one-time password has been accepted. "
+				+ "You must now set a new password on the next screen."
+			);
+			ViewUserLoginNew.alertUsernamePasswordError.showAndWait();
+
+			guiNewAccountSetup.ControllerNewAccountSetup.doNewAccountSetup(theStage, user);
+			return;
+		}
 
 		if (password.compareTo(actualPassword) != 0) {
 			ViewUserLoginNew.alertUsernamePasswordError.setContentText(
@@ -79,7 +110,10 @@ public class ControllerUserLoginNew {
 
 	protected static void doSetupAccount(Stage theStage, String invitationCode) {
 
-	    if (invitationCode == null || invitationCode.trim().length() == 0) {
+		// Trim whitespace to prevent lookup failures from accidental spaces
+		if (invitationCode != null) invitationCode = invitationCode.trim();
+
+	    if (invitationCode == null || invitationCode.length() == 0) {
 	        ViewUserLoginNew.alertUsernamePasswordError.setTitle("Missing Invitation Code");
 	        ViewUserLoginNew.alertUsernamePasswordError.setHeaderText("No Invitation Code Entered");
 	        ViewUserLoginNew.alertUsernamePasswordError.setContentText(

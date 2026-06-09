@@ -546,7 +546,7 @@ public class Database {
 	}
 	
 	/*******
-	 * <p> Method: void removeExpiredInvitations() </p>
+	 * <p> Method: void Invitations() </p>
 	 * 
 	 * <p> Description: Removes all invitation codes whose expiry date has passed.
 	 * This method should be called each time the Admin Home page loads to ensure
