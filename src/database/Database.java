@@ -25,12 +25,15 @@ import entityClasses.User;
  * @author Lynn Robert Carter
  * @author Kyle Kim (Team 3) - Added deleteUser, setOneTimePassword, getOneTimePassword,
  *                             clearOneTimePassword methods and oneTimePassword column
+ * @author James Suchovic (Team 3) - Added getAllUsers() and getInvitationCodes()
  * 
  * @version 2.00		2025-04-29 Updated and expanded from the version produce by Pravalika 
- * @version 2.01        added getAllUsers() and getInvitationCodes() (James Suchovic Team 3)
+   @version 2.01
  * 						Mukkiri and Ishwarya Hidkimath Basavaraj
  * @version 2.02		2025-12-17 Minor updates for Spring 2026
- * @version 2.03		2026-06-06 Added deleteUser and one-time password methods (Kyle Kim, Team 3)
+ * @version 2.03 	    2026-06-06 Added deleteUser and one-time password methods (Kyle Kim, Team 3)
+ * @version 2.04        2026-08-06 Added getAllUsers() and getInvitationCodes()  (James Suchovic Team 3)
+ * @version 2.04        2026-09-07 ExpiryDate to getInvitationsCodes()  (James Suchovic Team 3)
  */
 
 /*
@@ -1174,7 +1177,7 @@ public class Database {
 	}
 	
 	public ResultSet getInvitationCodes() { // admin home relies on
-		String query = "SELECT code, role, emailAddress FROM InvitationCodes";
+		String query = "SELECT code, role, emailAddress, expiryDate FROM InvitationCodes";
 		try {
 			return statement.executeQuery(query);
 		} catch (SQLException e) {

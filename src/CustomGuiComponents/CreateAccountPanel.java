@@ -1,8 +1,5 @@
 package CustomGuiComponents;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
 import java.sql.SQLException;
 
 import database.Database;
@@ -26,7 +23,7 @@ import utilities.InputValidator;
  * navigating to the account setup page. Features real-time password validation
  * feedback as the user types, including matching check against the confirm field. </p>
  * 
- *  @author James Suchovic (Team 3) - Designed and implemented account setup UI,
+ * @author James Suchovic (Team 3) - Designed and implemented account setup UI,
  *  navigation flow, layout structure, and functionality
  * @author Kyle Kim (Team 3) - Added on-screen error label and real-time password validation
  * 

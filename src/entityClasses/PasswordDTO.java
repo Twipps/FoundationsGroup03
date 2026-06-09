@@ -1,5 +1,7 @@
 package entityClasses;
 
+// @ Author implemented and designed by (Rob Taylor group 03)
+
 public class PasswordDTO {
     
     //verifyPassword flags 

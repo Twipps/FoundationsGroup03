@@ -1,8 +1,5 @@
 package CustomGuiComponents;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
 import database.Database;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,10 +19,10 @@ import javafx.scene.layout.VBox;
  * a selected user. Allows the admin to set a one-time password, add/remove roles,
  * and delete the user account with confirmation. </p>
  * 
- * @author James Suchovic (Team 3) - Initial UI implementation
- * @author Kyle Kim (Team 3) - Wired deleteUser and setOneTimePassword logic
- * 
- * @version 1.00    Initial implementation
+ * @author James Suchovic (Team 3) - implemented and Designed and implemented account setup UI,
+ *                                   navigation flow, layout structure, and functionality
+ * @author Kyle Kim (Team 3) - Wired deleteUser and setOneTimePassword logic                                  
+ *                                   
  * @version 1.01    2026-06-08 Added deleteUser and setOneTimePassword functionality (Kyle Kim)
  */
 public class AdminUserManagementPanel {

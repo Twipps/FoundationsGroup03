@@ -3,6 +3,8 @@ package CustomGuiComponents;
 // @author James Suchovic (Team 3) - Designed and implemented account setup UI,
 // navigation flow, layout structure, and functionality
 
+// @version 1.01 added expiration date to invite list (James Suchovic Team 3) 
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -21,7 +23,7 @@ public class AdminInvitationList {
     public static ScrollPane createInvitationList(BorderPane contentPane) {
         VBox container = createInvitationContainer();
         refreshInvitations(container);
-        contentPane.setRight(null); // to to remove anything existing from user page
+        contentPane.setRight(null);
 
         ScrollPane scrollPane = new ScrollPane(container);
         scrollPane.setFitToWidth(true);
@@ -37,7 +39,6 @@ public class AdminInvitationList {
     }
 
     public static void refreshInvitations(VBox container) {
-        // Pull invitations from database
     	container.getChildren().clear();
     	ResultSet resultSet = theDatabase.getInvitationCodes();
 
@@ -47,16 +48,21 @@ public class AdminInvitationList {
     			String role = resultSet.getString("role");
     			String email = resultSet.getString("emailAddress");
 
+    			String expiryDate = resultSet.getString("expiryDate");
+    			if (expiryDate == null) {
+    				expiryDate = "Never";
+    			}
+
     			container.getChildren().add(
-    				createInvitationRow(code, role, email));
+    				createInvitationRow(code, role, email, expiryDate));
     		}
     	} catch (SQLException e) {
     		e.printStackTrace();
     	}
     }
 
-    private static HBox createInvitationRow(String code, String role, 
-    		String email) {
+    private static HBox createInvitationRow(String code, String role,
+    		String email, String expiryDate) {
         HBox row = new HBox(15);
 
         row.setPadding(new Insets(10));
@@ -64,15 +70,18 @@ public class AdminInvitationList {
         Label codeLabel = new Label(code);
         Label roleLabel = new Label(role);
         Label emailLabel = new Label(email);
+        Label expiryLabel = new Label(expiryDate);
 
         codeLabel.setPrefWidth(200);
         roleLabel.setPrefWidth(150);
         emailLabel.setPrefWidth(250);
+        expiryLabel.setPrefWidth(250);
 
         row.getChildren().addAll(
             codeLabel,
             roleLabel,
-            emailLabel
+            emailLabel,
+            expiryLabel
         );
 
         return row;
