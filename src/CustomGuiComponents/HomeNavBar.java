@@ -26,11 +26,15 @@ public class HomeNavBar {
 	
 	// will be different depending on user
     public static VBox createNavigationBar(Stage theStage, User user,
-    		Label titleBar, BorderPane contentPane) {  
+    		Label titleBar, BorderPane contentPane, final int theRole) {  
     	VBox rNavigation = null;
     	
-    	if (user == null || user.getAdminRole() ) {
+    	if (user == null || theRole == 1 ) {
     		rNavigation = createAdminNavBar(theStage, user, titleBar, contentPane);
+    	} else if (theRole == 3) {
+    		rNavigation = createInstructorNavBar(theStage, user, titleBar, contentPane);
+    	} else if (theRole == 2) {
+    		rNavigation = createStudentNavBar(theStage, user, titleBar, contentPane);
     	}
         
         return rNavigation;
@@ -38,12 +42,128 @@ public class HomeNavBar {
     
     private static VBox createStudentNavBar(Stage theStage, User user, 
         	Label titleBar, BorderPane contentPane) {
-    	return null;
+    	VBox studentBar = new VBox(10);     
+        
+    	Button home = new Button();
+        Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
+        Button logout = createLogOutButton(theStage);
+        
+        Label userName = new Label(user.getFirstName() + " " + user.getLastName());
+        Label roleLabel = new Label("Student"); 
+        
+        Circle placeHolderIcon = new Circle(25);
+        
+        placeHolderIcon.setStyle( "-fx-fill: #f1f5f9;" + 
+        		"-fx-stroke: #852525;" + 
+        		"-fx-stroke-width: 2;"
+        );
+                
+        userName.setStyle (
+        		"-fx-font-size: 15px;" +
+//        		"-fx-font-weight: bold;" +
+        		"-fx-text-fill: white;"
+        );
+        
+        roleLabel.setStyle (
+            	"-fx-font-size: 12px;" +
+            	"-fx-text-fill: white;"
+            );
+        
+        String navButtonStyle =
+        	    "-fx-background-color: transparent;" +
+        	    "-fx-border-color: transparent;" +
+        	    "-fx-text-fill: white;" +
+        	    "-fx-font-size: 14px;" +
+        	    "-fx-font-weight: bold;" +
+        	    "-fx-focus-color: transparent;" +
+        	    "-fx-faint-focus-color: transparent;";
+
+        home.setStyle(navButtonStyle);
+        accountSettings.setStyle(navButtonStyle);
+        logout.setStyle(navButtonStyle);
+        
+        home.setOnAction(e -> {
+            titleBar.setText("Student Home");
+            contentPane.setCenter(null);
+        });
+        
+        Region spacer = new Region(); // to space the logout button to the bottom
+        VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
+                
+        studentBar.setSpacing(10);
+        studentBar.setPadding(new Insets(15));
+        studentBar.setAlignment(Pos.TOP_CENTER);
+        
+        studentBar.setStyle(brandColorNav);
+        studentBar.getChildren().addAll(home, createSeparator(),
+        		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
+        		accountSettings, createSeparator(), logout);
+
+    	return studentBar;
     }
     
     private static VBox createInstructorNavBar(Stage theStage, User user, 
-        	Label titleBar, BorderPane contentPane) {
-    	return null;
+        Label titleBar, BorderPane contentPane) {
+    	VBox instructorBar = new VBox(10);   
+    	
+        Button home = new Button();
+        Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
+        Button logout = createLogOutButton(theStage);
+        
+        Label userName = new Label(user.getFirstName() + " " + user.getLastName());
+        Label roleLabel = new Label("Instructor"); 
+        
+        Circle placeHolderIcon = new Circle(25);
+        
+        
+        
+        placeHolderIcon.setStyle( "-fx-fill: #f1f5f9;" + 
+        		"-fx-stroke: #852525;" + 
+        		"-fx-stroke-width: 2;"
+        );
+                
+        userName.setStyle (
+        		"-fx-font-size: 15px;" +
+//        		"-fx-font-weight: bold;" +
+        		"-fx-text-fill: white;"
+        );
+        
+        roleLabel.setStyle (
+            	"-fx-font-size: 12px;" +
+            	"-fx-text-fill: white;"
+            );
+        
+        String navButtonStyle =
+        	    "-fx-background-color: transparent;" +
+        	    "-fx-border-color: transparent;" +
+        	    "-fx-text-fill: white;" +
+        	    "-fx-font-size: 14px;" +
+        	    "-fx-font-weight: bold;" +
+        	    "-fx-focus-color: transparent;" +
+        	    "-fx-faint-focus-color: transparent;";
+
+        accountSettings.setStyle(navButtonStyle);
+        home.setStyle(navButtonStyle);
+        logout.setStyle(navButtonStyle);
+        
+        home.setOnAction(e -> {
+            titleBar.setText("Instructor/Staff Home");
+            contentPane.setCenter(null);
+        });
+        
+        Region spacer = new Region(); // to space the logout button to the bottom
+        VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
+                
+        instructorBar.setSpacing(10);
+        instructorBar.setPadding(new Insets(15));
+        instructorBar.setAlignment(Pos.TOP_CENTER);
+        
+        instructorBar.setStyle(brandColorNav);
+        instructorBar.getChildren().addAll(home, createSeparator(),
+        		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
+        		accountSettings, createSeparator(), logout);
+
+    	return instructorBar;
     }
     
     private static VBox createAdminNavBar(Stage theStage, User user, 

@@ -47,9 +47,9 @@ public class RoleSessionSelectionPanel {
 			if (inRole.equals("Admin")) {
 				guiAdminHomeNew.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
 			} else if (inRole.equals("Instructor")) {
-				// TODO add doInstructorHome	
+				guiInstructorNew.ViewInstructorNew.displayInstructorHomeNew(theStage, user);	
 			} else if (inRole.equals("Student")) {
-				// TODO add doStudentHome
+				guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
 			}
 		});
 		

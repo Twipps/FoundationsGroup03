@@ -41,10 +41,10 @@ public class ViewNewAccountSetup {
                 guiAdminHomeNew.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
             }
             else if (user.getNewInstructor()) {
-                // guiInstructorHome.ControllerInstructorHome.doInstructorHome(theStage, user);
+            	guiInstructorNew.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
             }
             else if (user.getNewStudent()) {
-                // guiStudentHome.ControllerStudentHome.doStudentHome(theStage, user);
+            	guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
             }
 
         });
