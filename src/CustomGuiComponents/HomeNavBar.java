@@ -44,7 +44,7 @@ public class HomeNavBar {
         	Label titleBar, BorderPane contentPane) {
     	VBox studentBar = new VBox(10);     
         
-    	Button home = new Button();
+    	Button home = createNavBarButton(theStage, "Home");
         Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
         Button logout = createLogOutButton(theStage);
         
@@ -106,7 +106,7 @@ public class HomeNavBar {
         Label titleBar, BorderPane contentPane) {
     	VBox instructorBar = new VBox(10);   
     	
-        Button home = new Button();
+        Button home = createNavBarButton(theStage, "Home");
         Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
         Button logout = createLogOutButton(theStage);
         
