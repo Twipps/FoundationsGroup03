@@ -1,11 +1,18 @@
 package CustomGuiComponents;
 
+import java.sql.SQLException;
+
+import database.Database;
+import entityClasses.User;
+import guiNewAccount.ModelNewAccount;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import utilities.InputValidator;
 
 // aids firstAdmin and userAcct creation; the panels this gets 
 // passed too will pass the role id for account creation
@@ -17,7 +24,9 @@ import javafx.scene.layout.VBox;
 
 // this is a shared panel for two gui's firstAdmin, and NewAccountNew
 public class CreateAccountPanel {	
-	public static VBox buildCreateAccountPanel(final int theRole) { 
+	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
+	public static VBox buildCreateAccountPanel(Stage theStage, String inviteCode) { // inviteCode is null if it comes from firstAdmin
 		VBox rBox = new VBox(10);
 		
 		TextField text_Username = new TextField();
@@ -33,9 +42,88 @@ public class CreateAccountPanel {
 		
 		Button createAccount = new Button("Create Account");
 		
-		createAccount.setOnAction((_) -> {
-			// this button will pass role (theRole) //TODO LINK THIS TO NEWACCOUTSETUP
-		});											//TODO ADD CHECK LOGIC FOR PASSWD
+		 // check if inviteCode is null or invalid, if not
+		 // set this user's role to that, and pass user onto user userSetup which
+		// will then pull user settings panel with userValue
+		// userSetup will set the users role when a user name is chosen
+		
+		// using the professors flow from the old controller
+		createAccount.setOnAction(e -> {
+		    String username = text_Username.getText().trim();
+		    String password = text_Password.getText();
+
+		    String returnString = InputValidator.verifyUsername(username);
+		    if (returnString.compareTo("") != 0) {
+		        text_Username.setText("");
+		        System.out.println(returnString);
+		        return;
+		    }
+
+		    if (!text_Password.getText().equals(text_PasswordAgain.getText())) {
+		        text_Password.setText("");
+		        text_PasswordAgain.setText("");
+		        System.out.println("Passwords do not match.");
+		        return;
+		    }
+
+		    returnString = ModelNewAccount.evaluatePassword(password);
+		    if (returnString.compareTo("") != 0) {
+		        text_Password.setText("");
+		        text_PasswordAgain.setText("");
+		        System.out.println(returnString);
+		        return;
+		    }
+
+		    String role;
+
+		    if (inviteCode == null) {
+		        role = "Admin";
+		    } else {
+		        if (theDatabase.isInvitationExpired(inviteCode)) {
+		            System.out.println("Invitation code expired.");
+		            return;
+		        }
+
+		        role = theDatabase.getRoleGivenAnInvitationCode(inviteCode);
+
+		        if (role == null || role.length() == 0) {
+		            System.out.println("Invalid invitation code.");
+		            return;
+		        }
+		    }
+
+		    User newUser = null;
+
+		    if (role.equals("Admin")) {
+		        newUser = new User(username, password, "", "", "", "", "", true, false, false);
+		    } else if (role.equals("Student")) {
+		        newUser = new User(username, password, "", "", "", "", "", false, true, false);
+		    } else if (role.equals("Instructor")) {
+		        newUser = new User(username, password, "", "", "", "", "", false, false, true);
+		    } else {
+		        System.out.println("Role does not exist: " + role);
+		        return;
+		    }
+
+		    if (inviteCode != null) {
+		        newUser.setEmailAddress(theDatabase.getEmailAddressUsingCode(inviteCode));
+		    }
+
+		    try {
+		        theDatabase.register(newUser);
+		    } catch (SQLException ex) {
+		        ex.printStackTrace();
+		        return;
+		    }
+
+		    if (inviteCode != null) {
+		        theDatabase.removeInvitationAfterUse(inviteCode);
+		    }
+
+		    theDatabase.getUserAccountDetails(username);
+
+		    guiNewAccountSetup.ControllerNewAccountSetup.doNewAccountSetup(theStage, newUser);
+		});										
 													
 		rBox.setStyle(
 				"-fx-background-color: rgba(255,255,255,0.5);" +

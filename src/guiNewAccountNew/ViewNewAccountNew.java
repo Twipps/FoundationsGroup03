@@ -11,10 +11,10 @@ import javafx.stage.Stage;
 public class ViewNewAccountNew {
 	protected static final int theRole = 0; // set to zero to cause failure if invite fails
 	
-	public static void DisplayNewAccountNew(Stage theStage, final int theRole) {	
+	public static void DisplayNewAccountNew(Stage theStage, String inviteCode) {	
 		BorderPane root = new BorderPane();
 		VBox welcomeBox = 
-				CustomGuiComponents.CreateAccountPanel.buildCreateAccountPanel(theRole);
+				CustomGuiComponents.CreateAccountPanel.buildCreateAccountPanel(theStage, inviteCode);
 		
 		root.setStyle("-fx-background-color: #9c3535;");
 		

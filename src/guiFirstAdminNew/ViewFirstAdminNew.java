@@ -20,7 +20,7 @@ public class ViewFirstAdminNew {
 	public static void DisplayFirstAdminNew(Stage theStage) {	
 		BorderPane root = new BorderPane();
 		VBox welcomeBox =  
-				CustomGuiComponents.CreateAccountPanel.buildCreateAccountPanel(theRole);
+				CustomGuiComponents.CreateAccountPanel.buildCreateAccountPanel(theStage, null);
 		
 		root.setStyle("-fx-background-color: #9c3535;");
 		
@@ -38,14 +38,11 @@ public class ViewFirstAdminNew {
 	}
 }
 
-/* TODO its 3am i need to sleep
+/* TODO its 3am I need to sleep
 firstAdmin
-inviteLogin: logical hookups
+inviteLogin: logical hook ups
 
 newUserUpdate: visualHookup, could be handed the theRole
-
-roleDispatch: visual
-roleDispatchButtonStack: logical
 
 student/Instuctor placeholders
 */
