@@ -13,7 +13,7 @@ import utilities.InputValidator;
  * <p> Copyright: Lynn Robert Carter © 2025 </p>
  * 
  * @author Lynn Robert Carter
- * @author Rob Taylor
+ * @author Rob Taylor (Team 3) - Implementation of password validation state machine
  * @author Kyle Kim (Team 3) - Improved error messages and fixed String comparison bug
  * 
  * @version 1.00    2025-08-15 Initial version

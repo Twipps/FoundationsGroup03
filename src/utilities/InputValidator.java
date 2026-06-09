@@ -15,7 +15,7 @@ public final class InputValidator {
 	//myTextField.setTextFormatter(new TextFormatter<Type>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	//or:
 	//myTextInputDialog.getEditor().setTextFormatter(new TextFormatter<Type>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
-	//to restrict max length to the universal max input lengt
+	//to restrict max length to the universal max input length
 	public static UnaryOperator<TextFormatter.Change> maxLengthFilter = change -> {
         if (change.getControlNewText().length() > MAX_INPUT_LENGTH) {
             return null; // Reject the change

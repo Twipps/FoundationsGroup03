@@ -19,7 +19,7 @@ import javafx.scene.layout.VBox;
  * a selected user. Allows the admin to set a one-time password, add/remove roles,
  * and delete the user account with confirmation. </p>
  * 
- * @author James Suchovic (Team 3) - implemented and Designed and implemented account setup UI,
+ * @author James Suchovic (Team 3) - Designed and implemented account setup UI,
  *                                   navigation flow, layout structure, and functionality
  * @author Kyle Kim (Team 3) - Wired deleteUser and setOneTimePassword logic                                  
  *                                   
