@@ -1,17 +1,23 @@
 package CustomGuiComponents;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
+/*** 
+*  @author James Suchovic (Team 3) - Designed and implemented account setup UI,
+*  navigation flow, layout structure, and functionality
+*  @author Kyle Kim (Team 3) - real-time password validation
+*  
+*  @version 1.0.1 - James Suchovic (Team 3) -  tweaked and incorporated real-time password validation
+*/
 
 import database.Database;
 import entityClasses.User;
-import javafx.geometry.Insets;
+import guiNewAccount.ModelNewAccount;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class UserSettingsPanel {
@@ -36,6 +42,9 @@ public class UserSettingsPanel {
 		Label currentLastName = new Label("Last Name: " + displayValue(theUser.getLastName()));
 		Label currentPreferredName = new Label("Preferred Name: " + displayValue(theUser.getPreferredFirstName()));
 		Label currentEmailAddr = new Label("Email: " + displayValue(theUser.getEmailAddress()));
+		Label errorLabel = new Label("");
+		
+		final boolean[] passwdValid = {false};
 
 		TextField newPassword = new TextField();
 		TextField newFirstName = new TextField();
@@ -65,7 +74,37 @@ public class UserSettingsPanel {
 		preferredNameInput.setAlignment(Pos.CENTER);
 		emailInput.setAlignment(Pos.CENTER);
 		
-		updatePassword.setDisable(true); // ROB WILL NEED TO CHANGE
+		updatePassword.setDisable(true);
+		
+		newPassword.textProperty().addListener((observable, oldValue, newValue) -> {		    
+		    if (newValue.isEmpty()) {
+		        errorLabel.setText("");
+		        passwdValid[0] = false;
+		        updatePassword.setDisable(true);
+		        return;
+		    }
+		    String result = ModelNewAccount.evaluatePassword(newValue);
+		    if (!result.isEmpty()) {
+		        errorLabel.setTextFill(Color.RED);
+		        updatePassword.setDisable(true);
+		        errorLabel.setText(result);
+		        passwdValid[0] = false;
+		    } else {
+		        errorLabel.setTextFill(Color.GREEN);
+		        errorLabel.setText("✓ Password meets all requirements");
+		        updatePassword.setDisable(false);
+		        passwdValid[0] = true;
+		    }
+		});
+		
+		updatePassword.setOnAction((_) -> {
+			if (newPassword.getText().trim().isEmpty()) {return;}
+			theDatabase.updatePassword(theUser.getUserName(), newPassword.getText());
+			theDatabase.getUserAccountDetails(theUser.getUserName());
+			theUser.setPassword(theDatabase.getCurrentPassword());
+			currentPassword.setText("Password: " + displayValue(theUser.getPassword()));
+			newPassword.setText("");
+		});
 
 		updateFirstName.setOnAction((_) -> {
 			if (newFirstName.getText().trim().isEmpty()) {return;}
@@ -120,8 +159,12 @@ public class UserSettingsPanel {
 		preferredNameRow.getChildren().addAll(currentPreferredName, preferredNameInput);
 		emailRow.getChildren().addAll(currentEmailAddr, emailInput);
 		
-		settingsBox.setPrefSize(350, 450);
-		settingsBox.setMaxSize(350, 450);
+		settingsBox.setPrefWidth(350);
+		settingsBox.setMaxWidth(350);
+		
+		settingsBox.setPrefHeight(450);
+		settingsBox.setMaxHeight(506);
+		
 		settingsBox.setAlignment(Pos.CENTER);
 
 		settingsBox.setStyle(
@@ -132,6 +175,7 @@ public class UserSettingsPanel {
 
 		settingsBox.getChildren().addAll(
 			userNameRow,
+			errorLabel,
 			passwordRow,
 			firstNameRow,
 			middleNameRow,
@@ -142,7 +186,7 @@ public class UserSettingsPanel {
 
 		return settingsBox;
 	}
-	
+		
 	private static String displayValue(String value) {
 		if (value == null || value.length() < 1) return "<none>";
 		return value;
