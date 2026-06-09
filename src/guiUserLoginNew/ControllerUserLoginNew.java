@@ -59,12 +59,12 @@ public class ControllerUserLoginNew {
 			} else if (user.getNewStudent()) {
 				loginResult = theDatabase.loginRole1(user);
 				if (loginResult) {
-					guiStudent.ViewStudentHome.displayRole1Home(theStage, user);
+					guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
 				}
 			} else if (user.getNewInstructor()) {
 				loginResult = theDatabase.loginRole2(user);
 				if (loginResult) {
-					guiInstructor.ViewInstructorHome.displayRole2Home(theStage, user);
+					guiInstructorNew.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
 				}
 			} else {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");
@@ -75,6 +75,17 @@ public class ControllerUserLoginNew {
 	}
 
 	protected static void doSetupAccount(Stage theStage, String invitationCode) {
+
+	    if (invitationCode == null || invitationCode.trim().length() == 0) {
+	        ViewUserLoginNew.alertUsernamePasswordError.setTitle("Missing Invitation Code");
+	        ViewUserLoginNew.alertUsernamePasswordError.setHeaderText("No Invitation Code Entered");
+	        ViewUserLoginNew.alertUsernamePasswordError.setContentText(
+	            "Please enter an invitation code before creating an account."
+	        );
+	        ViewUserLoginNew.alertUsernamePasswordError.showAndWait();
+	        return;
+	    }
+
 	    if (theDatabase.isInvitationExpired(invitationCode)) {
 	        ViewUserLoginNew.alertUsernamePasswordError.setTitle("Invitation Code Expired");
 	        ViewUserLoginNew.alertUsernamePasswordError.setHeaderText("Invitation Code Expired");

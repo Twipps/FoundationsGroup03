@@ -24,11 +24,6 @@ public class ViewAdminHomeNew {
 	public static Alert alertEmailError = new Alert(Alert.AlertType.ERROR);
 	public static Alert alertEmailSent = new Alert(Alert.AlertType.INFORMATION);
 	
-	// declare all leaf nodes elements we new to draw the page
-	 private ViewAdminHomeNew() {
-		 
-	 }
-	
 	 public static void displayAdminHomeNew(Stage theStage, User user) {		 	
 		    applicationMain.FoundationsMain.activeHomePage = theRole;
 		 	
@@ -52,7 +47,7 @@ public class ViewAdminHomeNew {
 		    contentPane.setCenter(AdminUserList.createUserList(userModifyPane));
 		    contentPane.setRight(userModifyPane);
 
-		    VBox adminNavBar = HomeNavBar.createNavigationBar(theStage, user, titleBar, contentPane);
+		    VBox adminNavBar = HomeNavBar.createNavigationBar(theStage, user, titleBar, contentPane, theRole);
 
 		    adminNavBar.prefHeightProperty().bind(root.heightProperty());
 
