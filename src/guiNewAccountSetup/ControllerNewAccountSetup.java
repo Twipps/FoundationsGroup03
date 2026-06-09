@@ -1,6 +1,10 @@
 package guiNewAccountSetup;
-// firstAdmin or NewAccountNew
-// will hand over the role information.
+
+// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
+// navigation flow, layout structure, and functionality
+
+//firstAdmin or NewAccountNew
+//will hand over the role information.
 
 import entityClasses.User;
 import javafx.stage.Stage;

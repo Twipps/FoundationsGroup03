@@ -11,7 +11,8 @@ import javafx.stage.Stage;
  * email validation, logout, and navigation. User management actions (delete, one-time
  * password, add/remove roles) are handled directly in AdminUserManagementPanel. </p>
  * 
- * @author James Suchovic (Team 3) - Initial implementation
+ * @author James Suchovic (Team 3) - Designed and implemented account setup UI, 
+ * navigation flow, layout structure, and functionality
  * @author Kyle Kim (Team 3) - Improved email validation
  * 
  * @version 1.00    Initial implementation

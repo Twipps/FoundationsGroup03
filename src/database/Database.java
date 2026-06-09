@@ -27,9 +27,10 @@ import entityClasses.User;
  *                             clearOneTimePassword methods and oneTimePassword column
  * 
  * @version 2.00		2025-04-29 Updated and expanded from the version produce by Pravalika 
+ * @version 2.01        added getAllUsers() and getInvitationCodes() (James Suchovic Team 3)
  * 						Mukkiri and Ishwarya Hidkimath Basavaraj
- * @version 2.01		2025-12-17 Minor updates for Spring 2026
- * @version 2.02		2026-06-06 Added deleteUser and one-time password methods (Kyle Kim, Team 3)
+ * @version 2.02		2025-12-17 Minor updates for Spring 2026
+ * @version 2.03		2026-06-06 Added deleteUser and one-time password methods (Kyle Kim, Team 3)
  */
 
 /*

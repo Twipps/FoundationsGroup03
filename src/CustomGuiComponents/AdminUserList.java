@@ -1,5 +1,8 @@
 package CustomGuiComponents;
 
+// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
+// navigation flow, layout structure, and functionality
+
 import java.util.List;
 
 import database.Database;
