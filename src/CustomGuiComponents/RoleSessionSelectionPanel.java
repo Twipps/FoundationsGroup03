@@ -1,32 +1,57 @@
 package CustomGuiComponents;
 
 import entityClasses.User;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class RoleSessionSelectionPanel {
-	public static VBox createRoleSessionSelectionPanel(User user) {
-		VBox rBox = new VBox();
+	public static VBox createRoleSessionSelectionPanel(Stage theStage, User user) {
+		VBox rBox = new VBox(10);
 		
-		// some loop from user roles {
-		rBox.getChildren().addAll(
-				
-				);
-		// }
+		Label pickRole = new Label("Choose Session Role");
 		
+		rBox.getChildren().add(pickRole);
+		
+		// not gonna be a loop just add if block for new roles
+		if (user.getAdminRole()) {
+			rBox.getChildren().add(createRoleButton(theStage, "Admin", user));
+		}
+		if (user.getNewInstructor()) {
+			rBox.getChildren().add(createRoleButton(theStage, "Instructor", user));
+		}
+		if (user.getNewStudent()) {
+			rBox.getChildren().add(createRoleButton(theStage, "Student", user));
+		}	
+		
+		rBox.setStyle(
+				"-fx-background-color: rgba(255,255,255,0.5);" +
+				"-fx-padding: 30;" +
+				"-fx-background-radius: 10;"
+			);
+		
+		rBox.setPrefSize(200, 200);
+		rBox.setMaxSize(200, 200);
+		rBox.setAlignment(Pos.CENTER);
+
 		return rBox;
 	}
 	
-	private static Button createRoleButton(int currentRole) {
+	private static Button createRoleButton(Stage theStage, String inRole, User user) {
 		// generates from given user roles
-		Button rButton = new Button();
+		Button rButton = new Button(inRole);
 		
 		rButton.setOnAction((_) -> {
-			// set to launch to one of the home pages depending on the given roles
-			
-			
+			if (inRole.equals("Admin")) {
+				guiAdminHomeNew.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
+			} else if (inRole.equals("Instructor")) {
+				// TODO add doInstructorHome	
+			} else if (inRole.equals("Student")) {
+				// TODO add doStudentHome
 			}
-		);
+		});
 		
 		return rButton;
 	}

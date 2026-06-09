@@ -70,11 +70,31 @@ public class ControllerUserLoginNew {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");
 			}
 		} else if (numberOfRoles > 1) {
-			guiMultipleRoleDispatch.ViewMultipleRoleDispatch.displayMultipleRoleDispatch(theStage, user);
+			guiMultipleRoleDispatchNew.ViewMultipleRoleDispatchNew.displayMRDP(theStage, user);
 		}
 	}
 
 	protected static void doSetupAccount(Stage theStage, String invitationCode) {
-		guiNewAccount.ViewNewAccount.displayNewAccount(theStage, invitationCode);
+	    if (theDatabase.isInvitationExpired(invitationCode)) {
+	        ViewUserLoginNew.alertUsernamePasswordError.setTitle("Invitation Code Expired");
+	        ViewUserLoginNew.alertUsernamePasswordError.setHeaderText("Invitation Code Expired");
+	        ViewUserLoginNew.alertUsernamePasswordError.setContentText(
+	            "This invitation code has expired. Please contact an admin for a new invitation."
+	        );
+	        ViewUserLoginNew.alertUsernamePasswordError.showAndWait();
+	        return;
+	    }
+
+	    String role = theDatabase.getRoleGivenAnInvitationCode(invitationCode);
+
+	    if (role == null || role.length() == 0) {
+	        ViewUserLoginNew.alertUsernamePasswordError.setTitle("Invalid Invitation Code");
+	        ViewUserLoginNew.alertUsernamePasswordError.setHeaderText("The invitation code is not valid.");
+	        ViewUserLoginNew.alertUsernamePasswordError.setContentText("Correct the code and try again.");
+	        ViewUserLoginNew.alertUsernamePasswordError.showAndWait();
+	        return;
+	    }
+
+	    guiNewAccountNew.ViewNewAccountNew.DisplayNewAccountNew(theStage, invitationCode);
 	}
 }

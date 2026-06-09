@@ -48,6 +48,20 @@ public class UserSettingsPanel {
 		Button updatePreferredName = new Button("Update");
 		Button updateEmail = new Button("Update");
 		
+		HBox passwordInput = new HBox(10, newPassword, updatePassword);
+		HBox firstNameInput = new HBox(10, newFirstName, updateFirstName);
+		HBox middleNameInput = new HBox(10, newMiddleName, updateMiddleName);
+		HBox lastNameInput = new HBox(10, newLastName, updateLastName);
+		HBox preferredNameInput = new HBox(10, newPreferredName, updatePreferredName);
+		HBox emailInput = new HBox(10, newEmailAddr, updateEmail);
+
+		passwordInput.setAlignment(Pos.CENTER);
+		firstNameInput.setAlignment(Pos.CENTER);
+		middleNameInput.setAlignment(Pos.CENTER);
+		lastNameInput.setAlignment(Pos.CENTER);
+		preferredNameInput.setAlignment(Pos.CENTER);
+		emailInput.setAlignment(Pos.CENTER);
+		
 		updatePassword.setDisable(true); // ROB WILL NEED TO CHANGE
 
 		updateFirstName.setOnAction((_) -> {
@@ -96,15 +110,22 @@ public class UserSettingsPanel {
 		});
 
 		userNameRow.getChildren().addAll(currentUsername);
-		passwordRow.getChildren().addAll(currentPassword, new HBox(10, newPassword, updatePassword));
-		firstNameRow.getChildren().addAll(currentFirstName, new HBox(10, newFirstName, updateFirstName));
-		middleNameRow.getChildren().addAll(currentMiddleName, new HBox(10, newMiddleName, updateMiddleName));
-		lastNameRow.getChildren().addAll(currentLastName, new HBox(10, newLastName, updateLastName));
-		preferredNameRow.getChildren().addAll(currentPreferredName, new HBox(10, newPreferredName, updatePreferredName));
-		emailRow.getChildren().addAll(currentEmailAddr, new HBox(10, newEmailAddr, updateEmail));
+		passwordRow.getChildren().addAll(currentPassword, passwordInput);
+		firstNameRow.getChildren().addAll(currentFirstName, firstNameInput);
+		middleNameRow.getChildren().addAll(currentMiddleName, middleNameInput);
+		lastNameRow.getChildren().addAll(currentLastName, lastNameInput);
+		preferredNameRow.getChildren().addAll(currentPreferredName, preferredNameInput);
+		emailRow.getChildren().addAll(currentEmailAddr, emailInput);
 		
-		settingsBox.setAlignment(Pos.BASELINE_CENTER);
-		settingsBox.setPadding(new Insets(5));
+		settingsBox.setPrefSize(350, 450);
+		settingsBox.setMaxSize(350, 450);
+		settingsBox.setAlignment(Pos.CENTER);
+
+		settingsBox.setStyle(
+		    "-fx-background-color: rgba(255,255,255,0.5);" +
+		    "-fx-padding: 30;" +
+		    "-fx-background-radius: 10;"
+		);;
 
 		settingsBox.getChildren().addAll(
 			userNameRow,
