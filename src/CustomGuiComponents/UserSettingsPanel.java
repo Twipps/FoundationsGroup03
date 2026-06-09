@@ -1,5 +1,8 @@
 package CustomGuiComponents;
 
+// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
+// navigation flow, layout structure, and functionality
+
 import database.Database;
 import entityClasses.User;
 import javafx.geometry.Insets;

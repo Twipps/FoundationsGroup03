@@ -1,5 +1,8 @@
 package guiUserLoginNew;
 
+// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
+// navigation flow, layout structure, and functionality
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;

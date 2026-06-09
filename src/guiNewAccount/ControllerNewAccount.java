@@ -27,7 +27,7 @@ import utilities.InputValidator;
  * @author Kyle Kim (Team 3) - Updated role strings to Student/Instructor/Staff
  * 
  * @version 1.00		2025-08-17 Initial version
- * @version 1.02		2026-06-06 Updated Role1/Role2 to Student/Instructor (Kyle Kim, Team 3)
+ * @version 1.02		2026-06-06 Updated Role1/Role2 to Student/Instructor/Staff (Kyle Kim, Team 3)
  */
 
 public class ControllerNewAccount {
