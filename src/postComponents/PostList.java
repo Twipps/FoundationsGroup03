@@ -38,5 +38,8 @@ public class PostList {
 		return rPost;
 	}
 	
+	// little archaic, but i'm creating this to create dynamic arrays that change what's on and what's in a post nav button.
+	public ArrayList<Post> getPostList() { return postList; }
+	
 	public void deletePost(int postID) { theDatabase.deletePost(postID); }
 }
