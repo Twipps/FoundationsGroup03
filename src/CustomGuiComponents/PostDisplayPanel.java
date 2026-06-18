@@ -33,13 +33,20 @@ public class PostDisplayPanel {
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
 		Button edit = new Button("Edit");
+		Button delete = new Button("Delete");
 		
 		edit.setOnAction(e -> {
 			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID));
 		});
 		
+		delete.setOnAction(e -> {
+			posts.deletePost(postID);
+			contentPane.setLeft(CustomGuiComponents.PostNavBar.createPostNavBar(theStage, contentPane));
+			contentPane.setCenter(new Label("Select or create a post."));
+		});
+		
 		HBox titleRow = new HBox(10);
-		titleRow.getChildren().addAll(title, spacer, edit);
+		titleRow.getChildren().addAll(title, spacer, edit, delete);
 		
 		Label author = new Label("Posted by: " + post.getAuthor());
 		Label category = new Label("Category: " + post.getCategory());

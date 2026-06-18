@@ -94,7 +94,9 @@ public class PostReplyEditPanel {
 				theDatabase.updatePostCategory(finalPost.getPostID(), inCategory);
 			}
 			
-			contentPane.setCenter(new Label("Post saved."));
+			contentPane.setCenter(PostDisplayPanel.createPostDisplayPanel(
+					theStage, contentPane, postID));
+			contentPane.setLeft(CustomGuiComponents.PostNavBar.createPostNavBar(theStage, contentPane));
 		});
 		
 		rBox.getChildren().addAll(titleStuff, categoryStuff, bodyStuff, errorLabel, post);
