@@ -41,8 +41,8 @@ public class Reply {
 		body = inBody;
 		author = inAuthor;
 
-		createdDate = new Timestamp(System.currentTimeMillis());
-		modifiedDate = new Timestamp(System.currentTimeMillis());
+		createdDate = inCreatedDate;
+		modifiedDate = inModifiedDate;
 	}
 
 	// Modifiers

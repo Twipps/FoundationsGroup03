@@ -43,6 +43,34 @@ public class ReplyList {
 
         return rReply;
     }
+    
+    public ArrayList<Reply> getRepliesForPost(int postID) {
+    	ArrayList<Reply> matches = new ArrayList<>();
+
+    	for (Reply reply : replyList) {
+    		if (reply.getParentPostID() == postID) {
+    			matches.add(reply);
+    		}
+    	}
+
+    	return matches;
+    }
+
+    public void createReply(int parentPostID, String body, String author) {
+
+    	if (body == null || body.trim().isEmpty()) {
+    		throw new IllegalArgumentException(
+    			"Reply body cannot be empty.");
+    	}
+
+    	theDatabase.addReply(
+    		parentPostID,
+    		body.trim(),
+    		author
+    	);
+
+    	refreshList();
+    }
 
     public void deleteReply(int replyID) {
         theDatabase.deleteReply(replyID);
