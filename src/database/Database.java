@@ -1223,10 +1223,10 @@ public class Database {
 	                result.getInt("postID"),
 	                result.getString("title"),
 	                result.getString("body"),
-	                result.getString("author"),
 	                result.getString("category"),
-	                result.getTimestamp("createdAt"),
-	                result.getTimestamp("updatedAt")
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
 	            );
 
 	            posts.add(post);
@@ -1251,10 +1251,10 @@ public class Database {
 	                result.getInt("postID"),
 	                result.getString("title"),
 	                result.getString("body"),
-	                result.getString("author"),
 	                result.getString("category"),
-	                result.getTimestamp("createdAt"),
-	                result.getTimestamp("updatedAt")
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
 	            );
 	        }
 	    } catch (SQLException e) {
@@ -1265,7 +1265,7 @@ public class Database {
 	}
 
 	public void addPost(String title, String body, String author, String category) {
-	    String query = "INSERT INTO Posts (title, body, author, category, createdAt, updatedAt) " +
+	    String query = "INSERT INTO Posts (title, body, author, category, createdDate, modifiedDate) " +
 	                   "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -1292,7 +1292,7 @@ public class Database {
 	}
 
 	public void updatePostTitle(int postID, String newTitle) {
-	    String query = "UPDATE Posts SET title = ?, updatedAt = CURRENT_TIMESTAMP WHERE postID = ?";
+	    String query = "UPDATE Posts SET title = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newTitle);
@@ -1304,7 +1304,7 @@ public class Database {
 	}
 
 	public void updatePostBody(int postID, String newBody) {
-	    String query = "UPDATE Posts SET body = ?, updatedAt = CURRENT_TIMESTAMP WHERE postID = ?";
+	    String query = "UPDATE Posts SET body = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newBody);
@@ -1316,7 +1316,7 @@ public class Database {
 	}
 
 	public void updatePostCategory(int postID, String newCategory) {
-	    String query = "UPDATE Posts SET category = ?, updatedAt = CURRENT_TIMESTAMP WHERE postID = ?";
+	    String query = "UPDATE Posts SET category = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newCategory);
@@ -1328,7 +1328,7 @@ public class Database {
 	}
 
 	public void updatePostModifiedDate(int postID) {
-	    String query = "UPDATE Posts SET updatedAt = CURRENT_TIMESTAMP WHERE postID = ?";
+	    String query = "UPDATE Posts SET modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setInt(1, postID);
@@ -1351,11 +1351,11 @@ public class Database {
 	        while (result.next()) {
 	            Reply reply = new Reply(
 	                result.getInt("replyID"),
-	                result.getInt("postID"),
+	                result.getInt("parentPostID"),
 	                result.getString("body"),
 	                result.getString("author"),
-	                result.getTimestamp("createdAt"),
-	                result.getTimestamp("updatedAt")
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
 	            );
 
 	            replies.add(reply);
@@ -1370,7 +1370,7 @@ public class Database {
 	public ArrayList<Reply> getRepliesForPost(int postID) {
 	    ArrayList<Reply> replies = new ArrayList<>();
 
-	    String query = "SELECT * FROM Replies WHERE postID = ? ORDER BY replyID";
+	    String query = "SELECT * FROM Replies WHERE parentPostID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setInt(1, postID);
@@ -1380,11 +1380,11 @@ public class Database {
 	        while (result.next()) {
 	            Reply reply = new Reply(
 	                result.getInt("replyID"),
-	                result.getInt("postID"),
+	                result.getInt("parentPostID"),
 	                result.getString("body"),
 	                result.getString("author"),
-	                result.getTimestamp("createdAt"),
-	                result.getTimestamp("updatedAt")
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
 	            );
 
 	            replies.add(reply);
@@ -1407,11 +1407,11 @@ public class Database {
 	        if (result.next()) {
 	            return new Reply(
 	                result.getInt("replyID"),
-	                result.getInt("postID"),
+	                result.getInt("parentPostID"),
 	                result.getString("body"),
 	                result.getString("author"),
-	                result.getTimestamp("createdAt"),
-	                result.getTimestamp("updatedAt")
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
 	            );
 	        }
 	    } catch (SQLException e) {
@@ -1422,7 +1422,7 @@ public class Database {
 	}
 
 	public void addReply(int parentPostID, String body, String author) {
-	    String query = "INSERT INTO Replies (postID, body, author, createdAt, updatedAt) " +
+	    String query = "INSERT INTO Replies (parentPostID, body, author, createdDate, modifiedDate) " +
 	                   "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -1448,7 +1448,10 @@ public class Database {
 	}
 
 	public void updateReplyBody(int replyID, String newBody) {
-	    String query = "UPDATE Replies SET body = ?, updatedAt = CURRENT_TIMESTAMP WHERE replyID = ?";
+		String query =
+			    "UPDATE Replies " +
+			    "SET body = ?, modifiedDate = CURRENT_TIMESTAMP " +
+			    "WHERE replyID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newBody);
@@ -1461,7 +1464,10 @@ public class Database {
 	}
 
 	public void updateReplyModifiedDate(int replyID) {
-	    String query = "UPDATE Replies SET updatedAt = CURRENT_TIMESTAMP WHERE replyID = ?";
+		String query =
+			    "UPDATE Replies " +
+			    "SET modifiedDate = CURRENT_TIMESTAMP " +
+			    "WHERE replyID = ?";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setInt(1, replyID);
