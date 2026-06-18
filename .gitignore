@@ -32,3 +32,6 @@ bin/
 hs_err_pid*
 replay_pid*
 .metadata/
+
+# Tester package from hw2
+src/tester/
