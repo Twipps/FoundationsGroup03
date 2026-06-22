@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 import entityClasses.User;
+import postComponents.Post;
+import postComponents.Reply;
 
 /*******
  * <p> Title: Database Class. </p>
@@ -25,7 +27,8 @@ import entityClasses.User;
  * @author Lynn Robert Carter
  * @author Kyle Kim (Team 3) - Added deleteUser, setOneTimePassword, getOneTimePassword,
  *                             clearOneTimePassword methods and oneTimePassword column
- * @author James Suchovic (Team 3) - Added getAllUsers() and getInvitationCodes()
+ * @author James Suchovic (Team 3) - Added getAllUsers(), getInvitationCodes(), reply and post
+ * 									 operations.
  * 
  * @version 2.00		2025-04-29 Updated and expanded from the version produce by Pravalika 
    @version 2.01
@@ -34,6 +37,7 @@ import entityClasses.User;
  * @version 2.03 	    2026-06-06 Added deleteUser and one-time password methods (Kyle Kim, Team 3)
  * @version 2.04        2026-08-06 Added getAllUsers() and getInvitationCodes()  (James Suchovic Team 3)
  * @version 2.04        2026-09-07 ExpiryDate to getInvitationsCodes()  (James Suchovic Team 3)
+ * @version 2.05		2026-06-17 Added posts and replys table with relevant functions 
  */
 
 /*
@@ -134,6 +138,25 @@ public class Database {
 		        + "role VARCHAR(10), "
 		        + "expiryDate TIMESTAMP DEFAULT NULL)";
 		statement.execute(invitationCodesTable);
+		
+		String postTable = "CREATE TABLE IF NOT EXISTS posts ("
+				+ "postID INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "title VARCHAR(255), "
+				+ "body TEXT, "
+				+ "author VARCHAR(255), "
+				+ "category VARCHAR(255), "
+				+ "createdDate TIMESTAMP DEFAULT NULL, "
+				+ "modifiedDate TIMESTAMP DEFAULT NULL)";
+		statement.execute(postTable);
+		
+		String replyTable = "CREATE TABLE IF NOT EXISTS replies ("
+				+ "replyID INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "parentPostID INT, "
+				+ "body TEXT, "   
+				+ "author VARCHAR(255), " 
+				+ "createdDate TIMESTAMP DEFAULT NULL, " 
+				+ "modifiedDate TIMESTAMP DEFAULT NULL)";
+		statement.execute(replyTable);
 	}
 
 
@@ -1184,6 +1207,274 @@ public class Database {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	// POST operations
+	public ArrayList<Post> getAllPosts() {
+	    ArrayList<Post> posts = new ArrayList<>();
+
+	    String query = "SELECT * FROM Posts ORDER BY postID";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        ResultSet result = pstmt.executeQuery();
+
+	        while (result.next()) {
+	            Post post = new Post(
+	                result.getInt("postID"),
+	                result.getString("title"),
+	                result.getString("body"),
+	                result.getString("category"),
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
+	            );
+
+	            posts.add(post);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return posts;
+	}
+
+	public Post getPost(int postID) {
+	    String query = "SELECT * FROM Posts WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, postID);
+
+	        ResultSet result = pstmt.executeQuery();
+
+	        if (result.next()) {
+	            return new Post(
+	                result.getInt("postID"),
+	                result.getString("title"),
+	                result.getString("body"),
+	                result.getString("category"),
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
+	            );
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+
+	public void addPost(String title, String body, String author, String category) {
+	    String query = "INSERT INTO Posts (title, body, author, category, createdDate, modifiedDate) " +
+	                   "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, title);
+	        pstmt.setString(2, body);
+	        pstmt.setString(3, author);
+	        pstmt.setString(4, category);
+
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void deletePost(int postID) {
+	    String query = "DELETE FROM Posts WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updatePostTitle(int postID, String newTitle) {
+	    String query = "UPDATE Posts SET title = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, newTitle);
+	        pstmt.setInt(2, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updatePostBody(int postID, String newBody) {
+	    String query = "UPDATE Posts SET body = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, newBody);
+	        pstmt.setInt(2, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updatePostCategory(int postID, String newCategory) {
+	    String query = "UPDATE Posts SET category = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, newCategory);
+	        pstmt.setInt(2, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updatePostModifiedDate(int postID) {
+	    String query = "UPDATE Posts SET modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	// REPLY operations
+	public ArrayList<Reply> getAllReplies() {
+	    ArrayList<Reply> replies = new ArrayList<>();
+
+	    String query = "SELECT * FROM Replies ORDER BY replyID";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        ResultSet result = pstmt.executeQuery();
+
+	        while (result.next()) {
+	            Reply reply = new Reply(
+	                result.getInt("replyID"),
+	                result.getInt("parentPostID"),
+	                result.getString("body"),
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
+	            );
+
+	            replies.add(reply);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return replies;
+	}
+
+	public ArrayList<Reply> getRepliesForPost(int postID) {
+	    ArrayList<Reply> replies = new ArrayList<>();
+
+	    String query = "SELECT * FROM Replies WHERE parentPostID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, postID);
+
+	        ResultSet result = pstmt.executeQuery();
+
+	        while (result.next()) {
+	            Reply reply = new Reply(
+	                result.getInt("replyID"),
+	                result.getInt("parentPostID"),
+	                result.getString("body"),
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
+	            );
+
+	            replies.add(reply);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return replies;
+	}
+
+	public Reply getReply(int replyID) {
+	    String query = "SELECT * FROM Replies WHERE replyID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, replyID);
+
+	        ResultSet result = pstmt.executeQuery();
+
+	        if (result.next()) {
+	            return new Reply(
+	                result.getInt("replyID"),
+	                result.getInt("parentPostID"),
+	                result.getString("body"),
+	                result.getString("author"),
+	                result.getTimestamp("createdDate"),
+	                result.getTimestamp("modifiedDate")
+	            );
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
+	}
+
+	public void addReply(int parentPostID, String body, String author) {
+	    String query = "INSERT INTO Replies (parentPostID, body, author, createdDate, modifiedDate) " +
+	                   "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, parentPostID);
+	        pstmt.setString(2, body);
+	        pstmt.setString(3, author);
+
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void deleteReply(int replyID) {
+	    String query = "DELETE FROM Replies WHERE replyID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, replyID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updateReplyBody(int replyID, String newBody) {
+		String query =
+			    "UPDATE Replies " +
+			    "SET body = ?, modifiedDate = CURRENT_TIMESTAMP " +
+			    "WHERE replyID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, newBody);
+	        pstmt.setInt(2, replyID);
+
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updateReplyModifiedDate(int replyID) {
+		String query =
+			    "UPDATE Replies " +
+			    "SET modifiedDate = CURRENT_TIMESTAMP " +
+			    "WHERE replyID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, replyID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	/*******

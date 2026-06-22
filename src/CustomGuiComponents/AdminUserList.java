@@ -37,7 +37,6 @@ public class AdminUserList {
     }
 
     public static void refreshUsers(VBox container, BorderPane userModifyPane) {
-
         List<User> allUsers = theDatabase.getAllUsers();
 
         for (int i = 0; i < allUsers.size(); i++) {

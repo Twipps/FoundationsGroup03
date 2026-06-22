@@ -39,8 +39,6 @@ public class ViewInstructorNew {
 		    VBox instructorNavBar = 
 		    		HomeNavBar.createNavigationBar(theStage, user, titleBar, contentPane, theRole);
 
-		    instructorNavBar.prefHeightProperty().bind(root.heightProperty());
-
 		    root.setLeft(instructorNavBar);
 		    root.setCenter(contentPane);
 
