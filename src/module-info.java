@@ -1,4 +1,4 @@
-module FoundationsGroup03 {
+module Foundations26 {
 	requires javafx.controls;
 	requires java.sql;
 	requires javafx.graphics;
