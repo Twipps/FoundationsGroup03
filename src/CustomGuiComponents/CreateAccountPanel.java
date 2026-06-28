@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import database.Database;
 import entityClasses.User;
-import guiNewAccountNew.ModelNewAccount;
+import guiNewAccount.ModelNewAccount;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
