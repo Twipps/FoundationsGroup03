@@ -23,7 +23,7 @@ package userNameRecognizerTestbed;
  * @version 1.01  2024-09-17  Correction to address UNChar coding error, improper error message,
  *                             and improve internal documentation
  * @version 2.00  2025-05-21  Updated FSM to require alphabetic-only first character (A–Z, a–z);
- *                             added '&' to the set of valid separator characters; extended maximum
+ *                             added '&amp;' to the set of valid separator characters; extended maximum
  *                             username length from 16 to 32 characters.  The separator character
  *                             set is now referred to as SepChar in the diagram and code comments.
  */

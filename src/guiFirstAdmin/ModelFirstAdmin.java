@@ -20,9 +20,21 @@ import utilities.InputValidator;
 
 public class ModelFirstAdmin {
 
+	/** The input string currently being processed by the password evaluator. */
 	public static String passwordInput = "";			// The input being processed
+	/** The index within the input where a validation error was found; -1 if none. */
 	public static int passwordIndexofError = -1;		// The index where the error was located
 	
+	/**********
+	 * <p> Method: evaluatePassword() </p>
+	 *
+	 * <p> Description: Evaluates the given password string against the required
+	 * strength criteria using the InputValidator FSM. Returns an empty string if
+	 * all requirements are met, or a descriptive error message otherwise. </p>
+	 *
+	 * @param input the password string to evaluate
+	 * @return empty string if valid, or an error message describing the failure
+	 */
 	public static String evaluatePassword(String input) {
 		// The following are the local variable used to perform the Directed Graph simulation
 		passwordIndexofError = 0;			// Initialize the IndexofError

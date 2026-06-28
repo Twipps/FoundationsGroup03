@@ -109,12 +109,19 @@ public class ModelPassPopUp {
 	 * 
 	 */
 
+	/** The input string currently being processed by the password evaluator. */
 	public static String passwordInput = "";			// The input being processed
+	/** The index within the input where a validation error was found; -1 if none. */
 	public static int passwordIndexofError = -1;		// The index where the error was located
+	/** True if the password contains at least one upper case letter. */
 	public static boolean foundUpperCase = false;
+	/** True if the password contains at least one lower case letter. */
 	public static boolean foundLowerCase = false;
+	/** True if the password contains at least one numeric digit. */
 	public static boolean foundNumericDigit = false;
+	/** True if the password contains at least one special character. */
 	public static boolean foundSpecialChar = false;
+	/** True if the password is at least eight characters long. */
 	public static boolean foundLongEnough = false;
 
 	
@@ -213,4 +220,3 @@ public class ModelPassPopUp {
 		return errMessage + "conditions were not satisfied";
 	}
 }
- 
