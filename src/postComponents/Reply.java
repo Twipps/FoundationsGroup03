@@ -1,4 +1,4 @@
-package entityClasses;
+package postComponents;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

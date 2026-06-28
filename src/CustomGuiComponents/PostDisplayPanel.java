@@ -1,13 +1,13 @@
 package CustomGuiComponents;
 
-import entityClasses.Post;
-import entityClasses.PostList;
-import entityClasses.Reply;
-import entityClasses.ReplyList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import postComponents.Post;
+import postComponents.PostList;
+import postComponents.Reply;
+import postComponents.ReplyList;
 
 public class PostDisplayPanel {
 

@@ -1,4 +1,4 @@
-package entityClasses;
+package postComponents;
 
 import java.util.ArrayList;
 
