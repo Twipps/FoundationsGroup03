@@ -2,6 +2,8 @@ package CustomGuiComponents;
 
 import java.util.ArrayList;
 
+import entityClasses.Post;
+import entityClasses.PostList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -13,8 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import postComponents.Post;
-import postComponents.PostList;
 
 public class PostNavBar {
 	
