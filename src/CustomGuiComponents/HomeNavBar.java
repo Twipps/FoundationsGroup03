@@ -51,6 +51,8 @@ public class HomeNavBar {
         Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
         Button logout = createLogOutButton(theStage);
         
+        Button posts = createNavBarButton(theStage, "Posts");
+        
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Student"); 
         
@@ -84,10 +86,25 @@ public class HomeNavBar {
         home.setStyle(navButtonStyle);
         accountSettings.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
+        posts.setStyle(navButtonStyle);
         
         home.setOnAction(e -> {
             titleBar.setText("Student Home");
             contentPane.setCenter(null);
+            contentPane.setLeft(null); // removing the post nav bar
+        });
+        
+        posts.setOnAction(e->{
+        	titleBar.setText("Posts");
+
+        	VBox postNav = CustomGuiComponents.PostNavBar.createPostNavBar(theStage, contentPane);
+
+        	postNav.setPrefWidth(275);
+        	postNav.setMinWidth(275);
+        	postNav.setMaxWidth(275);
+
+        	contentPane.setLeft(postNav);
+        	contentPane.setCenter(new Label("Select or create a post."));
         });
         
         Region spacer = new Region(); // to space the logout button to the bottom
@@ -98,7 +115,7 @@ public class HomeNavBar {
         studentBar.setAlignment(Pos.TOP_CENTER);
         
         studentBar.setStyle(brandColorNav);
-        studentBar.getChildren().addAll(home, createSeparator(),
+        studentBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(),
         		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
         		accountSettings, createSeparator(), logout);
 
