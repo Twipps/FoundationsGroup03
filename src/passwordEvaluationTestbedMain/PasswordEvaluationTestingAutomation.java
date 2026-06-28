@@ -22,6 +22,15 @@ public class PasswordEvaluationTestingAutomation {
 	 * This mainline displays a header to the console, performs a sequence of
 	 * test cases, and then displays a footer with a summary of the results
 	 */
+	/**********
+	 * <p> Method: main() </p>
+	 *
+	 * <p> Description: Entry point for the semi-automated password evaluation test suite.
+	 * Displays a header, runs a set of predefined test cases, and prints a pass/fail
+	 * summary to the console. </p>
+	 *
+	 * @param args command line arguments (not used)
+	 */
 	public static void main(String[] args) {
 		/************** Test cases semi-automation report header **************/
 		System.out.println("______________________________________");

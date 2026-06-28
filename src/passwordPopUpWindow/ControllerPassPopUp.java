@@ -3,6 +3,19 @@ package passwordPopUpWindow;
 import database.Database;
 import entityClasses.User;
 
+/*******
+ * <p> Title: ControllerPassPopUp Class. </p>
+ *
+ * <p> Description: Controller for the Password Pop-Up window. Handles the button
+ * press action that accepts the validated password, hides the pop-up, updates the
+ * password in the database, and refreshes the user update page. </p>
+ *
+ * <p> Copyright: Lynn Robert Carter © 2025 </p>
+ *
+ * @author Lynn Robert Carter
+ *
+ * @version 2.00  2025-07-31 Rewrite for the Fall 2025 offering of CSE 360
+ */
 public class ControllerPassPopUp {
 	
 	// This enables access to the application's database
