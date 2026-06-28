@@ -1,4 +1,4 @@
-package guiNewAccount;
+package guiNewAccountNew;
 
 import entityClasses.PasswordDTO;
 import utilities.InputValidator;
