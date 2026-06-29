@@ -1,1 +1,0 @@
-moduleSearchIndex = [{"l":"Foundations26"}];updateSearchResults();
