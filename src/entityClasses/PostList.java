@@ -4,23 +4,37 @@ import java.util.ArrayList;
 
 import database.Database;
 
-/****
- * @author James Suchovic (Team 03) - Original implementation
+/**
+ * <p>Title: PostList Class</p>
  *
- * <p>Description: Builds a list of posts</p>
+ * <p>Description: Class that manages a collection of Post objects loaded from the
+ * database. Provides operations for refreshing, retrieving, and deleting posts
+ * used by the student discussion GUI.</p>
+ *
+ * @author James Suchovic (Team 03)
  */
-
 public class PostList {
 	
 	private ArrayList<Post> postList;
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
+	/**
+	 * Creates a PostList by loading all current posts from the database.
+	 */
 	public PostList () { postList = theDatabase.getAllPosts(); }
 	
-	// builds new list
+	/**
+	 * Reloads the post list from the database.
+	 */
 	public void refreshList() { postList = theDatabase.getAllPosts(); }
 	
+	/**
+	 * Searches the current post list for a post with the given post ID.
+	 *
+	 * @param postID the unique ID of the post to find
+	 * @return the matching post, or null if no post with that ID exists
+	 */
 	public Post getPost(int postID) {
 		Post rPost = null;
 		boolean found = false;
@@ -38,8 +52,17 @@ public class PostList {
 		return rPost;
 	}
 	
-	// little archaic, but i'm creating this to create dynamic arrays that change what's on and what's in a post nav button.
+	/**
+	 * Gets the current list of posts.
+	 *
+	 * @return the list of posts currently loaded from the database
+	 */
 	public ArrayList<Post> getPostList() { return postList; }
 	
+	/**
+	 * Deletes the post with the given post ID from the database.
+	 *
+	 * @param postID the unique ID of the post to delete
+	 */
 	public void deletePost(int postID) { theDatabase.deletePost(postID); }
 }

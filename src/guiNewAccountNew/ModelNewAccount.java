@@ -21,9 +21,16 @@ import utilities.InputValidator;
  * @version 1.02    2026-06-08 Improved error messages; fixed == vs .equals() bug (Kyle Kim)
  */
 public class ModelNewAccount {
-
+	/** Stores the current password being evaluated. */
 	public static String passwordInput = "";
+	/** Stores the index of the first invalid character, or -1 if none exists. */
 	public static int passwordIndexofError = -1;
+	
+	/**
+	 * Prevents creation of ModelNewAccount objects.
+	 */
+	private ModelNewAccount() {
+	}
 	
 	/**********
 	 * <p> Method: evaluatePassword(String input) </p>

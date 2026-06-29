@@ -1,8 +1,15 @@
 package guiUserLoginNew;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-// @author Kyle Kim (Team 3) - Added trim to invitation code to prevent whitespace issues
+/**
+ * <p>Title: ControllerUserLoginNew Class</p>
+ *
+ * <p>Description: Controller for the user login page. Handles login validation,
+ * one-time password login, invitation-code account creation, and role-based
+ * navigation after successful authentication.</p>
+ *
+ * @author James Suchovic (Team 03)
+ * @author Kyle Kim (Team 03)
+ */
 
 import database.Database;
 import entityClasses.User;
@@ -11,7 +18,18 @@ import javafx.stage.Stage;
 public class ControllerUserLoginNew {
 
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
+	/**
+	 * Prevents creation of ControllerUserLoginNew objects.
+	 */
+	private ControllerUserLoginNew() {
+	}
 
+	/**
+	 * Displays the user login page.
+	 *
+	 * @param theStage the primary application stage
+	 */
 	public static void doUserLoginNew(Stage theStage) {
 		ViewUserLoginNew.DisplayUserLoginNew(theStage);
 	}

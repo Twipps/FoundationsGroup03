@@ -4,11 +4,26 @@ import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
 import entityClasses.PasswordDTO;
 
+/**
+ * <p>Title: InputValidator Class</p>
+ *
+ * <p>Description: Provides utility methods for validating usernames,
+ * passwords, and text input. Contains finite-state-machine logic used
+ * throughout the application.</p>
+ *
+ * @author Rob Taylor (Team 03)
+ * 
+ */
+
 public final class InputValidator {
 	
+	/**
+	 * Prevents creation of InputValidator objects.
+	 */
 	private InputValidator() {		//There is no need to make an instance of this class
 	}
-		
+	
+	/** Maximum number of characters allowed in user input. */
 	public static final int MAX_INPUT_LENGTH = 32;  			// No input can exceed 32 chars
 	
 	//apply this filter to each input field using:
@@ -16,6 +31,10 @@ public final class InputValidator {
 	//or:
 	//myTextInputDialog.getEditor().setTextFormatter(new TextFormatter<Type>(InputValidator.maxLengthFilter)); //Restrict input to MAX_INPUT_LENGTH
 	//to restrict max length to the universal max input length
+	/**
+	 * TextFormatter filter that prevents text input from exceeding
+	 * {@link #MAX_INPUT_LENGTH} characters.
+	 */
 	public static UnaryOperator<TextFormatter.Change> maxLengthFilter = change -> {
         if (change.getControlNewText().length() > MAX_INPUT_LENGTH) {
             return null; // Reject the change
@@ -25,9 +44,13 @@ public final class InputValidator {
     	
 
     //Fields used by FSM methods
+    /** Current input string being processed. */
 	private static String inputLine = "";				// The input line
+	/** Current character being evaluated. */
 	private static char currentChar;					// The current character in the line
+	/** Current character index. */
 	private static int currentCharNdx;					// The index of the current character
+	/** Indicates whether the FSM is still processing input. */
 	private static boolean running;						// The flag that specifies if the FSM is 
 														// running
     
@@ -105,9 +128,13 @@ public final class InputValidator {
 	
 	
 	//Attributes used by Username FSM
+	/** Indicates whether the current state is a final state. */
 	private static boolean finalState = false;
+	/** Current FSM state. */
 	private static int state = 0;
+	/** Next FSM state. */
 	private static int nextState = -1;
+	/** Current username length. */
 	private static int userNameSize = 0;
 	
 	/**********
@@ -306,6 +333,9 @@ public final class InputValidator {
 		}
 	}
 	
+	/**
+	 * Helper methods used by the username and password finite-state machines.
+	 */
 	private class HelperMethods {
 		/*****
 		 * Private helper: advance currentCharNdx by one.  If the new index is still within the

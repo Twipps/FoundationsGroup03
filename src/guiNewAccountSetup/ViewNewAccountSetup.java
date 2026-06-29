@@ -13,11 +13,28 @@ import entityClasses.User;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 
-// this page will use the VBox from UserSettingsPanel in customgui components
-// to reuse the logic already made.
-
-// this is a shared gui
+/**
+ * <p>Title: ViewNewAccountSetup Class</p>
+ *
+ * <p>Description: Class that builds and displays the new account setup page.
+ * Allows users to complete their account information before continuing to their
+ * assigned home page.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
 public class ViewNewAccountSetup {
+	/**
+	 * Prevents creation of ViewNewAccountSetup objects.
+	 */
+	private ViewNewAccountSetup() {
+	}
+	
+	/**
+	 * Displays the new account setup page.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the user completing account setup
+	 */
     public static void displayNewAccountSetup(Stage theStage, User user) {
         BorderPane root = new BorderPane();
 

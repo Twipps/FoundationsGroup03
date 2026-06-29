@@ -16,14 +16,33 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: PostNavBar Class</p>
+ *
+ * <p>Description: Class that creates the post navigation panel used by the
+ * student discussion GUI. Provides controls for creating posts, searching posts,
+ * filtering posts by category, and selecting posts to display.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
 public class PostNavBar {
 	
 	private static PostList allPosts = new PostList();
 	
-	// needs button to display edit panel
-	// needs text field for seaching
-	// needs vbox of selectable hbox's showing the posts you can navigate
+	/**
+	 * Prevents creation of PostNavBar objects.
+	 */
+	private PostNavBar() {
+	}
 	
+	/**
+	 * Creates the post navigation bar with create, search, filter, and post list controls.
+	 *
+	 * @param theStage the primary application stage
+	 * @param contentPane the main content pane used by the post interface
+	 * @return a VBox containing the post navigation controls
+	 */
 	public static VBox createPostNavBar(Stage theStage, BorderPane contentPane) {
 		VBox rBox = new VBox(10); // contains scroll list and search bar
 		
@@ -73,6 +92,15 @@ public class PostNavBar {
 		return rBox;
 	}
 	
+	/**
+	 * Filters the displayed post list using the provided search text and category.
+	 *
+	 * @param postList the VBox that contains the displayed post rows
+	 * @param search the search text used to match post title, body, or category
+	 * @param category the selected category filter
+	 * @param contentPane the main content pane used by the post interface
+	 * @param theStage the primary application stage
+	 */
 	public static void filterPosts(VBox postList, String search, String category, BorderPane contentPane, Stage theStage) {
 		postList.getChildren().clear();
 		allPosts.refreshList();
@@ -92,6 +120,13 @@ public class PostNavBar {
 		}
 	}
 	
+	/**
+	 * Checks whether a post matches the provided search text.
+	 *
+	 * @param post the post being checked
+	 * @param search the search text
+	 * @return true if the post matches the search text or the search is blank; otherwise false
+	 */
 	public static boolean matchesSearch(Post post, String search) {
 		if (search == null || search.isBlank()) {
 			return true;
@@ -103,6 +138,13 @@ public class PostNavBar {
 				|| safeLower(post.getCategory()).contains(searchLower);
 	}
 	
+	/**
+	 * Checks whether a post matches the selected category.
+	 *
+	 * @param post the post being checked
+	 * @param category the selected category filter
+	 * @return true if the post matches the selected category or the category is All; otherwise false
+	 */
 	public static boolean matchesCategory(Post post, String category) {
 		if (category == null || category.compareTo("All") == 0) {
 			return true;
@@ -111,6 +153,14 @@ public class PostNavBar {
 		return safeLower(post.getCategory()).compareTo(category.toLowerCase()) == 0;
 	}
 	
+	/**
+	 * Creates a selectable row for a post in the navigation list.
+	 *
+	 * @param post the post represented by the row
+	 * @param contentPane the main content pane used by the post interface
+	 * @param theStage the primary application stage
+	 * @return a VBox containing the post title, category, and body sample
+	 */
 	public static VBox createPostRow(Post post, BorderPane contentPane, Stage theStage) {
 		VBox rBox = new VBox(5);
 		rBox.setPadding(new Insets(8));
@@ -137,6 +187,12 @@ public class PostNavBar {
 		return rBox;
 	}
 	
+	/**
+	 * Creates a shortened sample of the post body text.
+	 *
+	 * @param body the full post body text
+	 * @return the original body if short enough, a shortened sample if longer, or an empty string if null
+	 */
 	public static String makeSample(String body) {
 		if (body == null) {
 			return "";
@@ -149,6 +205,12 @@ public class PostNavBar {
 		return body.substring(0, 80) + "...";
 	}
 	
+	/**
+	 * Safely converts a string to lowercase.
+	 *
+	 * @param value the value to convert
+	 * @return the lowercase value, or an empty string if the value is null
+	 */
 	public static String safeLower(String value) {
 		if (value == null) {
 			return "";

@@ -1,8 +1,5 @@
 package CustomGuiComponents;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
 import entityClasses.User;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,7 +7,31 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: RoleSessionSelectionPanel Class</p>
+ *
+ * <p>Description: Class that creates the role selection panel displayed when a
+ * user has multiple available roles. Allows the user to choose which role to
+ * use for the current session.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
+
 public class RoleSessionSelectionPanel {
+	/**
+	 * Prevents creation of RoleSessionSelectionPanel objects
+	 */
+	private RoleSessionSelectionPanel() {
+	}
+	
+	/**
+	 * Creates the role selection panel for users with multiple roles.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the authenticated user whose available roles are displayed
+	 * @return a VBox containing the available role selection buttons
+	 */
 	public static VBox createRoleSessionSelectionPanel(Stage theStage, User user) {
 		VBox rBox = new VBox(10);
 		

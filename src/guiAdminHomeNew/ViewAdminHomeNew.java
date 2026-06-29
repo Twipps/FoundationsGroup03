@@ -1,8 +1,5 @@
 package guiAdminHomeNew;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
 import CustomGuiComponents.AdminUserList;
 import CustomGuiComponents.HomeNavBar;
 import entityClasses.User;
@@ -17,16 +14,43 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: ViewAdminHomeNew Class</p>
+ *
+ * <p>Description: Class that builds and displays the administrator home page.
+ * It sets up the admin navigation bar, user list, invitation controls, and
+ * shared alert components.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
 public class ViewAdminHomeNew {
-	
+	/** The role value used for the administrator session. */
 	protected static final int theRole = 1; // copying how the professor keeps a consistent role
 	
+	/** Text field used to enter an invitation email address. */
 	public static TextField text_InvitationEmailAddress;
+	/** Combo box used to select the invited user's role. */
 	public static ComboBox<String> combobox_SelectRole;
+	/** Label showing the number of outstanding invitations. */
 	public static Label label_NumberOfInvitations = new Label();
+	/** Alert displayed when an invitation email error occurs. */
 	public static Alert alertEmailError = new Alert(Alert.AlertType.ERROR);
+	/** Alert displayed when an invitation is sent successfully. */
 	public static Alert alertEmailSent = new Alert(Alert.AlertType.INFORMATION);
 	
+	/**
+	 * Prevents creation of ViewAdminHomeNew objects.
+	 */
+	private ViewAdminHomeNew() {
+	}
+	
+	/**
+	 * Displays the administrator home page.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the administrator user being displayed
+	 */
 	 public static void displayAdminHomeNew(Stage theStage, User user) {		 	
 		    applicationMain.FoundationsMain.activeHomePage = theRole;
 		 	

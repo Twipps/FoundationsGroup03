@@ -29,6 +29,12 @@ public class AdminUserManagementPanel {
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
+	/**
+	 * Prevents creation of AdminUserManagementPanel objects.
+	 */
+	private AdminUserManagementPanel() {
+	}
+	
 	/**********
 	 * <p> Method: createUserManagementPanel() </p>
 	 * 

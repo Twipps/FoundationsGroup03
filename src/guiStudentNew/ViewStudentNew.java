@@ -1,8 +1,5 @@
 package guiStudentNew;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
 import CustomGuiComponents.HomeNavBar;
 import entityClasses.User;
 import javafx.geometry.Insets;
@@ -13,9 +10,32 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: ViewStudentNew Class</p>
+ *
+ * <p>Description: Class that builds and displays the student home page.
+ * Creates the student interface and navigation bar for users in a student
+ * session.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
 public class ViewStudentNew {
+	/** Role identifier used for student sessions. */
 	protected static final int theRole = 2;
 	
+	/**
+	 * Prevents creation of ViewStudentNew objects.
+	 */
+	private ViewStudentNew() {
+	}
+	
+	/**
+	 * Displays the student home page.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the student user whose session is being displayed
+	 */
 	 public static void displayInstructorHomeNew(Stage theStage, User user) {		 	
 		    applicationMain.FoundationsMain.activeHomePage = theRole;
 		 	

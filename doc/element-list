@@ -1,0 +1,15 @@
+module:Foundations26
+applicationMain
+CustomGuiComponents
+database
+entityClasses
+guiAdminHomeNew
+guiFirstAdminNew
+guiInstructorNew
+guiMultipleRoleDispatchNew
+guiNewAccountNew
+guiNewAccountSetup
+guiStudentNew
+guiUserLoginNew
+userNameRecognizerTestbed
+utilities

@@ -37,6 +37,13 @@ import utilities.InputValidator;
 public class CreateAccountPanel {	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
+	/**
+	 * Prevents creation of CreateAccountPanel objects because this class only
+	 * provides static GUI helper methods.
+	 */
+	private CreateAccountPanel() {
+	}
+	
 	/**********
 	 * <p> Method: buildCreateAccountPanel() </p>
 	 * 

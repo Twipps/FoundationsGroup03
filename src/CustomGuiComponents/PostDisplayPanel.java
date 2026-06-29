@@ -9,8 +9,31 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: PostDisplayPanel Class</p>
+ *
+ * <p>Description: Class that creates the GUI panel used to display a selected
+ * post and its replies. Provides controls for viewing, editing, deleting, and
+ * replying to posts.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
 public class PostDisplayPanel {
+	/**
+	 * Prevents creation of PostDisplayPanel objects because this class only
+	 * provides static GUI helper methods.
+	 */
+	private PostDisplayPanel() {
+	}
 
+	/**
+	 * Creates the display panel for a selected post.
+	 *
+	 * @param theStage the primary application stage
+	 * @param contentPane the main content pane used by the post interface
+	 * @param postID the unique ID of the post to display
+	 * @return a ScrollPane containing the selected post, reply input, and replies
+	 */
 	public static ScrollPane createPostDisplayPanel(Stage theStage, BorderPane contentPane, int postID) {
 		ScrollPane postReplyStack = new ScrollPane();
 		postReplyStack.setFitToWidth(true);
@@ -113,7 +136,14 @@ public class PostDisplayPanel {
 		return rBox;
 	}
 
-	// replystack is really ugly right now but it works PLACEHOLDER
+	/**
+	 * Creates the vertical container that displays all replies for a post.
+	 *
+	 * @param theStage the primary application stage
+	 * @param contentPane the main content pane used by the post interface
+	 * @param postID the unique ID of the post whose replies are displayed
+	 * @return a VBox containing all reply rows for the selected post
+	 */
 	public static VBox replyStack(Stage theStage, BorderPane contentPane, int postID) {
 		VBox rBox = new VBox(10);
 
@@ -126,6 +156,14 @@ public class PostDisplayPanel {
 		return rBox;
 	}
 
+	/**
+	 * Creates a GUI row for a single reply.
+	 *
+	 * @param theStage the primary application stage
+	 * @param contentPane the main content pane used by the post interface
+	 * @param reply the reply to display
+	 * @return a VBox containing the reply information and delete control
+	 */
 	public static VBox createReplyRow(Stage theStage, BorderPane contentPane, Reply reply) {
 		VBox rBox = new VBox(6);
 		rBox.setPadding(new Insets(10));

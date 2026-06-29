@@ -1165,7 +1165,11 @@ public class Database {
 	 */
 	public boolean getCurrentNewRole2() { return currentInstructorRole;};	
 	
-	// Adding for new ui functionalities
+	/**
+	 * Gets all users stored in the database.
+	 *
+	 * @return a list containing all user accounts
+	 */
 	public List<User> getAllUsers() { // admin home relies on this
 	    List<User> users = new ArrayList<>();
 
@@ -1199,6 +1203,11 @@ public class Database {
 	    return users;
 	}
 	
+	/**
+	 * Gets all active invitation codes from the database.
+	 *
+	 * @return a ResultSet containing invitation code, role, email address, and expiry date data, or null if the query fails
+	 */
 	public ResultSet getInvitationCodes() { // admin home relies on
 		String query = "SELECT code, role, emailAddress, expiryDate FROM InvitationCodes";
 		try {
@@ -1209,7 +1218,11 @@ public class Database {
 		return null;
 	}
 	
-	// POST operations
+	/**
+	 * Gets all posts stored in the database.
+	 *
+	 * @return an ArrayList containing all posts
+	 */
 	public ArrayList<Post> getAllPosts() {
 	    ArrayList<Post> posts = new ArrayList<>();
 
@@ -1238,6 +1251,12 @@ public class Database {
 	    return posts;
 	}
 
+	/**
+	 * Gets a single post by its unique post ID.
+	 *
+	 * @param postID the unique ID of the post to retrieve
+	 * @return the matching Post object, or null if no matching post exists
+	 */
 	public Post getPost(int postID) {
 	    String query = "SELECT * FROM Posts WHERE postID = ?";
 
@@ -1264,6 +1283,14 @@ public class Database {
 	    return null;
 	}
 
+	/**
+	 * Adds a new post to the database.
+	 *
+	 * @param title the title of the post
+	 * @param body the body text of the post
+	 * @param author the author who created the post
+	 * @param category the category assigned to the post
+	 */
 	public void addPost(String title, String body, String author, String category) {
 	    String query = "INSERT INTO Posts (title, body, author, category, createdDate, modifiedDate) " +
 	                   "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
@@ -1280,6 +1307,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Deletes a post from the database.
+	 *
+	 * @param postID the unique ID of the post to delete
+	 */
 	public void deletePost(int postID) {
 	    String query = "DELETE FROM Posts WHERE postID = ?";
 
@@ -1291,6 +1323,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the title of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newTitle the new title for the post
+	 */
 	public void updatePostTitle(int postID, String newTitle) {
 	    String query = "UPDATE Posts SET title = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1303,6 +1341,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the body text of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newBody the new body text for the post
+	 */
 	public void updatePostBody(int postID, String newBody) {
 	    String query = "UPDATE Posts SET body = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1315,6 +1359,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the category of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newCategory the new category for the post
+	 */
 	public void updatePostCategory(int postID, String newCategory) {
 	    String query = "UPDATE Posts SET category = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1327,6 +1377,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the modified date of a post to the current timestamp.
+	 *
+	 * @param postID the unique ID of the post to update
+	 */
 	public void updatePostModifiedDate(int postID) {
 	    String query = "UPDATE Posts SET modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1339,7 +1394,11 @@ public class Database {
 	}
 
 
-	// REPLY operations
+	/**
+	 * Gets all replies stored in the database.
+	 *
+	 * @return an ArrayList containing all replies
+	 */
 	public ArrayList<Reply> getAllReplies() {
 	    ArrayList<Reply> replies = new ArrayList<>();
 
@@ -1367,6 +1426,12 @@ public class Database {
 	    return replies;
 	}
 
+	/**
+	 * Gets all replies associated with a specific post.
+	 *
+	 * @param postID the unique ID of the parent post
+	 * @return an ArrayList containing replies for the specified post
+	 */
 	public ArrayList<Reply> getRepliesForPost(int postID) {
 	    ArrayList<Reply> replies = new ArrayList<>();
 
@@ -1396,6 +1461,12 @@ public class Database {
 	    return replies;
 	}
 
+	/**
+	 * Gets a single reply by its unique reply ID.
+	 *
+	 * @param replyID the unique ID of the reply to retrieve
+	 * @return the matching Reply object, or null if no matching reply exists
+	 */
 	public Reply getReply(int replyID) {
 	    String query = "SELECT * FROM Replies WHERE replyID = ?";
 
@@ -1420,7 +1491,14 @@ public class Database {
 
 	    return null;
 	}
-
+	
+	/**
+	 * Adds a new reply to the database.
+	 *
+	 * @param parentPostID the unique ID of the post being replied to
+	 * @param body the body text of the reply
+	 * @param author the author who created the reply
+	 */
 	public void addReply(int parentPostID, String body, String author) {
 	    String query = "INSERT INTO Replies (parentPostID, body, author, createdDate, modifiedDate) " +
 	                   "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
@@ -1436,6 +1514,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Deletes a reply from the database.
+	 *
+	 * @param replyID the unique ID of the reply to delete
+	 */
 	public void deleteReply(int replyID) {
 	    String query = "DELETE FROM Replies WHERE replyID = ?";
 
@@ -1447,6 +1530,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the body text of a reply.
+	 *
+	 * @param replyID the unique ID of the reply to update
+	 * @param newBody the new body text for the reply
+	 */
 	public void updateReplyBody(int replyID, String newBody) {
 		String query =
 			    "UPDATE Replies " +
@@ -1463,6 +1552,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the modified date of a reply to the current timestamp.
+	 *
+	 * @param replyID the unique ID of the reply to update
+	 */
 	public void updateReplyModifiedDate(int replyID) {
 		String query =
 			    "UPDATE Replies " +

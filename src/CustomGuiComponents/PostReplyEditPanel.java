@@ -13,10 +13,34 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: PostReplyEditPanel Class</p>
+ *
+ * <p>Description: Class that creates the post editing panel used by the student
+ * discussion GUI. Provides controls for creating a new post or editing an
+ * existing post.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
 public class PostReplyEditPanel {
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
+	/**
+	 * Prevents creation of PostReplyEditPanel objects.
+	 */
+	private PostReplyEditPanel() {
+	}
+	
+	/**
+	 * Creates the post editing panel.
+	 *
+	 * @param theStage the primary application stage
+	 * @param contentPane the main content pane used by the post interface
+	 * @param postID the ID of the post to edit, or -1 when creating a new post
+	 * @return a VBox containing the post editing controls
+	 */
 	public static VBox createPostEditPanel(Stage theStage, BorderPane contentPane, int postID) {
 		VBox rBox = new VBox(10);
 		

@@ -1,13 +1,5 @@
 package CustomGuiComponents;
 
-/*** 
-*  @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-*  navigation flow, layout structure, and functionality
-*  @author Kyle Kim (Team 3) - real-time password validation
-*  
-*  @version 1.0.1 - James Suchovic (Team 3) -  tweaked and incorporated real-time password validation
-*/
-
 import database.Database;
 import entityClasses.User;
 import guiNewAccountNew.ModelNewAccount;
@@ -20,10 +12,34 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+/**
+ * <p>Title: UserSettingsPanel Class</p>
+ *
+ * <p>Description: Class that creates the user account settings panel. Provides
+ * controls for updating password, name fields, preferred name, and email address
+ * while displaying the current account values.</p>
+ *
+ * @author James Suchovic (Team 03)
+ * @author Kyle Kim (Team 03)
+ * @version 1.0.1
+ */
+
 public class UserSettingsPanel {
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
-	// this will get applied to the center of any user home page
+	/**
+	 * Prevents creation of UserSettingsPanel objects
+	 */
+	private UserSettingsPanel() {
+	}
+	
+	/**
+	 * Creates the user settings panel for the selected user.
+	 *
+	 * @param theStage the primary application stage
+	 * @param theUser the user whose account settings are displayed and updated
+	 * @return a VBox containing the user settings controls
+	 */
 	public static VBox createSettingsPanel(Stage theStage, User theUser) {
 		VBox settingsBox = new VBox(15);
 
