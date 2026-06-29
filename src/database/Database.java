@@ -257,7 +257,7 @@ public class Database {
  *  <p> Method: List getUserList() </p>
  *  
  *  <P> Description: Generate an List of Strings, one for each user in the database,
- *  starting with "<Select User>" at the start of the list. </p>
+ *  starting with "Select User" at the start of the list. </p>
  *  
  *  @return a list of userNames found in the database.
  */
