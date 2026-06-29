@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import entityClasses.Post;
-import entityClasses.Reply;
 import entityClasses.User;
+import postComponents.Post;
+import postComponents.Reply;
 
 /*******
  * <p> Title: Database Class. </p>
