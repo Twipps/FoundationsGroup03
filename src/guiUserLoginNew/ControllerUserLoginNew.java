@@ -111,7 +111,7 @@ public class ControllerUserLoginNew {
 			} else if (user.getNewStudent()) {
 				loginResult = theDatabase.loginRole1(user);
 				if (loginResult) {
-					guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
+					guiStudentNew.ViewStudentNew.displayStudentHomeNew(theStage, user);
 				}
 			} else if (user.getNewInstructor()) {
 				loginResult = theDatabase.loginRole2(user);
