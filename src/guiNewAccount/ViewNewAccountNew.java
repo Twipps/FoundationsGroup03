@@ -32,7 +32,7 @@ public class ViewNewAccountNew {
 	public static void DisplayNewAccountNew(Stage theStage, String inviteCode) {	
 		BorderPane root = new BorderPane();
 		VBox welcomeBox = 
-				CustomGuiComponents.generalUse.CreateAccountPanel.buildCreateAccountPanel(theStage, inviteCode);
+				guiComponents.generalUse.CreateAccountPanel.buildCreateAccountPanel(theStage, inviteCode);
 		
 		root.setStyle("-fx-background-color: #9c3535;");
 		

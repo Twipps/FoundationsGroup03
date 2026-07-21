@@ -36,7 +36,7 @@ public class ViewMultipleRoleDispatchNew {
 	public static void displayMRDP(Stage theStage, User user) {
 		BorderPane root = new BorderPane();
 		VBox selectionBox = 
-				CustomGuiComponents.generalUse.RoleSessionSelectionPanel.
+				guiComponents.generalUse.RoleSessionSelectionPanel.
 				createRoleSessionSelectionPanel(theStage, user);
 		
 		root.setStyle("-fx-background-color: #9c3535;");

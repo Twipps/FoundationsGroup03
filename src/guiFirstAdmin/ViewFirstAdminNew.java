@@ -1,6 +1,6 @@
 package guiFirstAdmin;
 
-import CustomGuiComponents.generalUse.CreateAccountPanel;
+import guiComponents.generalUse.CreateAccountPanel;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -41,7 +41,7 @@ public class ViewFirstAdminNew {
 	public static void DisplayFirstAdminNew(Stage theStage) {	
 		BorderPane root = new BorderPane();
 		VBox welcomeBox =  
-				CustomGuiComponents.generalUse.CreateAccountPanel.buildCreateAccountPanel(theStage, null);
+				guiComponents.generalUse.CreateAccountPanel.buildCreateAccountPanel(theStage, null);
 		
 		root.setStyle("-fx-background-color: #9c3535;");
 		

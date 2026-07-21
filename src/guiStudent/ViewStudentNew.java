@@ -1,8 +1,8 @@
 package guiStudent;
 
-import CustomGuiComponents.generalUse.HomeNavBar;
-import CustomGuiComponents.postFunctionality.PostNavBar;
 import entityClasses.User;
+import guiComponents.generalUse.HomeNavBar;
+import guiComponents.postFunctionality.PostNavBar;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

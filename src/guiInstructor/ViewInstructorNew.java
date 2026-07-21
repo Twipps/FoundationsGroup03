@@ -1,7 +1,7 @@
 package guiInstructor;
 
-import CustomGuiComponents.generalUse.HomeNavBar;
 import entityClasses.User;
+import guiComponents.generalUse.HomeNavBar;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

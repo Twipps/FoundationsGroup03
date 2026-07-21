@@ -1,4 +1,4 @@
-package CustomGuiComponents.generalUse;
+package guiComponents.generalUse;
 
 import entityClasses.User;
 import javafx.geometry.Pos;

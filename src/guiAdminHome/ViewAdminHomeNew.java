@@ -1,8 +1,8 @@
 package guiAdminHome;
 
-import CustomGuiComponents.adminHome.AdminUserList;
-import CustomGuiComponents.generalUse.HomeNavBar;
 import entityClasses.User;
+import guiComponents.adminHome.AdminUserList;
+import guiComponents.generalUse.HomeNavBar;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;

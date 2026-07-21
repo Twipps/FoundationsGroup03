@@ -34,7 +34,7 @@ public class ViewNewAccountSetup {
         BorderPane root = new BorderPane();
 
         VBox userUpdateBox =
-            CustomGuiComponents.generalUse.UserSettingsPanel.createSettingsPanel(theStage, user);
+            guiComponents.generalUse.UserSettingsPanel.createSettingsPanel(theStage, user);
 
         Button goHome = new Button("Continue");
         

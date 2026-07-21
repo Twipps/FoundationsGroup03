@@ -1,4 +1,4 @@
-package CustomGuiComponents.postFunctionality;
+package guiComponents.postFunctionality;
 
 import database.Database;
 import entityClasses.Post;
@@ -168,7 +168,7 @@ public class PostReplyEditPanel {
 			// Refresh the post display and nav bar after save
 			contentPane.setCenter(PostDisplayPanel.createPostDisplayPanel(
 				theStage, contentPane, postID));
-			contentPane.setLeft(CustomGuiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane));
+			contentPane.setLeft(guiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane));
 		});
 
 		rBox.getChildren().addAll(titleStuff, categoryStuff, bodyStuff, errorLabel, post);

@@ -1,4 +1,4 @@
-package CustomGuiComponents.generalUse;
+package guiComponents.generalUse;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
@@ -9,11 +9,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import CustomGuiComponents.adminHome.AdminInvitationList;
-import CustomGuiComponents.adminHome.AdminInvitationManagementPanel;
-import CustomGuiComponents.adminHome.AdminUserList;
 import entityClasses.User;
 import guiAdminHome.ControllerAdminHomeNew;
+import guiComponents.adminHome.AdminInvitationList;
+import guiComponents.adminHome.AdminInvitationManagementPanel;
+import guiComponents.adminHome.AdminUserList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -118,7 +118,7 @@ public class HomeNavBar {
         posts.setOnAction(e->{
         	titleBar.setText("Posts");
 
-        	VBox postNav = CustomGuiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane);
+        	VBox postNav = guiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane);
 
         	postNav.setPrefWidth(275);
         	postNav.setMinWidth(275);
@@ -196,7 +196,7 @@ public class HomeNavBar {
         posts.setOnAction(e->{
         	titleBar.setText("Posts");
 
-        	VBox postNav = CustomGuiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane);
+        	VBox postNav = guiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane);
 
         	postNav.setPrefWidth(275);
         	postNav.setMinWidth(275);

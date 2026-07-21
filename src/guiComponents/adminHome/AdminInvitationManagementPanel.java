@@ -1,4 +1,4 @@
-package CustomGuiComponents.adminHome;
+package guiComponents.adminHome;
 
 import database.Database;
 import guiAdminHome.ControllerAdminHomeNew;

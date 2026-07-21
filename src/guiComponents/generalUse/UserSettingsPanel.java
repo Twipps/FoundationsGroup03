@@ -1,4 +1,4 @@
-package CustomGuiComponents.generalUse;
+package guiComponents.generalUse;
 
 import database.Database;
 import entityClasses.User;

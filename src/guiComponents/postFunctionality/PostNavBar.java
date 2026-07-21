@@ -1,4 +1,4 @@
-package CustomGuiComponents.postFunctionality;
+package guiComponents.postFunctionality;
 
 import java.util.ArrayList;
 
