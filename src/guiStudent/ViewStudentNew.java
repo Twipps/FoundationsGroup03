@@ -73,7 +73,7 @@ public class ViewStudentNew {
 	 * @param theStage the primary application stage
 	 * @param user     the student user whose session is being displayed
 	 */
-	public static void displayInstructorHomeNew(Stage theStage, User user) {
+	public static void displayStudentHomeNew(Stage theStage, User user) {
 		// REQ-03: Set active home page to student role so nav bar renders correctly
 		applicationMain.FoundationsMain.activeHomePage = theRole;
 

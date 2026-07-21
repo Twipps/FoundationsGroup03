@@ -59,7 +59,7 @@ public class ViewNewAccountSetup {
             	guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
             }
             else if (user.getNewStudent()) {
-            	guiStudent.ViewStudentNew.displayInstructorHomeNew(theStage, user);
+            	guiStudent.ViewStudentNew.displayStudentHomeNew(theStage, user);
             }
 
         });

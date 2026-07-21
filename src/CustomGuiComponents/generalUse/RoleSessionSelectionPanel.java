@@ -73,7 +73,7 @@ public class RoleSessionSelectionPanel {
 			} else if (inRole.equals("Instructor")) {
 				guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);	
 			} else if (inRole.equals("Student")) {
-				guiStudent.ViewStudentNew.displayInstructorHomeNew(theStage, user);
+				guiStudent.ViewStudentNew.displayStudentHomeNew(theStage, user);
 			}
 		});
 		
