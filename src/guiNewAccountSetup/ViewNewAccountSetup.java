@@ -34,7 +34,7 @@ public class ViewNewAccountSetup {
         BorderPane root = new BorderPane();
 
         VBox userUpdateBox =
-            CustomGuiComponents.UserSettingsPanel.createSettingsPanel(theStage, user);
+            CustomGuiComponents.generalUse.UserSettingsPanel.createSettingsPanel(theStage, user);
 
         Button goHome = new Button("Continue");
         
@@ -53,13 +53,13 @@ public class ViewNewAccountSetup {
         goHome.setOnAction((_) -> {
 
             if (user.getAdminRole()) {
-                guiAdminHomeNew.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
+                guiAdminHome.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
             }
             else if (user.getNewInstructor()) {
-            	guiInstructorNew.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
+            	guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
             }
             else if (user.getNewStudent()) {
-            	guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
+            	guiStudent.ViewStudentNew.displayInstructorHomeNew(theStage, user);
             }
 
         });
