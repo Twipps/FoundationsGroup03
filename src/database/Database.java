@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import entityClasses.Post;
 import entityClasses.Reply;
+import entityClasses.Request;
+import entityClasses.Thread;
 import entityClasses.User;
 
 /*******
@@ -37,7 +39,9 @@ import entityClasses.User;
  * @version 2.03 	    2026-06-06 Added deleteUser and one-time password methods (Kyle Kim, Team 3)
  * @version 2.04        2026-08-06 Added getAllUsers() and getInvitationCodes()  (James Suchovic Team 3)
  * @version 2.04        2026-09-07 ExpiryDate to getInvitationsCodes()  (James Suchovic Team 3)
- * @version 2.05		2026-06-17 Added posts and replys table with relevant functions 
+ * @version 2.05		2026-06-17 Added posts and replys table with relevant functions
+ * @version 2.06		2026-07-21 Added Thread CRUD, Request CRUD, soft delete, reply count,
+ *                               read/unread tracking, and staff statistics (Kyle Kim, Team 3)
  */
 
 /*
@@ -99,7 +103,7 @@ public class Database {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			// statement.execute("DROP ALL OBJECTS");
+			statement.execute("DROP ALL OBJECTS");
 
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
@@ -140,13 +144,14 @@ public class Database {
 		statement.execute(invitationCodesTable);
 		
 		String postTable = "CREATE TABLE IF NOT EXISTS posts ("
-				+ "postID INT AUTO_INCREMENT PRIMARY KEY, "
-				+ "title VARCHAR(255), "
-				+ "body TEXT, "
-				+ "author VARCHAR(255), "
-				+ "category VARCHAR(255), "
-				+ "createdDate TIMESTAMP DEFAULT NULL, "
-				+ "modifiedDate TIMESTAMP DEFAULT NULL)";
+		        + "postID INT AUTO_INCREMENT PRIMARY KEY, "
+		        + "title VARCHAR(255), "
+		        + "body TEXT, "
+		        + "author VARCHAR(255), "
+		        + "category VARCHAR(255), "
+		        + "createdDate TIMESTAMP DEFAULT NULL, "
+		        + "modifiedDate TIMESTAMP DEFAULT NULL, "
+		        + "isDeleted BOOLEAN DEFAULT FALSE)";
 		statement.execute(postTable);
 		
 		String replyTable = "CREATE TABLE IF NOT EXISTS replies ("
@@ -157,6 +162,45 @@ public class Database {
 				+ "createdDate TIMESTAMP DEFAULT NULL, " 
 				+ "modifiedDate TIMESTAMP DEFAULT NULL)";
 		statement.execute(replyTable);
+
+		// ── Thread table (TP3 — Kyle Kim) ────────────────────────────────────
+		String threadTable = "CREATE TABLE IF NOT EXISTS threads ("
+				+ "threadID INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "title VARCHAR(255) UNIQUE NOT NULL, "
+				+ "body TEXT, "
+				+ "author VARCHAR(255), "
+				+ "category VARCHAR(255), "
+				+ "createdDate TIMESTAMP DEFAULT NULL, "
+				+ "modifiedDate TIMESTAMP DEFAULT NULL, "
+				+ "isDeleted BOOLEAN DEFAULT FALSE)";
+		statement.execute(threadTable);
+
+		// Seed the General thread — must always exist, cannot be deleted or renamed
+		String seedGeneral = "MERGE INTO threads (title, body, author, category, createdDate, isDeleted) "
+				+ "KEY(title) VALUES ('General', 'Default thread for all posts', 'system', "
+				+ "'General', CURRENT_TIMESTAMP, FALSE)";
+		statement.execute(seedGeneral);
+
+		// ── Admin request table (TP3 — Rob Taylor) ───────────────────────────
+		String requestTable = "CREATE TABLE IF NOT EXISTS requests ("
+				+ "requestID INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "title VARCHAR(255) NOT NULL, "
+				+ "author VARCHAR(255), "
+				+ "requestType VARCHAR(100), "
+				+ "status VARCHAR(50) DEFAULT 'OPEN', "
+				+ "timeCreated TIMESTAMP DEFAULT NULL, "
+				+ "lastUpdated TIMESTAMP DEFAULT NULL, "
+				+ "body TEXT)";
+		statement.execute(requestTable);
+
+		// ── Read tracking table (TP3 — Kyle Kim) ─────────────────────────────
+		String readTrackingTable = "CREATE TABLE IF NOT EXISTS postReadStatus ("
+				+ "readStatusID INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "username VARCHAR(255), "
+				+ "postID INT, "
+				+ "readAt TIMESTAMP DEFAULT NULL, "
+				+ "UNIQUE(username, postID))";
+		statement.execute(readTrackingTable);
 	}
 
 
@@ -257,7 +301,7 @@ public class Database {
  *  <p> Method: List getUserList() </p>
  *  
  *  <P> Description: Generate an List of Strings, one for each user in the database,
- *  starting with "<Select User>" at the start of the list. </p>
+ *  starting with "Select User" at the start of the list. </p>
  *  
  *  @return a list of userNames found in the database.
  */
@@ -1165,7 +1209,11 @@ public class Database {
 	 */
 	public boolean getCurrentNewRole2() { return currentInstructorRole;};	
 	
-	// Adding for new ui functionalities
+	/**
+	 * Gets all users stored in the database.
+	 *
+	 * @return a list containing all user accounts
+	 */
 	public List<User> getAllUsers() { // admin home relies on this
 	    List<User> users = new ArrayList<>();
 
@@ -1199,6 +1247,11 @@ public class Database {
 	    return users;
 	}
 	
+	/**
+	 * Gets all active invitation codes from the database.
+	 *
+	 * @return a ResultSet containing invitation code, role, email address, and expiry date data, or null if the query fails
+	 */
 	public ResultSet getInvitationCodes() { // admin home relies on
 		String query = "SELECT code, role, emailAddress, expiryDate FROM InvitationCodes";
 		try {
@@ -1209,11 +1262,15 @@ public class Database {
 		return null;
 	}
 	
-	// POST operations
+	/**
+	 * Gets all posts stored in the database.
+	 *
+	 * @return an ArrayList containing all posts
+	 */
 	public ArrayList<Post> getAllPosts() {
 	    ArrayList<Post> posts = new ArrayList<>();
 
-	    String query = "SELECT * FROM Posts ORDER BY postID";
+	    String query = "SELECT * FROM Posts WHERE isDeleted = FALSE ORDER BY postID";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        ResultSet result = pstmt.executeQuery();
@@ -1238,6 +1295,12 @@ public class Database {
 	    return posts;
 	}
 
+	/**
+	 * Gets a single post by its unique post ID.
+	 *
+	 * @param postID the unique ID of the post to retrieve
+	 * @return the matching Post object, or null if no matching post exists
+	 */
 	public Post getPost(int postID) {
 	    String query = "SELECT * FROM Posts WHERE postID = ?";
 
@@ -1264,6 +1327,14 @@ public class Database {
 	    return null;
 	}
 
+	/**
+	 * Adds a new post to the database.
+	 *
+	 * @param title the title of the post
+	 * @param body the body text of the post
+	 * @param author the author who created the post
+	 * @param category the category assigned to the post
+	 */
 	public void addPost(String title, String body, String author, String category) {
 	    String query = "INSERT INTO Posts (title, body, author, category, createdDate, modifiedDate) " +
 	                   "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
@@ -1280,6 +1351,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Deletes a post from the database.
+	 *
+	 * @param postID the unique ID of the post to delete
+	 */
 	public void deletePost(int postID) {
 	    String query = "DELETE FROM Posts WHERE postID = ?";
 
@@ -1291,6 +1367,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the title of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newTitle the new title for the post
+	 */
 	public void updatePostTitle(int postID, String newTitle) {
 	    String query = "UPDATE Posts SET title = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1303,6 +1385,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the body text of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newBody the new body text for the post
+	 */
 	public void updatePostBody(int postID, String newBody) {
 	    String query = "UPDATE Posts SET body = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1315,6 +1403,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the category of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newCategory the new category for the post
+	 */
 	public void updatePostCategory(int postID, String newCategory) {
 	    String query = "UPDATE Posts SET category = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1327,6 +1421,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the modified date of a post to the current timestamp.
+	 *
+	 * @param postID the unique ID of the post to update
+	 */
 	public void updatePostModifiedDate(int postID) {
 	    String query = "UPDATE Posts SET modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
 
@@ -1339,7 +1438,11 @@ public class Database {
 	}
 
 
-	// REPLY operations
+	/**
+	 * Gets all replies stored in the database.
+	 *
+	 * @return an ArrayList containing all replies
+	 */
 	public ArrayList<Reply> getAllReplies() {
 	    ArrayList<Reply> replies = new ArrayList<>();
 
@@ -1367,6 +1470,12 @@ public class Database {
 	    return replies;
 	}
 
+	/**
+	 * Gets all replies associated with a specific post.
+	 *
+	 * @param postID the unique ID of the parent post
+	 * @return an ArrayList containing replies for the specified post
+	 */
 	public ArrayList<Reply> getRepliesForPost(int postID) {
 	    ArrayList<Reply> replies = new ArrayList<>();
 
@@ -1396,6 +1505,12 @@ public class Database {
 	    return replies;
 	}
 
+	/**
+	 * Gets a single reply by its unique reply ID.
+	 *
+	 * @param replyID the unique ID of the reply to retrieve
+	 * @return the matching Reply object, or null if no matching reply exists
+	 */
 	public Reply getReply(int replyID) {
 	    String query = "SELECT * FROM Replies WHERE replyID = ?";
 
@@ -1420,7 +1535,14 @@ public class Database {
 
 	    return null;
 	}
-
+	
+	/**
+	 * Adds a new reply to the database.
+	 *
+	 * @param parentPostID the unique ID of the post being replied to
+	 * @param body the body text of the reply
+	 * @param author the author who created the reply
+	 */
 	public void addReply(int parentPostID, String body, String author) {
 	    String query = "INSERT INTO Replies (parentPostID, body, author, createdDate, modifiedDate) " +
 	                   "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
@@ -1436,6 +1558,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Deletes a reply from the database.
+	 *
+	 * @param replyID the unique ID of the reply to delete
+	 */
 	public void deleteReply(int replyID) {
 	    String query = "DELETE FROM Replies WHERE replyID = ?";
 
@@ -1447,6 +1574,12 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the body text of a reply.
+	 *
+	 * @param replyID the unique ID of the reply to update
+	 * @param newBody the new body text for the reply
+	 */
 	public void updateReplyBody(int replyID, String newBody) {
 		String query =
 			    "UPDATE Replies " +
@@ -1463,6 +1596,11 @@ public class Database {
 	    }
 	}
 
+	/**
+	 * Updates the modified date of a reply to the current timestamp.
+	 *
+	 * @param replyID the unique ID of the reply to update
+	 */
 	public void updateReplyModifiedDate(int replyID) {
 		String query =
 			    "UPDATE Replies " +
@@ -1477,6 +1615,531 @@ public class Database {
 	    }
 	}
 	
+
+	// =========================================================================
+	// THREAD CRUD METHODS — TP3 (Kyle Kim)
+	// =========================================================================
+
+	/*******
+	 * <p> Method: createThread() </p>
+	 * <p> Description: Creates a new discussion thread. Validates title is not
+	 * null or blank. Returns false if duplicate or validation fails.
+	 * Satisfies STAFF-REQ-01. </p>
+	 * @param title    the display name — must not be null or blank
+	 * @param body     optional description (may be null)
+	 * @param author   the staff member creating the thread
+	 * @param category optional sub-category (may be null)
+	 * @return true if created successfully, false otherwise
+	 */
+	public boolean createThread(String title, String body, String author, String category) {
+		if (title == null || title.isBlank()) {
+			System.err.println("createThread: thread title must not be null or blank.");
+			return false;
+		}
+		String query = "INSERT INTO threads (title, body, author, category, createdDate, isDeleted) "
+				+ "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, FALSE)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, title);
+			pstmt.setString(2, body);
+			pstmt.setString(3, author);
+			pstmt.setString(4, category);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			System.err.println("createThread failed: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/*******
+	 * <p> Method: getAllThreads() </p>
+	 * <p> Description: Returns all non-deleted Thread objects ordered by creation
+	 * date. Always includes General. Used by staffThreadNavBar and PostNavBar.
+	 * Satisfies STAFF-REQ-02. </p>
+	 * @return ArrayList of active Thread objects
+	 */
+	public ArrayList<Thread> getAllThreads() {
+		ArrayList<Thread> threads = new ArrayList<>();
+		String query = "SELECT * FROM threads WHERE isDeleted = FALSE ORDER BY createdDate ASC";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				threads.add(new Thread(
+					rs.getInt("threadID"),
+					rs.getString("title"),
+					rs.getString("body"),
+					rs.getString("author"),
+					rs.getString("category"),
+					rs.getTimestamp("createdDate"),
+					rs.getTimestamp("modifiedDate"),
+					rs.getBoolean("isDeleted")
+				));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return threads;
+	}
+
+	/*******
+	 * <p> Method: getThreadByID() </p>
+	 * <p> Description: Retrieves a single Thread by threadID. Returns null if
+	 * not found or soft-deleted. Satisfies STAFF-REQ-02. </p>
+	 * @param threadID the unique ID of the thread
+	 * @return matching Thread object, or null
+	 */
+	public Thread getThreadByID(int threadID) {
+		String query = "SELECT * FROM threads WHERE threadID = ? AND isDeleted = FALSE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, threadID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return new Thread(
+					rs.getInt("threadID"),
+					rs.getString("title"),
+					rs.getString("body"),
+					rs.getString("author"),
+					rs.getString("category"),
+					rs.getTimestamp("createdDate"),
+					rs.getTimestamp("modifiedDate"),
+					rs.getBoolean("isDeleted")
+				);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/*******
+	 * <p> Method: getThreadByTitle() </p>
+	 * <p> Description: Retrieves a Thread by title. Used for duplicate checking
+	 * and General thread lookup. Returns null if not found. </p>
+	 * @param title the title to search for
+	 * @return matching Thread object, or null
+	 */
+	public Thread getThreadByTitle(String title) {
+		if (title == null || title.isBlank()) return null;
+		String query = "SELECT * FROM threads WHERE title = ? AND isDeleted = FALSE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, title);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return new Thread(
+					rs.getInt("threadID"),
+					rs.getString("title"),
+					rs.getString("body"),
+					rs.getString("author"),
+					rs.getString("category"),
+					rs.getTimestamp("createdDate"),
+					rs.getTimestamp("modifiedDate"),
+					rs.getBoolean("isDeleted")
+				);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/*******
+	 * <p> Method: updateThreadTitle() </p>
+	 * <p> Description: Renames a thread. General cannot be renamed. New title
+	 * must not be null/blank or duplicate. Also updates all posts whose category
+	 * matched the old title. Satisfies STAFF-REQ-03. </p>
+	 * @param threadID the ID of the thread to rename
+	 * @param newTitle the new display name
+	 * @return true if rename succeeded, false otherwise
+	 */
+	public boolean updateThreadTitle(int threadID, String newTitle) {
+		Thread existing = getThreadByID(threadID);
+		if (existing == null) {
+			System.err.println("updateThreadTitle: thread not found.");
+			return false;
+		}
+		if ("General".equals(existing.getTitle())) {
+			System.err.println("updateThreadTitle: General thread cannot be renamed.");
+			return false;
+		}
+		if (newTitle == null || newTitle.isBlank()) {
+			System.err.println("updateThreadTitle: new title must not be null or blank.");
+			return false;
+		}
+		if (getThreadByTitle(newTitle) != null) {
+			System.err.println("updateThreadTitle: a thread named '" + newTitle + "' already exists.");
+			return false;
+		}
+		try {
+			String oldTitle = existing.getTitle();
+			String updatePosts = "UPDATE posts SET category = ? WHERE category = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(updatePosts)) {
+				pstmt.setString(1, newTitle);
+				pstmt.setString(2, oldTitle);
+				pstmt.executeUpdate();
+			}
+			String updateThread = "UPDATE threads SET title = ?, modifiedDate = CURRENT_TIMESTAMP WHERE threadID = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(updateThread)) {
+				pstmt.setString(1, newTitle);
+				pstmt.setInt(2, threadID);
+				int rows = pstmt.executeUpdate();
+				return rows > 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/*******
+	 * <p> Method: deleteThread() </p>
+	 * <p> Description: Soft-deletes a thread (isDeleted=TRUE). All posts in the
+	 * deleted thread are migrated to General first. General cannot be deleted.
+	 * Satisfies STAFF-REQ-04. </p>
+	 * @param threadID the ID of the thread to soft-delete
+	 * @return true if soft-deleted, false if blocked
+	 */
+	public boolean deleteThread(int threadID) {
+		Thread existing = getThreadByID(threadID);
+		if (existing == null) return false;
+		if ("General".equals(existing.getTitle())) {
+			System.err.println("deleteThread: General thread cannot be deleted.");
+			return false;
+		}
+		try {
+			String migratePosts = "UPDATE posts SET category = 'General' WHERE category = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(migratePosts)) {
+				pstmt.setString(1, existing.getTitle());
+				pstmt.executeUpdate();
+			}
+			String softDelete = "UPDATE threads SET isDeleted = TRUE, modifiedDate = CURRENT_TIMESTAMP WHERE threadID = ?";
+			try (PreparedStatement pstmt = connection.prepareStatement(softDelete)) {
+				pstmt.setInt(1, threadID);
+				pstmt.executeUpdate();
+			}
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// =========================================================================
+	// SOFT DELETE FOR POSTS — TP3 (Kyle Kim)
+	// =========================================================================
+
+	/*******
+	 * <p> Method: softDeletePost() </p>
+	 * <p> Description: Marks a post as soft-deleted (isDeleted=TRUE). Replies
+	 * are preserved. PostDisplayPanel shows "This post has been deleted". </p>
+	 * @param postID the unique ID of the post to soft-delete
+	 */
+	public void softDeletePost(int postID) {
+	    System.out.println("softDeletePost called for postID: " + postID);
+	    String query = "UPDATE posts SET isDeleted = TRUE, "
+	            + "modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, postID);
+	        int rows = pstmt.executeUpdate();
+	        System.out.println("Rows updated: " + rows);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	// =========================================================================
+	// REPLY COUNT — TP3 (Kyle Kim)
+	// =========================================================================
+
+	/*******
+	 * <p> Method: getReplyCountForPost() </p>
+	 * <p> Description: Returns number of replies for a post. Used by PostNavBar
+	 * to display reply count on each post row. </p>
+	 * @param postID the unique ID of the post
+	 * @return the number of replies, or 0 if none
+	 */
+	public int getReplyCountForPost(int postID) {
+		String query = "SELECT COUNT(*) AS replyCount FROM replies WHERE parentPostID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, postID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("replyCount");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	// =========================================================================
+	// READ/UNREAD TRACKING — TP3 (Kyle Kim)
+	// =========================================================================
+
+	/*******
+	 * <p> Method: markPostAsRead() </p>
+	 * <p> Description: Records that a user has read a post. Safe to call
+	 * multiple times — MERGE prevents duplicates. </p>
+	 * @param username the student marking the post as read
+	 * @param postID   the post being marked as read
+	 */
+	public void markPostAsRead(String username, int postID) {
+		String query = "MERGE INTO postReadStatus (username, postID, readAt) KEY(username, postID) VALUES (?, ?, CURRENT_TIMESTAMP)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			pstmt.setInt(2, postID);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*******
+	 * <p> Method: hasUserReadPost() </p>
+	 * <p> Description: Returns true if user has read the specified post. </p>
+	 * @param username the username to check
+	 * @param postID   the post ID to check
+	 * @return true if the user has read this post
+	 */
+	public boolean hasUserReadPost(String username, int postID) {
+		String query = "SELECT COUNT(*) AS cnt FROM postReadStatus WHERE username = ? AND postID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			pstmt.setInt(2, postID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt") > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/*******
+	 * <p> Method: getUnreadPostCount() </p>
+	 * <p> Description: Returns number of posts user has not yet read. </p>
+	 * @param username the username to check
+	 * @return the number of unread posts
+	 */
+	public int getUnreadPostCount(String username) {
+		String query = "SELECT COUNT(*) AS cnt FROM posts p WHERE p.isDeleted = FALSE "
+				+ "AND NOT EXISTS (SELECT 1 FROM postReadStatus r WHERE r.username = ? AND r.postID = p.postID)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	// =========================================================================
+	// ADMIN REQUEST CRUD — TP3 (Rob Taylor)
+	// =========================================================================
+
+	/*******
+	 * <p> Method: createRequest() </p>
+	 * <p> Description: Creates a new admin action request. New requests always
+	 * start with status "OPEN". Satisfies STAFF-REQ-07. </p>
+	 * @param title       the request title — must not be null or blank
+	 * @param author      the staff member submitting the request
+	 * @param requestType the type of admin action requested
+	 * @param body        full description of the request
+	 * @return true if created successfully, false otherwise
+	 */
+	public boolean createRequest(String title, String author, String requestType, String body) {
+		if (title == null || title.isBlank()) {
+			System.err.println("createRequest: title must not be null or blank.");
+			return false;
+		}
+		String query = "INSERT INTO requests (title, author, requestType, status, timeCreated, lastUpdated, body) "
+				+ "VALUES (?, ?, ?, 'OPEN', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, title);
+			pstmt.setString(2, author);
+			pstmt.setString(3, requestType);
+			pstmt.setString(4, body);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			System.err.println("createRequest failed: " + e.getMessage());
+			return false;
+		}
+	}
+
+	/*******
+	 * <p> Method: getAllRequests() </p>
+	 * <p> Description: Returns all Request objects ordered by timeCreated
+	 * descending. Satisfies STAFF-REQ-08. </p>
+	 * @return ArrayList of all Request objects
+	 */
+	public ArrayList<Request> getAllRequests() {
+		ArrayList<Request> requests = new ArrayList<>();
+		String query = "SELECT * FROM requests ORDER BY timeCreated DESC";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				requests.add(new Request(
+					rs.getInt("requestID"),
+					rs.getString("title"),
+					rs.getString("author"),
+					rs.getString("requestType"),
+					rs.getString("status"),
+					rs.getTimestamp("timeCreated"),
+					rs.getTimestamp("lastUpdated"),
+					rs.getString("body")
+				));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return requests;
+	}
+
+	/*******
+	 * <p> Method: getRequestByID() </p>
+	 * <p> Description: Retrieves a single Request by requestID. Returns null if not found. </p>
+	 * @param requestID the unique ID of the request
+	 * @return matching Request object, or null
+	 */
+	public Request getRequestByID(int requestID) {
+		String query = "SELECT * FROM requests WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, requestID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return new Request(
+					rs.getInt("requestID"),
+					rs.getString("title"),
+					rs.getString("author"),
+					rs.getString("requestType"),
+					rs.getString("status"),
+					rs.getTimestamp("timeCreated"),
+					rs.getTimestamp("lastUpdated"),
+					rs.getString("body")
+				);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/*******
+	 * <p> Method: updateRequestStatus() </p>
+	 * <p> Description: Updates request status. Valid: "OPEN", "CLOSED", "REOPENED".
+	 * Satisfies STAFF-REQ-09. </p>
+	 * @param requestID the ID of the request to update
+	 * @param newStatus the new status value
+	 * @return true if update succeeded
+	 */
+	public boolean updateRequestStatus(int requestID, String newStatus) {
+		String query = "UPDATE requests SET status = ?, lastUpdated = CURRENT_TIMESTAMP WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, newStatus);
+			pstmt.setInt(2, requestID);
+			int rows = pstmt.executeUpdate();
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/*******
+	 * <p> Method: updateRequestBody() </p>
+	 * <p> Description: Updates the body description of a request. </p>
+	 * @param requestID the ID of the request to update
+	 * @param newBody   the updated description — must not be null or blank
+	 * @return true if update succeeded
+	 */
+	public boolean updateRequestBody(int requestID, String newBody) {
+		if (newBody == null || newBody.isBlank()) {
+			System.err.println("updateRequestBody: body must not be null or blank.");
+			return false;
+		}
+		String query = "UPDATE requests SET body = ?, lastUpdated = CURRENT_TIMESTAMP WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, newBody);
+			pstmt.setInt(2, requestID);
+			int rows = pstmt.executeUpdate();
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	// =========================================================================
+	// STAFF STATISTICS — TP3 (Rob Taylor)
+	// =========================================================================
+
+	/*******
+	 * <p> Method: getPostCountForUser() </p>
+	 * <p> Description: Returns total non-deleted posts by a user.
+	 * Used by staffUserActivityAuditPanel. Satisfies STAFF-REQ-05. </p>
+	 * @param username the student username
+	 * @return number of posts by this user
+	 */
+	public int getPostCountForUser(String username) {
+		String query = "SELECT COUNT(*) AS cnt FROM posts WHERE author = ? AND isDeleted = FALSE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/*******
+	 * <p> Method: getReplyCountForUser() </p>
+	 * <p> Description: Returns total replies by a user.
+	 * Used by staffUserActivityAuditPanel. Satisfies STAFF-REQ-05. </p>
+	 * @param username the student username
+	 * @return number of replies by this user
+	 */
+	public int getReplyCountForUser(String username) {
+		String query = "SELECT COUNT(*) AS cnt FROM replies WHERE author = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/*******
+	 * <p> Method: getPostsForUser() </p>
+	 * <p> Description: Returns all non-deleted posts by a user ordered by
+	 * creation date descending. Used by staffUserActivityAuditPanel.
+	 * Satisfies STAFF-REQ-05. </p>
+	 * @param username the student username
+	 * @return ArrayList of Post objects by this user
+	 */
+	public ArrayList<Post> getPostsForUser(String username) {
+		ArrayList<Post> posts = new ArrayList<>();
+		String query = "SELECT * FROM posts WHERE author = ? AND isDeleted = FALSE ORDER BY createdDate DESC";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				posts.add(new Post(
+					rs.getInt("postID"),
+					rs.getString("title"),
+					rs.getString("body"),
+					rs.getString("category"),
+					rs.getString("author"),
+					rs.getTimestamp("createdDate"),
+					rs.getTimestamp("modifiedDate")
+				));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return posts;
+	}
+
 	/*******
 	 * <p> Debugging method</p>
 	 * 
