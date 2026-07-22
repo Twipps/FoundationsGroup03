@@ -152,6 +152,7 @@ public class HomeNavBar {
         Button logout = createLogOutButton(theStage);
         
         Button posts = createNavBarButton(theStage, "Posts");
+        Button adminRequests = createNavBarButton(theStage, "Admin Requests");
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -186,6 +187,7 @@ public class HomeNavBar {
         home.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
         posts.setStyle(navButtonStyle);
+        adminRequests.setStyle(navButtonStyle);
         
         home.setOnAction(e -> {
             titleBar.setText("Instructor/Staff Home");
@@ -206,6 +208,19 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create a post."));
         });
         
+        adminRequests.setOnAction(e->{
+        	titleBar.setText("Admin Requests");
+        	
+        	VBox requestNav = guiComponents.requestFunctionality.RequestNavBar.createRequestNavBar(theStage, contentPane);
+        	
+        	requestNav.setPrefWidth(275);
+        	requestNav.setMinWidth(275);
+        	requestNav.setMaxWidth(275);
+
+        	contentPane.setLeft(requestNav);
+        	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
+        });
+        
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
                 
@@ -214,7 +229,7 @@ public class HomeNavBar {
         instructorBar.setAlignment(Pos.TOP_CENTER);
         
         instructorBar.setStyle(brandColorNav);
-        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(),
+        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), adminRequests,
         		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
         		accountSettings, createSeparator(), logout);
 

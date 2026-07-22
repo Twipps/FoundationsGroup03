@@ -2066,6 +2066,46 @@ public class Database {
 			return false;
 		}
 	}
+	
+	/*******
+	 * <p> Method: updateRequestTitle() </p>
+	 * <p> Description: Updates the title of a request. </p>
+	 * @param requestID the ID of the request to update
+	 * @param newTitle   the updated title — must not be null or blank
+	 * @return true if update succeeded
+	 */
+	public boolean updateRequestTitle(int requestID, String newTitle) {
+		if (newTitle == null || newTitle.isBlank()) {
+			System.err.println("updateRequestTitle: title must not be null or blank.");
+			return false;
+		}
+		String query = "UPDATE requests SET title = ?, lastUpdated = CURRENT_TIMESTAMP WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, newTitle);
+			pstmt.setInt(2, requestID);
+			int rows = pstmt.executeUpdate();
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Deletes a request from the database.
+	 *
+	 * @param requestID the unique ID of the request to delete
+	 */
+	public void deleteRequest(int requestID) {
+	    String query = "DELETE FROM requests WHERE requestID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, requestID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
 
 	// =========================================================================
 	// STAFF STATISTICS — TP3 (Rob Taylor)
