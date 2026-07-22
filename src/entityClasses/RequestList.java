@@ -71,7 +71,6 @@ public class RequestList {
 		Request rRequest = null;
 		boolean found = false;
 		int i = 0;
-
 		while (!found && i != requestList.size()) {
 			if (requestList.get(i).getRequestID() == requestID) {
 				rRequest = requestList.get(i);
@@ -79,7 +78,6 @@ public class RequestList {
 			}
 			i++;
 		}
-
 		return rRequest; // null if not found
 	}
 

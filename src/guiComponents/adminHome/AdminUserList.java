@@ -1,7 +1,4 @@
-package CustomGuiComponents;
-
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
+package guiComponents.adminHome;
 
 import java.util.List;
 
@@ -14,10 +11,32 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+/**
+ * <p>Title: AdminUserList Class</p>
+ *
+ * <p>Description: Class that builds and refreshes the list of user accounts
+ * displayed in the administrator interface.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
+
 public class AdminUserList {
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
+	/**
+	 * Prevents creation of AdminUserList objects.
+	 */
+	private AdminUserList() {
+	}
 
+	/**
+	 * Creates the scrollable user list displayed in the administrator interface.
+	 *
+	 * @param userModifyPane the main content pane used by the administrator screen
+	 * @return a ScrollPane containing the current list of users
+	 */
     public static ScrollPane createUserList(BorderPane userModifyPane) {
         VBox container = createUserContainer();
         refreshUsers(container, userModifyPane);
@@ -36,6 +55,12 @@ public class AdminUserList {
         return container;
     }
 
+    /**
+     * Reloads the displayed list of users from the database.
+     *
+     * @param container the VBox that will contain the user rows
+     * @param userModifyPane the pane used to display user management controls
+     */
     public static void refreshUsers(VBox container, BorderPane userModifyPane) {
         List<User> allUsers = theDatabase.getAllUsers();
 

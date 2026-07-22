@@ -1,9 +1,4 @@
-package CustomGuiComponents;
-
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
-// @version 1.01 added expiration date to invite list (James Suchovic Team 3) 
+package guiComponents.adminHome;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,10 +11,32 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class AdminInvitationList {
-	
-	private static Database theDatabase = applicationMain.FoundationsMain.database;
+/**
+ * <p>Title: AdminInvitationList Class</p>
+ *
+ * <p>Description: Class that builds and refreshes the invitation code list shown
+ * in the admin user interface.</p>
+ *
+ * @author James Suchovic (Team 03)
+ * @version 1.01 added expiration date to invite list
+ */
 
+public class AdminInvitationList {
+		
+	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
+	/**
+	 * Prevents creation of AdminInvitationList objects.
+	 */
+	private AdminInvitationList() {
+	}
+
+	/**
+	 * Creates the scrollable invitation list panel for the admin interface.
+	 *
+	 * @param contentPane the main content pane used by the admin screen
+	 * @return a ScrollPane containing the current invitation list
+	 */
     public static ScrollPane createInvitationList(BorderPane contentPane) {
         VBox container = createInvitationContainer();
         refreshInvitations(container);
@@ -38,6 +55,11 @@ public class AdminInvitationList {
         return container;
     }
 
+    /**
+     * Reloads the displayed invitation codes from the database.
+     *
+     * @param container the VBox that will contain the invitation rows
+     */
     public static void refreshInvitations(VBox container) {
     	container.getChildren().clear();
     	ResultSet resultSet = theDatabase.getInvitationCodes();

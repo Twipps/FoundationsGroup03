@@ -1,4 +1,4 @@
-package CustomGuiComponents;
+package guiComponents.adminHome;
 
 import database.Database;
 import javafx.geometry.Insets;
@@ -28,6 +28,12 @@ import javafx.scene.layout.VBox;
 public class AdminUserManagementPanel {
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
+	/**
+	 * Prevents creation of AdminUserManagementPanel objects.
+	 */
+	private AdminUserManagementPanel() {
+	}
 	
 	/**********
 	 * <p> Method: createUserManagementPanel() </p>

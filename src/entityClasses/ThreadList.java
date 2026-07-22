@@ -72,7 +72,6 @@ public class ThreadList {
 		Thread rThread = null;
 		boolean found = false;
 		int i = 0;
-
 		while (!found && i != threadList.size()) {
 			if (threadList.get(i).getThreadID() == threadID) {
 				rThread = threadList.get(i);
@@ -80,7 +79,6 @@ public class ThreadList {
 			}
 			i++;
 		}
-
 		return rThread; // null if not found
 	}
 

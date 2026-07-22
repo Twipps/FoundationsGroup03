@@ -1,7 +1,4 @@
-package CustomGuiComponents;
-
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
+package guiComponents.generalUse;
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
@@ -14,23 +11,45 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import entityClasses.User;
 import guiAdminHome.ControllerAdminHomeNew;
-import guiComponents.adminHome.AdminUserList;
 import guiComponents.adminHome.AdminInvitationList;
 import guiComponents.adminHome.AdminInvitationManagementPanel;
-import guiUserUpdate.ViewUserUpdate;
+import guiComponents.adminHome.AdminUserList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 
-// This will be a reusable navigation bar with different 
-// options depending on the role that it is given
+/**
+ * <p>Title: HomeNavBar Class</p>
+ *
+ * <p>Description: Class that creates the navigation bar displayed throughout the
+ * application. Generates role-specific navigation controls for administrators,
+ * students, and instructors.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
 public class HomeNavBar {
 	
 	static String brandColorNav = "-fx-background-color: #9c3535;";
 	
-	// will be different depending on user
+	/**
+	 * Prevents creation of HomeNavBar objects.
+	 */
+	private HomeNavBar() {
+	}
+	
+	/**
+	 * Creates the appropriate navigation bar for the specified user role.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the currently authenticated user
+	 * @param titleBar the page title label
+	 * @param contentPane the main application content pane
+	 * @param theRole the active role for the current session
+	 * @return a VBox containing the navigation bar for the selected role
+	 */
     public static VBox createNavigationBar(Stage theStage, User user,
     		Label titleBar, BorderPane contentPane, final int theRole) {  
     	VBox rNavigation = null;
@@ -68,7 +87,6 @@ public class HomeNavBar {
                 
         userName.setStyle (
         		"-fx-font-size: 15px;" +
-//        		"-fx-font-weight: bold;" +
         		"-fx-text-fill: white;"
         );
         
@@ -100,7 +118,7 @@ public class HomeNavBar {
         posts.setOnAction(e->{
         	titleBar.setText("Posts");
 
-        	VBox postNav = CustomGuiComponents.PostNavBar.createPostNavBar(theStage, contentPane);
+        	VBox postNav = guiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane);
 
         	postNav.setPrefWidth(275);
         	postNav.setMinWidth(275);
@@ -147,7 +165,6 @@ public class HomeNavBar {
                 
         userName.setStyle (
         		"-fx-font-size: 15px;" +
-//        		"-fx-font-weight: bold;" +
         		"-fx-text-fill: white;"
         );
         
@@ -179,7 +196,7 @@ public class HomeNavBar {
         posts.setOnAction(e->{
         	titleBar.setText("Posts");
 
-        	VBox postNav = CustomGuiComponents.PostNavBar.createPostNavBar(theStage, contentPane);
+        	VBox postNav = guiComponents.postFunctionality.PostNavBar.createPostNavBar(theStage, contentPane);
 
         	postNav.setPrefWidth(275);
         	postNav.setMinWidth(275);
@@ -225,7 +242,6 @@ public class HomeNavBar {
                 
         userName.setStyle (
         		"-fx-font-size: 15px;" +
-//        		"-fx-font-weight: bold;" +
         		"-fx-text-fill: white;"
         );
         

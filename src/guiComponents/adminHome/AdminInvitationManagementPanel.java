@@ -1,11 +1,8 @@
-package CustomGuiComponents;
-
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
+package guiComponents.adminHome;
 
 import database.Database;
-import guiAdminHomeNew.ControllerAdminHomeNew;
-import guiAdminHomeNew.ViewAdminHomeNew;
+import guiAdminHome.ControllerAdminHomeNew;
+import guiAdminHome.ViewAdminHomeNew;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,10 +11,33 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+/**
+ * <p>Title: AdminInvitationManagementPanel Class</p>
+ *
+ * <p>Description: Class that creates the invitation management panel for the
+ * administrator interface. Provides controls for selecting a role, entering an
+ * email address, and sending invitation codes.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
+
 public class AdminInvitationManagementPanel {
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
+	/**
+	 * Prevents creation of AdminInvitationManagementPanel.
+	 */
+	private AdminInvitationManagementPanel() {
+	}
+	
+	/**
+	 * Creates the invitation management panel displayed in the administrator
+	 * interface.
+	 *
+	 * @param contentPane the main content pane used by the administrator screen
+	 * @return a VBox containing the invitation management controls
+	 */
 	public static VBox createInvitationManagementPanel(BorderPane contentPane) {
 		VBox rPanel = new VBox(15);	
 		rPanel.setPadding(new Insets(15));

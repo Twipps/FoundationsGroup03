@@ -1,10 +1,9 @@
-package CustomGuiComponents;
+package guiComponents.postFunctionality;
 
 import java.util.ArrayList;
 
 import entityClasses.Post;
 import entityClasses.PostList;
-import guiComponents.postFunctionality.PostReplyEditPanel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -245,24 +244,14 @@ public class PostNavBar {
 		Label title = new Label(post.getTitle()); // REQ-03: show post title
 		Label category = new Label("[" + post.getCategory() + "]"); // REQ-12: show thread
 
-		// TP3: Show reply count on each post row
-		int replyCount = applicationMain.FoundationsMain.database.getReplyCountForPost(post.getPostID());
-		Label replyLabel = new Label(replyCount + (replyCount == 1 ? " reply" : " replies"));
-		replyLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11px;");
-
-		titleRow.getChildren().addAll(title, category, replyLabel);
+		titleRow.getChildren().addAll(title, category);
 
 		// REQ-03: Show a truncated preview of the post body (max 80 chars)
 		Label sampleString = new Label(makeSample(post.getBody()));
 		sampleString.setWrapText(true);
 
 		// REQ-04: Clicking the row loads the full post in PostDisplayPanel
-		// TP3: Mark post as read when clicked
 		rBox.setOnMouseClicked(e -> {
-			applicationMain.FoundationsMain.database.markPostAsRead(
-				applicationMain.FoundationsMain.database.getCurrentUsername(),
-				post.getPostID()
-			);
 			contentPane.setCenter(PostDisplayPanel.createPostDisplayPanel(
 				theStage, contentPane, post.getPostID()
 			));

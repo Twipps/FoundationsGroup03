@@ -1,10 +1,13 @@
 package guiNewAccountSetup;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-
-//firstAdmin or NewAccountNew
-//will hand over the role information.
+/**
+ * <p>Title: ControllerNewAccountSetup Class</p>
+ *
+ * <p>Description: Controller for the new account setup page. Directs newly
+ * created users to complete their account information after registration.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
 
 import entityClasses.User;
 import javafx.stage.Stage;
@@ -14,6 +17,18 @@ import javafx.stage.Stage;
 
 // this is a shared gui
 public class ControllerNewAccountSetup {
+	/**
+	 * Prevents creation of ControllerNewAccountSetup objects.
+	 */
+	private ControllerNewAccountSetup() {
+	}
+	
+	/**
+	 * Displays the new account setup page.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the newly created user completing account setup
+	 */
 	public static void doNewAccountSetup(Stage theStage, User user) {
 		guiNewAccountSetup.ViewNewAccountSetup.displayNewAccountSetup(theStage, user);
 		

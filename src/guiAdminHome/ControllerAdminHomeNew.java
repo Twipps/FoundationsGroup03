@@ -1,4 +1,4 @@
-package guiAdminHomeNew;
+package guiAdminHome;
 
 import database.Database;
 import entityClasses.User;
@@ -22,20 +22,31 @@ public class ControllerAdminHomeNew {
 	
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
 	
-	/**********
-	 * <p> Method: doAdminHomeNew() </p>
-	 * <p> Description: Navigates to the new Admin Home page. </p>
+	/**
+	 * Prevents creation of ControllerAdminHomeNew objects
 	 */
-	public static void doAdminHomeNew(Stage theStage, User user) {
-		guiAdminHomeNew.ViewAdminHomeNew.displayAdminHomeNew(theStage, user);
+	private ControllerAdminHomeNew() {
 	}
 	
-	/**********
+	/**
+	 * <p> Method: doAdminHomeNew() </p>
+	 * <p> Description: Navigates to the new Admin Home page. </p>
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the admin user being displayed
+	 */
+	public static void doAdminHomeNew(Stage theStage, User user) {
+		guiAdminHome.ViewAdminHomeNew.displayAdminHomeNew(theStage, user);
+	}
+	
+	/**
 	 * <p> Method: performLogOut() </p>
 	 * <p> Description: Logs the admin out and returns to the login page. </p>
+	 *
+	 * @param theStage the primary application stage
 	 */
 	public static void performLogOut(Stage theStage) {
-		guiUserLoginNew.ViewUserLoginNew.DisplayUserLoginNew(theStage);
+		guiUserLogin.ViewUserLoginNew.DisplayUserLoginNew(theStage);
 	}
 	
 	/**********

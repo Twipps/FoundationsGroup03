@@ -1,8 +1,15 @@
-package guiUserLoginNew;
+package guiUserLogin;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
-// @author Kyle Kim (Team 3) - Added trim to invitation code to prevent whitespace issues
+/**
+ * <p>Title: ControllerUserLoginNew Class</p>
+ *
+ * <p>Description: Controller for the user login page. Handles login validation,
+ * one-time password login, invitation-code account creation, and role-based
+ * navigation after successful authentication.</p>
+ *
+ * @author James Suchovic (Team 03)
+ * @author Kyle Kim (Team 03)
+ */
 
 import database.Database;
 import entityClasses.User;
@@ -11,7 +18,18 @@ import javafx.stage.Stage;
 public class ControllerUserLoginNew {
 
 	private static Database theDatabase = applicationMain.FoundationsMain.database;
+	
+	/**
+	 * Prevents creation of ControllerUserLoginNew objects.
+	 */
+	private ControllerUserLoginNew() {
+	}
 
+	/**
+	 * Displays the user login page.
+	 *
+	 * @param theStage the primary application stage
+	 */
 	public static void doUserLoginNew(Stage theStage) {
 		ViewUserLoginNew.DisplayUserLoginNew(theStage);
 	}
@@ -88,23 +106,23 @@ public class ControllerUserLoginNew {
 			if (user.getAdminRole()) {
 				loginResult = theDatabase.loginAdmin(user);
 				if (loginResult) {
-					guiAdminHomeNew.ViewAdminHomeNew.displayAdminHomeNew(theStage, user);
+					guiAdminHome.ViewAdminHomeNew.displayAdminHomeNew(theStage, user);
 				}
 			} else if (user.getNewStudent()) {
 				loginResult = theDatabase.loginRole1(user);
 				if (loginResult) {
-					guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
+					guiStudent.ViewStudentNew.displayStudentHomeNew(theStage, user);
 				}
 			} else if (user.getNewInstructor()) {
 				loginResult = theDatabase.loginRole2(user);
 				if (loginResult) {
-					guiInstructorNew.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
+					guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
 				}
 			} else {
 				System.out.println("***** UserLogin goToUserHome request has an invalid role");
 			}
 		} else if (numberOfRoles > 1) {
-			guiMultipleRoleDispatchNew.ViewMultipleRoleDispatchNew.displayMRDP(theStage, user);
+			guiMultipleRoleDispatch.ViewMultipleRoleDispatchNew.displayMRDP(theStage, user);
 		}
 	}
 
@@ -143,6 +161,6 @@ public class ControllerUserLoginNew {
 	        return;
 	    }
 
-	    guiNewAccountNew.ViewNewAccountNew.DisplayNewAccountNew(theStage, invitationCode);
+	    guiNewAccount.ViewNewAccountNew.DisplayNewAccountNew(theStage, invitationCode);
 	}
 }

@@ -101,11 +101,11 @@ public class FoundationsMain extends Application {
 		// and password using a special start you page.
 		if (database.isDatabaseEmpty()) {
 			// This is a first use, so have the user set up the admin account
-			guiFirstAdminNew.ViewFirstAdminNew.DisplayFirstAdminNew(theStage);	
+			guiFirstAdmin.ViewFirstAdminNew.DisplayFirstAdminNew(theStage);	
 		}
 		else
 			// This is not a first use, so set up for the user to log in or create a new account
-			guiUserLoginNew.ViewUserLoginNew.DisplayUserLoginNew(theStage);
+			guiUserLogin.ViewUserLoginNew.DisplayUserLoginNew(theStage);
 		
 		// With the JavaFX pages set up, this thread of the execution comes to an end.
 	}
@@ -118,7 +118,7 @@ public class FoundationsMain extends Application {
 	 * command line parameters, if needed.  This application does not use them.  If they are
 	 * provided, the application will ignore them.</p>
 	 * 
-	 * @param String[] args   The array of command lines parameters.  These are not used.
+	 * @param args   The array of command lines parameters.  These are not used.
 	 */
 	public static void main(String[] args) {
 		launch(args);	// The launch method loads JavaFX and invokes its initialization.  When it

@@ -1,9 +1,4 @@
 package guiNewAccountSetup;
-// firstAdmin or NewAccountNew
-// will hand over the role information.
-
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,16 +8,33 @@ import entityClasses.User;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 
-// this page will use the VBox from UserSettingsPanel in customgui components
-// to reuse the logic already made.
-
-// this is a shared gui
+/**
+ * <p>Title: ViewNewAccountSetup Class</p>
+ *
+ * <p>Description: Class that builds and displays the new account setup page.
+ * Allows users to complete their account information before continuing to their
+ * assigned home page.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
 public class ViewNewAccountSetup {
+	/**
+	 * Prevents creation of ViewNewAccountSetup objects.
+	 */
+	private ViewNewAccountSetup() {
+	}
+	
+	/**
+	 * Displays the new account setup page.
+	 *
+	 * @param theStage the primary application stage
+	 * @param user the user completing account setup
+	 */
     public static void displayNewAccountSetup(Stage theStage, User user) {
         BorderPane root = new BorderPane();
 
         VBox userUpdateBox =
-            CustomGuiComponents.UserSettingsPanel.createSettingsPanel(theStage, user);
+            guiComponents.generalUse.UserSettingsPanel.createSettingsPanel(theStage, user);
 
         Button goHome = new Button("Continue");
         
@@ -41,13 +53,13 @@ public class ViewNewAccountSetup {
         goHome.setOnAction((_) -> {
 
             if (user.getAdminRole()) {
-                guiAdminHomeNew.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
+                guiAdminHome.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
             }
             else if (user.getNewInstructor()) {
-            	guiInstructorNew.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
+            	guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
             }
             else if (user.getNewStudent()) {
-            	guiStudentNew.ViewStudentNew.displayInstructorHomeNew(theStage, user);
+            	guiStudent.ViewStudentNew.displayStudentHomeNew(theStage, user);
             }
 
         });

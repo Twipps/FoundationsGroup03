@@ -1,7 +1,14 @@
-package guiUserLoginNew;
+package guiUserLogin;
 
-// @author James Suchovic (Team 3) - Designed and implemented account setup UI,
-// navigation flow, layout structure, and functionality
+/**
+ * <p>Title: ViewUserLoginNew Class</p>
+ *
+ * <p>Description: Class that builds and displays the user login page.
+ * Provides fields for user authentication and invitation-based account
+ * creation.</p>
+ *
+ * @author James Suchovic (Team 03)
+ */
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,11 +24,26 @@ import javafx.stage.Stage;
 
 public class ViewUserLoginNew {
 
+	/** Username input field. */
 	protected static TextField text_Username = new TextField();
+	/** Password input field. */
 	protected static PasswordField text_Password = new PasswordField();
+	/** Invitation code input field for creating a new account. */
 	protected static TextField text_Invitation = new TextField();
+	/** Alert used to display login and account creation errors. */
 	protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
+	
+	/**
+	 * Prevents creation of ViewUserLoginNew objects.
+	 */
+	private ViewUserLoginNew() {
+	}
 
+	/**
+	 * Displays the user login page.
+	 *
+	 * @param theStage the primary application stage
+	 */
 	public static void DisplayUserLoginNew(Stage theStage) {
 		BorderPane root = new BorderPane();
 		VBox welcomeBox = new VBox(10);

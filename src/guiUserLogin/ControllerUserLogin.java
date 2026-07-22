@@ -142,7 +142,7 @@ public class ControllerUserLogin {
 			if (user.getAdminRole()) {
 				loginResult = theDatabase.loginAdmin(user);
 				if (loginResult) {
-					guiAdminHomeNew.ViewAdminHomeNew.displayAdminHomeNew(theStage, user); // CHANGE HERE TO HOP
+					guiAdminHome.ViewAdminHomeNew.displayAdminHomeNew(theStage, user); 
 				}
 			} else if (user.getNewStudent()) {
 				loginResult = theDatabase.loginRole1(user);

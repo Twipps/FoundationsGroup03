@@ -1,10 +1,9 @@
-package CustomGuiComponents;
+package guiComponents.postFunctionality;
 
 import entityClasses.Post;
 import entityClasses.PostList;
 import entityClasses.Reply;
 import entityClasses.ReplyList;
-import guiComponents.postFunctionality.PostReplyEditPanel;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -44,7 +43,6 @@ import javafx.stage.Stage;
  * @version 1.00  2026-06-XX  Initial implementation
  * @version 1.01  2026-06-28  Added "Are you sure?" delete confirmation (REQ-07),
  *                             User Story mappings, and inline REQ comments
- * @version 1.02  2026-07-21  Changed hard delete to soft delete (TP3 — Kyle Kim)
  */
 public class PostDisplayPanel {
 
@@ -76,28 +74,19 @@ public class PostDisplayPanel {
 		postStack.setPadding(new Insets(20));
 
 		// REQ-04: Load the post from the database by ID
-		// TP3: Use direct DB call so we can retrieve soft-deleted posts too
 		PostList posts = new PostList();
-		Post post = applicationMain.FoundationsMain.database.getPost(postID);
-		// Check if post is soft-deleted by comparing: DB returns it but PostList (isDeleted=FALSE filter) doesn't
-		boolean isDeleted = (post != null) && (posts.getPost(postID) == null);
+		Post post = posts.getPost(postID);
 
-		// Handle case where post truly doesn't exist at all
+		// Handle case where post is not found (e.g. deleted by another session)
 		if (post == null) {
 			postStack.getChildren().add(new Label("Post not found."));
 			postReplyStack.setContent(postStack);
 			return postReplyStack;
 		}
 
-		// REQ-04: Display post title — show deleted indicator for soft-deleted posts
-		Label title;
-		if (isDeleted) {
-			title = new Label("[This post has been deleted]");
-			title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: gray;");
-		} else {
-			title = new Label(post.getTitle());
-			title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
-		}
+		// REQ-04: Display post title prominently
+		Label title = new Label(post.getTitle());
+		title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
 		Region spacer = new Region();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -108,40 +97,26 @@ public class PostDisplayPanel {
 		// REQ-07: Delete button shows "Are you sure?" confirmation before deleting
 		Button delete = new Button("Delete");
 
-		// Hide edit and delete buttons for soft-deleted posts
-		if (isDeleted) {
-			edit.setVisible(false);
-			delete.setVisible(false);
-		}
-
 		edit.setOnAction(e -> {
 			// REQ-05: Navigate to edit panel for this post
 			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID));
 		});
 
 		delete.setOnAction(e -> {
-			// REQ-07: Show confirmation dialog before deleting
+			// REQ-07: Show confirmation dialog before deleting — user story explicitly requires this
 			Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
 			confirmation.setTitle("Delete Post");
 			confirmation.setHeaderText("Are you sure?");
-			// TP3: Soft delete — replies remain visible after deletion
-			confirmation.setContentText(
-				"This will mark the post as deleted. " +
-				"Any replies will remain visible with a deleted message.");
+			confirmation.setContentText("This will permanently delete the post and its replies.");
 
 			confirmation.showAndWait().ifPresent(response -> {
 				if (response == ButtonType.OK) {
-					// TP3: Soft delete sets isDeleted=TRUE — preserves replies per user story
-					applicationMain.FoundationsMain.database.softDeletePost(postID);
-					// Refresh nav bar — soft-deleted post no longer appears in list
+					// REQ-07: Student confirmed deletion — remove post from database
+					posts.deletePost(postID);
 					contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
-					// Show deleted confirmation message
-					javafx.scene.control.Label deletedMsg = new javafx.scene.control.Label(
-						"Post has been deleted. Replies are preserved in the database.");
-					deletedMsg.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-padding: 20;");
-					contentPane.setCenter(deletedMsg);
+					contentPane.setCenter(new Label("Select or create a post."));
 				}
-				// If student clicked Cancel, do nothing
+				// If student clicked Cancel, do nothing — post is preserved
 			});
 		});
 
@@ -153,22 +128,14 @@ public class PostDisplayPanel {
 		Label category = new Label("Category: " + post.getCategory()); // REQ-12: shows thread
 		Label createdDate = new Label("Created: " + post.getCreatedDate());
 
-		// REQ-04: Display post body — or deleted message for soft-deleted posts
-		Label body;
-		if (isDeleted) {
-			body = new Label("The original post has been deleted.");
-			body.setStyle("-fx-text-fill: gray; -fx-font-style: italic;");
-		} else {
-			body = new Label(post.getBody());
-		}
+		// REQ-04: Display full post body
+		Label body = new Label(post.getBody());
 		body.setWrapText(true);
 
 		postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
 
-		// REQ-02: Only show reply input if post is not soft-deleted
-		if (!isDeleted) {
-			postStack.getChildren().add(createReplyInput(contentPane, postID, theStage));
-		}
+		// REQ-02: Add the reply input area below the post
+		postStack.getChildren().add(createReplyInput(contentPane, postID, theStage));
 
 		Label repliesTitle = new Label("Replies");
 		repliesTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
