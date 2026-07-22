@@ -84,14 +84,14 @@ public class RequestNavBar {
 		searchBar.setPromptText("Search requests...");
 
 		// Category filter dropdown — "All" shows all categories
-		ComboBox<String> categoryFilter = new ComboBox<String>();
-		categoryFilter.getItems().add("All");
-		categoryFilter.getItems().add("Open");
-		categoryFilter.getItems().add("ReOpened");
-		categoryFilter.getItems().add("Closed");
-		categoryFilter.setValue("All"); // default to showing all categories
+		ComboBox<String> statusFilter = new ComboBox<String>();
+		statusFilter.getItems().add("All");
+		statusFilter.getItems().add("Open");
+		statusFilter.getItems().add("ReOpened");
+		statusFilter.getItems().add("Closed");
+		statusFilter.setValue("All"); // default to showing all categories
 
-		searchStuff.getChildren().addAll(searchBar, categoryFilter);
+		searchStuff.getChildren().addAll(searchBar, statusFilter);
 
 		VBox requestList = new VBox(8);
 		ScrollPane scrollPane = new ScrollPane(requestList);
@@ -99,16 +99,16 @@ public class RequestNavBar {
 		VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
 		// Initial population of the request list with no filter applied
-		filterRequests(requestList, searchBar.getText(), categoryFilter.getValue(), contentPane, theStage);
+		filterRequests(requestList, searchBar.getText(), statusFilter.getValue(), contentPane, theStage);
 
 		// Update request list in real time as the user types in the search bar
 		searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
-			filterRequests(requestList, newValue, categoryFilter.getValue(), contentPane, theStage);
+			filterRequests(requestList, newValue, statusFilter.getValue(), contentPane, theStage);
 		});
 
 		// REQ-12: Update request list when the category filter selection changes
-		categoryFilter.setOnAction(e -> {
-			filterRequests(requestList, searchBar.getText(), categoryFilter.getValue(), contentPane, theStage);
+		statusFilter.setOnAction(e -> {
+			filterRequests(requestList, searchBar.getText(), statusFilter.getValue(), contentPane, theStage);
 		});
 
 		rBox.getChildren().addAll(createRequest, searchStuff, scrollPane);
@@ -222,9 +222,9 @@ public class RequestNavBar {
 
 		HBox titleRow = new HBox(10);
 		Label title = new Label(request.getTitle());
-		Label category = new Label("[" + request.getStatus() + "]");
+		Label status = new Label("[" + request.getStatus() + "]");
 
-		titleRow.getChildren().addAll(title, category);
+		titleRow.getChildren().addAll(title, status);
 
 		// Show a truncated preview of the request body (max 80 chars)
 		Label sampleString = new Label(makeSample(request.getBody()));

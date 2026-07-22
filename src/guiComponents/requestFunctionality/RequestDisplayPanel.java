@@ -113,14 +113,15 @@ public class RequestDisplayPanel {
 
 		// Display request metadata — author, category, creation date
 		Label author = new Label("Requested by: " + request.getAuthor());
-		Label category = new Label("Status: " + request.getStatus());
+		Label status = new Label("Status: " + request.getStatus());
+		Label category = new Label("Request Type: " + request.getRequestType());
 		Label createdDate = new Label("Created: " + request.getTimeCreated());
 
 		// Display full request body
 		Label body = new Label(request.getBody());
 		body.setWrapText(true);
 
-		requestStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
+		requestStack.getChildren().addAll(titleRow, author, status, category, createdDate, body, new Separator());
 
 		requestScrollPane.setContent(requestStack);
 		return requestScrollPane;

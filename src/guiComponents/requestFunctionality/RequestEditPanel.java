@@ -139,7 +139,7 @@ public class RequestEditPanel {
 				// Edit mode — update the existing request's fields
 				theDatabase.updateRequestTitle(finalRequest.getRequestID(), inTitle);
 				theDatabase.updateRequestBody(finalRequest.getRequestID(), inBody);
-				theDatabase.updateRequestStatus(finalRequest.getRequestID(), inType);
+				theDatabase.updateRequestType(finalRequest.getRequestID(), inType);
 			}
 
 			// Refresh the request display and nav bar after save

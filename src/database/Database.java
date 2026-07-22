@@ -2091,6 +2091,30 @@ public class Database {
 		}
 	}
 	
+	/*******
+	 * <p> Method: updateRequestType() </p>
+	 * <p> Description: Updates the type of a request. </p>
+	 * @param requestID the ID of the request to update
+	 * @param newTitle   the updated type — must not be null or blank
+	 * @return true if update succeeded
+	 */
+	public boolean updateRequestType(int requestID, String newType) {
+		if (newType == null || newType.isBlank()) {
+			System.err.println("updateRequestTitle: title must not be null or blank.");
+			return false;
+		}
+		String query = "UPDATE requests SET requestType = ?, lastUpdated = CURRENT_TIMESTAMP WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, newType);
+			pstmt.setInt(2, requestID);
+			int rows = pstmt.executeUpdate();
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	/**
 	 * Deletes a request from the database.
 	 *
