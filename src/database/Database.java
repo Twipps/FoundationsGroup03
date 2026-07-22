@@ -2139,6 +2139,45 @@ public class Database {
 		}
 		return posts;
 	}
+	
+	/*******
+	 * <p> Method: getPostsForThread() </p>
+	 * <p> Description: Returns all non-deleted posts belonging to the given
+	 * thread, looked up by threadID. Internally resolves the thread's title
+	 * and filters posts by that category string, since posts are currently
+	 * associated to threads via the category field rather than a threadID
+	 * foreign key. Returns an empty list if the thread does not exist. </p>
+	 * @param threadID the unique ID of the thread
+	 * @return ArrayList of Post objects belonging to this thread
+	 */
+	public ArrayList<Post> getPostsForThread(int threadID) {
+		ArrayList<Post> posts = new ArrayList<>();
+
+		Thread thread = getThreadByID(threadID);
+		if (thread == null) {
+			return posts;
+		}
+
+		String query = "SELECT * FROM posts WHERE category = ? AND isDeleted = FALSE ORDER BY createdDate DESC";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, thread.getTitle());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				posts.add(new Post(
+					rs.getInt("postID"),
+					rs.getString("title"),
+					rs.getString("body"),
+					rs.getString("category"),
+					rs.getString("author"),
+					rs.getTimestamp("createdDate"),
+					rs.getTimestamp("modifiedDate")
+				));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return posts;
+	}
 
 	/*******
 	 * <p> Debugging method</p>
