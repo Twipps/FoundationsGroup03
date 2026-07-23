@@ -109,4 +109,27 @@ public class RequestList {
 		}
 		return openList;
 	}
+	
+	/*******
+	 * <p> Method: deleteRequest() </p>
+	 *
+	 * <p> Description: Deletes the request with the given requestID from the database
+	 * by delegating to Database.deleteRequest(). Called by RequestDisplayPanel after
+	 * the Staff confirms the "Are you sure?" delete confirmation dialog. </p>
+	 *
+	 * <p> Satisfies REQ-07: "As a student, I can delete one of my posts.
+	 * When I do this, I receive an 'Are you sure?' question before the delete
+	 * takes place." — the confirmation dialog is shown by PostDisplayPanel
+	 * before this method is called. </p>
+	 *
+	 * @param requestID the unique ID of the request to delete
+	 */
+	public void deleteRequest(int requestID) {
+		// REQ-07: Delete the request from the database — confirmation already shown by RequestDisplayPanel
+		theDatabase.deleteRequest(requestID);
+	}
+	
+	public void updateStatus(int requestID, String newStatus) {
+		theDatabase.updateRequestStatus(requestID, newStatus);
+	}
 }

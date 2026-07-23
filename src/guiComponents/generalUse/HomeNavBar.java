@@ -152,6 +152,7 @@ public class HomeNavBar {
         Button logout = createLogOutButton(theStage);
         
         Button posts = createNavBarButton(theStage, "Posts");
+        Button adminRequests = createNavBarButton(theStage, "Admin Requests");
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -186,6 +187,7 @@ public class HomeNavBar {
         home.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
         posts.setStyle(navButtonStyle);
+        adminRequests.setStyle(navButtonStyle);
         
         home.setOnAction(e -> {
             titleBar.setText("Instructor/Staff Home");
@@ -206,6 +208,19 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create a post."));
         });
         
+        adminRequests.setOnAction(e->{
+        	titleBar.setText("Admin Requests");
+        	
+        	VBox requestNav = guiComponents.requestFunctionality.RequestNavBar.createRequestNavBar(theStage, contentPane);
+        	
+        	requestNav.setPrefWidth(275);
+        	requestNav.setMinWidth(275);
+        	requestNav.setMaxWidth(275);
+
+        	contentPane.setLeft(requestNav);
+        	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
+        });
+        
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
                 
@@ -214,7 +229,7 @@ public class HomeNavBar {
         instructorBar.setAlignment(Pos.TOP_CENTER);
         
         instructorBar.setStyle(brandColorNav);
-        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(),
+        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), adminRequests,
         		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
         		accountSettings, createSeparator(), logout);
 
@@ -227,6 +242,7 @@ public class HomeNavBar {
         
         Button users = createNavBarButton(theStage,"Users");
         Button invitations = createNavBarButton(theStage, "Invitations");
+        Button adminRequests = createNavBarButton(theStage, "Admin Requests");
         Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
         Button logout = createLogOutButton(theStage);
         
@@ -261,6 +277,7 @@ public class HomeNavBar {
 
         users.setStyle(navButtonStyle);
         invitations.setStyle(navButtonStyle);
+        adminRequests.setStyle(navButtonStyle);
         accountSettings.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
         
@@ -270,13 +287,30 @@ public class HomeNavBar {
         // refreshes per button push
         users.setOnAction(e -> {
             titleBar.setText("Users");
+            contentPane.setLeft(null);
             contentPane.setCenter(AdminUserList.createUserList(contentPane));
+            contentPane.setRight(null);
         });
 
         invitations.setOnAction(e -> {
             titleBar.setText("Invitations");
+            contentPane.setLeft(null);
             contentPane.setCenter(AdminInvitationList.createInvitationList(contentPane));
             contentPane.setRight(AdminInvitationManagementPanel.createInvitationManagementPanel(contentPane)); //doesn't need info from the invitation list so it can be done here
+        });
+        
+        adminRequests.setOnAction(e->{
+        	titleBar.setText("Admin Requests");
+        	
+        	VBox requestNav = guiComponents.requestFunctionality.RequestNavBar.createRequestNavBar(theStage, contentPane);
+        	
+        	requestNav.setPrefWidth(275);
+        	requestNav.setMinWidth(275);
+        	requestNav.setMaxWidth(275);
+
+        	contentPane.setLeft(requestNav);
+        	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
+        	contentPane.setRight(null);
         });
         
         adminBar.setSpacing(10);
@@ -284,7 +318,7 @@ public class HomeNavBar {
         adminBar.setAlignment(Pos.TOP_CENTER);
         
         adminBar.setStyle(brandColorNav);
-        adminBar.getChildren().addAll(users, createSeparator(), invitations, createSeparator(),
+        adminBar.getChildren().addAll(users, createSeparator(), invitations, createSeparator(), adminRequests, 
         		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), accountSettings, createSeparator(), logout);
         
         return adminBar;

@@ -1,5 +1,6 @@
 package guiComponents.generalUse;
 
+import applicationMain.FoundationsMain;
 import entityClasses.User;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -69,10 +70,13 @@ public class RoleSessionSelectionPanel {
 		
 		rButton.setOnAction((_) -> {
 			if (inRole.equals("Admin")) {
+				FoundationsMain.activeRole = 1;
 				guiAdminHome.ControllerAdminHomeNew.doAdminHomeNew(theStage, user);
 			} else if (inRole.equals("Instructor")) {
+				FoundationsMain.activeRole = 3;
 				guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);	
 			} else if (inRole.equals("Student")) {
+				FoundationsMain.activeRole = 2;
 				guiStudent.ViewStudentNew.displayStudentHomeNew(theStage, user);
 			}
 		});

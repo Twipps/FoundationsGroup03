@@ -103,7 +103,7 @@ public class Database {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			statement.execute("DROP ALL OBJECTS");
+			// statement.execute("DROP ALL OBJECTS");
 
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
@@ -2065,6 +2065,70 @@ public class Database {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	/*******
+	 * <p> Method: updateRequestTitle() </p>
+	 * <p> Description: Updates the title of a request. </p>
+	 * @param requestID the ID of the request to update
+	 * @param newTitle   the updated title — must not be null or blank
+	 * @return true if update succeeded
+	 */
+	public boolean updateRequestTitle(int requestID, String newTitle) {
+		if (newTitle == null || newTitle.isBlank()) {
+			System.err.println("updateRequestTitle: title must not be null or blank.");
+			return false;
+		}
+		String query = "UPDATE requests SET title = ?, lastUpdated = CURRENT_TIMESTAMP WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, newTitle);
+			pstmt.setInt(2, requestID);
+			int rows = pstmt.executeUpdate();
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/*******
+	 * <p> Method: updateRequestType() </p>
+	 * <p> Description: Updates the type of a request. </p>
+	 * @param requestID the ID of the request to update
+	 * @param newTitle   the updated type — must not be null or blank
+	 * @return true if update succeeded
+	 */
+	public boolean updateRequestType(int requestID, String newType) {
+		if (newType == null || newType.isBlank()) {
+			System.err.println("updateRequestTitle: title must not be null or blank.");
+			return false;
+		}
+		String query = "UPDATE requests SET requestType = ?, lastUpdated = CURRENT_TIMESTAMP WHERE requestID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, newType);
+			pstmt.setInt(2, requestID);
+			int rows = pstmt.executeUpdate();
+			return rows > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Deletes a request from the database.
+	 *
+	 * @param requestID the unique ID of the request to delete
+	 */
+	public void deleteRequest(int requestID) {
+	    String query = "DELETE FROM requests WHERE requestID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, requestID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	// =========================================================================

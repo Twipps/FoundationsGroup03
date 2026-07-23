@@ -1,5 +1,7 @@
 package guiUserLogin;
 
+import applicationMain.FoundationsMain;
+
 /**
  * <p>Title: ControllerUserLoginNew Class</p>
  *
@@ -106,16 +108,19 @@ public class ControllerUserLoginNew {
 			if (user.getAdminRole()) {
 				loginResult = theDatabase.loginAdmin(user);
 				if (loginResult) {
+					FoundationsMain.activeRole = 1;
 					guiAdminHome.ViewAdminHomeNew.displayAdminHomeNew(theStage, user);
 				}
 			} else if (user.getNewStudent()) {
 				loginResult = theDatabase.loginRole1(user);
 				if (loginResult) {
+					FoundationsMain.activeRole = 2;
 					guiStudent.ViewStudentNew.displayStudentHomeNew(theStage, user);
 				}
 			} else if (user.getNewInstructor()) {
 				loginResult = theDatabase.loginRole2(user);
 				if (loginResult) {
+					FoundationsMain.activeRole = 3;
 					guiInstructor.ViewInstructorNew.displayInstructorHomeNew(theStage, user);
 				}
 			} else {
