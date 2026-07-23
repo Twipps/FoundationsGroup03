@@ -149,6 +149,7 @@ public class Database {
 		        + "body TEXT, "
 		        + "author VARCHAR(255), "
 		        + "category VARCHAR(255), "
+		        + "staffFeedback TEXT, "
 		        + "createdDate TIMESTAMP DEFAULT NULL, "
 		        + "modifiedDate TIMESTAMP DEFAULT NULL, "
 		        + "isDeleted BOOLEAN DEFAULT FALSE)";
@@ -1283,7 +1284,8 @@ public class Database {
 	                result.getString("category"),
 	                result.getString("author"),
 	                result.getTimestamp("createdDate"),
-	                result.getTimestamp("modifiedDate")
+	                result.getTimestamp("modifiedDate"),
+	                result.getString("staffFeedback")
 	            );
 
 	            posts.add(post);
@@ -1317,7 +1319,8 @@ public class Database {
 	                result.getString("category"),
 	                result.getString("author"),
 	                result.getTimestamp("createdDate"),
-	                result.getTimestamp("modifiedDate")
+	                result.getTimestamp("modifiedDate"),
+	                result.getString("staffFeedback")
 	            );
 	        }
 	    } catch (SQLException e) {
@@ -1414,6 +1417,24 @@ public class Database {
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newCategory);
+	        pstmt.setInt(2, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	/**
+	 * Updates the private staff feedback of a post.
+	 *
+	 * @param postID the unique ID of the post to update
+	 * @param newStaffFeedback the new staff feedback for the post
+	 */
+	public void updateStaffFeedback(int postID, String newStaffFeedback) {
+	    String query = "UPDATE Posts SET staffFeedback = ? WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, newStaffFeedback);
 	        pstmt.setInt(2, postID);
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
@@ -2195,7 +2216,8 @@ public class Database {
 					rs.getString("category"),
 					rs.getString("author"),
 					rs.getTimestamp("createdDate"),
-					rs.getTimestamp("modifiedDate")
+					rs.getTimestamp("modifiedDate"),
+					rs.getString("staffFeedback")
 				));
 			}
 		} catch (SQLException e) {
@@ -2234,7 +2256,8 @@ public class Database {
 					rs.getString("category"),
 					rs.getString("author"),
 					rs.getTimestamp("createdDate"),
-					rs.getTimestamp("modifiedDate")
+					rs.getTimestamp("modifiedDate"),
+					rs.getString("staffFeedback")
 				));
 			}
 		} catch (SQLException e) {
