@@ -2,6 +2,7 @@ package guiComponents.requestFunctionality;
 
 import java.util.ArrayList;
 
+import applicationMain.FoundationsMain;
 import entityClasses.Request;
 import entityClasses.RequestList;
 import javafx.geometry.Insets;
@@ -71,6 +72,10 @@ public class RequestNavBar {
 
 		Button createRequest = new Button("Create Request");
 		createRequest.setMaxWidth(Double.MAX_VALUE);
+		
+		if (FoundationsMain.activeRole == 1) {		// Role 1 indicates admin
+			createRequest.setDisable(true);			// Admin can only update the status of a request
+		}
 
 		createRequest.setOnAction(e -> {
 			// requestID=-1 signals RequestEditPanel to create a new request

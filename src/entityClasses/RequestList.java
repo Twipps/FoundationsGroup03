@@ -128,4 +128,8 @@ public class RequestList {
 		// REQ-07: Delete the request from the database — confirmation already shown by RequestDisplayPanel
 		theDatabase.deleteRequest(requestID);
 	}
+	
+	public void updateStatus(int requestID, String newStatus) {
+		theDatabase.updateRequestStatus(requestID, newStatus);
+	}
 }

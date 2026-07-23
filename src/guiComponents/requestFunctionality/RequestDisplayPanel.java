@@ -1,5 +1,6 @@
 package guiComponents.requestFunctionality;
 
+import applicationMain.FoundationsMain;
 import entityClasses.Request;
 import entityClasses.RequestList;
 import javafx.geometry.Insets;
@@ -61,7 +62,7 @@ public class RequestDisplayPanel {
 		VBox requestStack = new VBox(15);
 		requestStack.setPadding(new Insets(20));
 
-		// REQ-04: Load the request from the database by ID
+		// Load the request from the database by ID
 		RequestList requests = new RequestList();
 		Request request = requests.getRequest(requestID);
 
@@ -75,6 +76,16 @@ public class RequestDisplayPanel {
 		// Display request title prominently
 		Label title = new Label(request.getTitle());
 		title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+		
+		String status = request.getStatus();
+		Label statusLabel = new Label("Status: " + status);
+		
+		// If the request is Open or Re-Opened, admins have the option to close the request
+		// If the request is Closed, admins or Staff can Re-Open the request
+		String statusOption = status.compareTo("OPEN") == 0 ||
+			status.compareTo("REOPENED") == 0 ?
+			"Close Request" :
+			"Re-Open Request";
 
 		Region spacer = new Region();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -84,6 +95,8 @@ public class RequestDisplayPanel {
 
 		// Delete button shows "Are you sure?" confirmation before deleting
 		Button delete = new Button("Delete");
+		
+		Button statusButton = new Button(statusOption);
 
 		edit.setOnAction(e -> {
 			// Navigate to edit panel for this request
@@ -107,13 +120,45 @@ public class RequestDisplayPanel {
 				// If student clicked Cancel, do nothing — request is preserved
 			});
 		});
+		
+		statusButton.setOnAction(e -> {
+			// Show confirmation dialog before closing or reopening
+			Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+			confirmation.setTitle(statusButton.getText());
+			confirmation.setHeaderText("Are you sure?");
+			confirmation.setContentText("Confirm that you want to " + statusButton.getText());
+
+			confirmation.showAndWait().ifPresent(response -> {
+				if (response == ButtonType.OK) {
+					if (statusOption.equals("Close Request")) {
+						requests.updateStatus(requestID, "CLOSED");
+						statusLabel.setText("Closed");
+						statusButton.setText("Re-Open Request");
+					} else if (statusOption.equals("Re-Open Request")) {
+						requests.updateStatus(requestID, "REOPENED");
+						statusLabel.setText("Re-Opened");
+						statusButton.setText("Close Request");
+					}
+					
+					contentPane.setLeft(RequestNavBar.createRequestNavBar(theStage, contentPane));
+					contentPane.setCenter(new Label("Select or create a request."));
+				}
+				// If student clicked Cancel, do nothing — request is preserved
+			});
+		});
+		
+		// Instructors cannot close requests, only reopen old ones or create new ones.
+		if (FoundationsMain.activeRole == 3) {
+			if (statusOption.equals("Close Request")) {
+				statusButton.setDisable(true);
+			}
+		}
 
 		HBox titleRow = new HBox(10);
-		titleRow.getChildren().addAll(title, spacer, edit, delete);
+		titleRow.getChildren().addAll(title, spacer, edit, delete, statusButton);
 
 		// Display request metadata — author, category, creation date
 		Label author = new Label("Requested by: " + request.getAuthor());
-		Label status = new Label("Status: " + request.getStatus());
 		Label category = new Label("Request Type: " + request.getRequestType());
 		Label createdDate = new Label("Created: " + request.getTimeCreated());
 
@@ -121,7 +166,7 @@ public class RequestDisplayPanel {
 		Label body = new Label(request.getBody());
 		body.setWrapText(true);
 
-		requestStack.getChildren().addAll(titleRow, author, status, category, createdDate, body, new Separator());
+		requestStack.getChildren().addAll(titleRow, author, statusLabel, category, createdDate, body, new Separator());
 
 		requestScrollPane.setContent(requestStack);
 		return requestScrollPane;
