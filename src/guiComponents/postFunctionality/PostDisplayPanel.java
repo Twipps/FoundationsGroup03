@@ -75,19 +75,28 @@ public class PostDisplayPanel {
 		postStack.setPadding(new Insets(20));
 
 		// REQ-04: Load the post from the database by ID
+		// TP3: Use direct DB call so we can retrieve soft-deleted posts too
 		PostList posts = new PostList();
-		Post post = posts.getPost(postID);
+		Post post = applicationMain.FoundationsMain.database.getPost(postID);
+		// Check if post is soft-deleted by comparing: DB returns it but PostList (isDeleted=FALSE filter) doesn't
+		boolean isDeleted = (post != null) && (posts.getPost(postID) == null);
 
-		// Handle case where post is not found (e.g. deleted by another session)
+		// Handle case where post truly doesn't exist at all
 		if (post == null) {
 			postStack.getChildren().add(new Label("Post not found."));
 			postReplyStack.setContent(postStack);
 			return postReplyStack;
 		}
 
-		// REQ-04: Display post title prominently
-		Label title = new Label(post.getTitle());
-		title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+		// REQ-04: Display post title — show deleted indicator for soft-deleted posts
+		Label title;
+		if (isDeleted) {
+			title = new Label("[This post has been deleted]");
+			title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: gray;");
+		} else {
+			title = new Label(post.getTitle());
+			title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+		}
 
 		Region spacer = new Region();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -103,21 +112,41 @@ public class PostDisplayPanel {
 			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID));
 		});
 
+		// Hide edit and delete buttons for soft-deleted posts
+		if (isDeleted) {
+			edit.setVisible(false);
+			delete.setVisible(false);
+		}
+
 		delete.setOnAction(e -> {
-			// REQ-07: Show confirmation dialog before deleting — user story explicitly requires this
+			// REQ-07: Show confirmation dialog before deleting
 			Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
 			confirmation.setTitle("Delete Post");
 			confirmation.setHeaderText("Are you sure?");
-			confirmation.setContentText("This will permanently delete the post and its replies.");
+			// TP3: Soft delete — replies remain visible after deletion
+			// Using a wrapped Label instead of setContentText() so the dialog
+			// sizes correctly and the full message is visible (not cut off)
+			Label confirmationText = new Label(
+				"This will mark the post as deleted. " +
+				"Any replies will remain visible with a deleted message.");
+			confirmationText.setWrapText(true);
+			confirmationText.setMaxWidth(320);
+			confirmation.getDialogPane().setContent(confirmationText);
+			confirmation.getDialogPane().setMinWidth(400);
 
 			confirmation.showAndWait().ifPresent(response -> {
 				if (response == ButtonType.OK) {
-					// REQ-07: Student confirmed deletion — remove post from database
-					posts.deletePost(postID);
+					// TP3: Soft delete sets isDeleted=TRUE — preserves replies per user story
+					applicationMain.FoundationsMain.database.softDeletePost(postID);
+					// Refresh nav bar — soft-deleted post no longer appears in list
 					contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
-					contentPane.setCenter(new Label("Select or create a post."));
+					// Show deleted confirmation message
+					Label deletedMsg = new Label(
+						"Post has been deleted. Replies are preserved in the database.");
+					deletedMsg.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-padding: 20;");
+					contentPane.setCenter(deletedMsg);
 				}
-				// If student clicked Cancel, do nothing — post is preserved
+				// If student clicked Cancel, do nothing
 			});
 		});
 
@@ -129,8 +158,14 @@ public class PostDisplayPanel {
 		Label category = new Label("Category: " + post.getCategory()); // REQ-12: shows thread
 		Label createdDate = new Label("Created: " + post.getCreatedDate());
 
-		// REQ-04: Display full post body
-		Label body = new Label(post.getBody());
+		// REQ-04: Display post body — or deleted message for soft-deleted posts
+		Label body;
+		if (isDeleted) {
+			body = new Label("The original post has been deleted.");
+			body.setStyle("-fx-text-fill: gray; -fx-font-style: italic;");
+		} else {
+			body = new Label(post.getBody());
+		}
 		body.setWrapText(true);
 		
 		// Private Staff Feedback UI
@@ -180,8 +215,10 @@ public class PostDisplayPanel {
 			postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
 		}
 
-		// REQ-02: Add the reply input area below the post
-		postStack.getChildren().add(createReplyInput(contentPane, postID, theStage));
+		// REQ-02: Only show reply input if post is not soft-deleted
+		if (!isDeleted) {
+			postStack.getChildren().add(createReplyInput(contentPane, postID, theStage));
+		}
 
 		Label repliesTitle = new Label("Replies");
 		repliesTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
@@ -233,6 +270,9 @@ public class PostDisplayPanel {
 			contentPane.setCenter(
 				PostDisplayPanel.createPostDisplayPanel(theStage, contentPane, postID)
 			);
+
+			// TP3: Also refresh the left nav bar so the reply count updates immediately
+			contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
 		});
 
 		rBox.getChildren().addAll(replyLabel, replyInput, error, submit);
@@ -302,6 +342,9 @@ public class PostDisplayPanel {
 			ReplyList replies = new ReplyList();
 			replies.deleteReply(reply.getReplyID());
 			contentPane.setCenter(createPostDisplayPanel(theStage, contentPane, reply.getParentPostID()));
+
+			// TP3: Also refresh the left nav bar so the reply count updates immediately
+			contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
 		});
 
 		HBox topRow = new HBox(10);
