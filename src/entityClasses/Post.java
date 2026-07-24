@@ -122,6 +122,11 @@ public class Post {
 	 *  Updated automatically by updateTitle(), updateBody(), updateCategory().
 	 *  Supports TP3 staff audit trail for reviewing edited posts. */
 	private Timestamp modifiedDate;
+	
+	/** String containing feedback about this post private to Staff
+	 *  Empty String if there has been no feedback
+	 */
+	private String staffFeedback;
 
 	// ── Constructors ──────────────────────────────────────────────────────────
 
@@ -150,6 +155,7 @@ public class Post {
 		category = inCategory; // REQ-12: category supports thread filtering
 		createdDate = new Timestamp(System.currentTimeMillis()); // record creation time
 		modifiedDate = null; // null indicates the post has never been modified
+		staffFeedback = "";
 	}
 
 	/*******
@@ -171,7 +177,7 @@ public class Post {
 	 *                       or null if the post has never been modified
 	 */
 	public Post(int inPostID, String inTitle, String inBody, String inCategory,
-			String inAuthor, Timestamp inCreatedDate, Timestamp inModifiedDate) {
+			String inAuthor, Timestamp inCreatedDate, Timestamp inModifiedDate, String inStaffFeedback) {
 		// REQ-03, REQ-04: Reconstruct a post from the database for display
 		postID = inPostID;
 		title = inTitle;
@@ -180,6 +186,7 @@ public class Post {
 		author = inAuthor;
 		createdDate = inCreatedDate;
 		modifiedDate = inModifiedDate;
+		staffFeedback = inStaffFeedback;
 	}
 
 	// ── Update Methods (CRUD — Update) ────────────────────────────────────────
@@ -313,4 +320,27 @@ public class Post {
 	 * @return the post modification timestamp, or null if never modified
 	 */
 	public Timestamp getModifiedDate() { return modifiedDate; }
+	
+	/*******
+	 * <p> Method: getStaffFeedback() </p>
+	 *
+	 * <p> Description: Returns any feedback that Staff has given
+	 * for this post </p>
+	 *
+	 * @return the feedback, or an empty string if none has been given
+	 */
+	public String getStaffFeedback() { return staffFeedback; }
+	
+	/*******
+	 * <p> Method: updateStaffFeedback() </p>
+	 *
+	 * <p> Description: Updates the staff feedback in memory.
+	 * This change is persisted to the database by calling
+	 * Database.updateStaffFeedback() after this method. </p>
+	 *
+	 * @param inStaffFeedback the new feedback text
+	 */
+	public void updateStaffFeedback(String inStaffFeedback) {
+		staffFeedback = inStaffFeedback;
+	}
 }

@@ -1,5 +1,6 @@
 package guiComponents.postFunctionality;
 
+import applicationMain.FoundationsMain;
 import entityClasses.Post;
 import entityClasses.PostList;
 import entityClasses.Reply;
@@ -166,8 +167,53 @@ public class PostDisplayPanel {
 			body = new Label(post.getBody());
 		}
 		body.setWrapText(true);
+		
+		// Private Staff Feedback UI
+		VBox staffFeedbackVBox = new VBox(10);
+		HBox staffFeedbackHBox = new HBox(10);
+		Label feedbackLabel = new Label("Private Staff Feedback: ");
+		Button staffFeedbackSaveButton = new Button("Save");
+		Button staffFeedbackEditButton = new Button("Edit");
+		TextArea feedbackTextArea = new TextArea(post.getStaffFeedback());
+		Label feedbackBodyLabel = new Label(post.getStaffFeedback());
+		
+		// Allow UI to reclaim space when element is hidden
+		staffFeedbackSaveButton.managedProperty().bind(staffFeedbackSaveButton.visibleProperty());
+		staffFeedbackEditButton.managedProperty().bind(staffFeedbackEditButton.visibleProperty());
+		feedbackBodyLabel.managedProperty().bind(feedbackBodyLabel.visibleProperty());
+		feedbackTextArea.managedProperty().bind(feedbackTextArea.visibleProperty());
+		
+		// Only show these when editing
+		feedbackTextArea.setVisible(false);
+		staffFeedbackSaveButton.setVisible(false);
+		
+		staffFeedbackHBox.getChildren().addAll(feedbackLabel, spacer, staffFeedbackEditButton, staffFeedbackSaveButton);
+		staffFeedbackVBox.getChildren().addAll(staffFeedbackHBox, feedbackBodyLabel, feedbackTextArea);
+		
+		staffFeedbackSaveButton.setOnAction(e -> {
+			FoundationsMain.database.updateStaffFeedback(postID, feedbackTextArea.getText());
+			post.updateStaffFeedback(feedbackTextArea.getText());
+			staffFeedbackSaveButton.setVisible(false);
+			staffFeedbackEditButton.setVisible(true);
+			feedbackBodyLabel.setVisible(true);
+			feedbackBodyLabel.setText(feedbackTextArea.getText());
+			feedbackTextArea.setVisible(false);
+		});
+		
+		staffFeedbackEditButton.setOnAction(e -> {
+			staffFeedbackSaveButton.setVisible(true);
+			staffFeedbackEditButton.setVisible(false);
+			feedbackBodyLabel.setVisible(false);
+			feedbackTextArea.setVisible(true);
+		});
 
-		postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
+		// only Admin can see the private staff feedback box
+		if (FoundationsMain.activeRole == 3) {		// 3 is the role for Admin
+			postStack.getChildren().addAll(titleRow, author, category, createdDate, body,
+					new Separator(), staffFeedbackVBox, new Separator());
+		} else {
+			postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
+		}
 
 		// REQ-02: Only show reply input if post is not soft-deleted
 		if (!isDeleted) {
