@@ -84,6 +84,11 @@ public class PostNavBar {
 			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, -1));
 		});
 
+		// TP3: Manual refresh button — reloads the post list (and reply counts)
+		// from the database without requiring navigation away and back
+		Button refresh = new Button("Refresh");
+		refresh.setMaxWidth(Double.MAX_VALUE);
+
 		HBox searchStuff = new HBox(10);
 
 		// REQ-13: Search bar filters post list in real time by keyword
@@ -109,6 +114,11 @@ public class PostNavBar {
 		// Initial population of the post list with no filter applied
 		filterPosts(postList, searchBar.getText(), categoryFilter.getValue(), contentPane, theStage);
 
+		// TP3: Refresh button re-runs the current search/filter to reload from the database
+		refresh.setOnAction(e -> {
+			filterPosts(postList, searchBar.getText(), categoryFilter.getValue(), contentPane, theStage);
+		});
+
 		// REQ-13: Update post list in real time as the user types in the search bar
 		searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
 			filterPosts(postList, newValue, categoryFilter.getValue(), contentPane, theStage);
@@ -119,7 +129,7 @@ public class PostNavBar {
 			filterPosts(postList, searchBar.getText(), categoryFilter.getValue(), contentPane, theStage);
 		});
 
-		rBox.getChildren().addAll(createPost, searchStuff, scrollPane);
+		rBox.getChildren().addAll(createPost, refresh, searchStuff, scrollPane);
 		rBox.setMaxWidth(300);
 
 		return rBox;
@@ -244,14 +254,24 @@ public class PostNavBar {
 		Label title = new Label(post.getTitle()); // REQ-03: show post title
 		Label category = new Label("[" + post.getCategory() + "]"); // REQ-12: show thread
 
-		titleRow.getChildren().addAll(title, category);
+		// TP3: Show reply count on each post row
+		int replyCount = applicationMain.FoundationsMain.database.getReplyCountForPost(post.getPostID());
+		Label replyLabel = new Label(replyCount + (replyCount == 1 ? " reply" : " replies"));
+		replyLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11px;");
+
+		titleRow.getChildren().addAll(title, category, replyLabel);
 
 		// REQ-03: Show a truncated preview of the post body (max 80 chars)
 		Label sampleString = new Label(makeSample(post.getBody()));
 		sampleString.setWrapText(true);
 
 		// REQ-04: Clicking the row loads the full post in PostDisplayPanel
+		// TP3: Mark post as read when clicked
 		rBox.setOnMouseClicked(e -> {
+			applicationMain.FoundationsMain.database.markPostAsRead(
+				applicationMain.FoundationsMain.database.getCurrentUsername(),
+				post.getPostID()
+			);
 			contentPane.setCenter(PostDisplayPanel.createPostDisplayPanel(
 				theStage, contentPane, post.getPostID()
 			));
