@@ -1837,31 +1837,75 @@ public class Database {
 
 	/*******
 	 * <p> Method: deleteThread() </p>
-	 * <p> Description: Soft-deletes a thread (isDeleted=TRUE). All posts in the
-	 * deleted thread are migrated to General first. General cannot be deleted.
-	 * Satisfies STAFF-REQ-04. </p>
-	 * @param threadID the ID of the thread to soft-delete
-	 * @return true if soft-deleted, false if blocked
+	 *
+	 * <p> Description: Soft-deletes a discussion thread. Before the thread is
+	 * deleted, every post associated with it is reassigned to the General
+	 * thread. The General thread itself cannot be deleted. </p>
+	 *
+	 * @param threadID the ID of the thread to delete
+	 * @return true if the thread was deleted, or false if deletion failed
 	 */
 	public boolean deleteThread(int threadID) {
+
 		Thread existing = getThreadByID(threadID);
-		if (existing == null) return false;
-		if ("General".equals(existing.getTitle())) {
-			System.err.println("deleteThread: General thread cannot be deleted.");
+
+		if (existing == null) {
 			return false;
 		}
+
+		if (existing.isGeneral()) {
+			System.err.println(
+				"deleteThread: General thread cannot be deleted."
+			);
+			return false;
+		}
+
+		Thread generalThread = getThreadByTitle("General");
+
+		if (generalThread == null) {
+			System.err.println(
+				"deleteThread: General thread could not be found."
+			);
+			return false;
+		}
+
 		try {
-			String migratePosts = "UPDATE posts SET category = 'General' WHERE category = ?";
-			try (PreparedStatement pstmt = connection.prepareStatement(migratePosts)) {
-				pstmt.setString(1, existing.getTitle());
+
+			/*
+			 * Reassign every post in the deleted thread to the
+			 * General thread before deleting it.
+			 */
+			String migratePosts =
+				"UPDATE Posts " +
+				"SET threadID = ?, modifiedDate = CURRENT_TIMESTAMP " +
+				"WHERE threadID = ?";
+
+			try (PreparedStatement pstmt =
+					connection.prepareStatement(migratePosts)) {
+
+				pstmt.setInt(1, generalThread.getThreadID());
+				pstmt.setInt(2, threadID);
 				pstmt.executeUpdate();
 			}
-			String softDelete = "UPDATE threads SET isDeleted = TRUE, modifiedDate = CURRENT_TIMESTAMP WHERE threadID = ?";
-			try (PreparedStatement pstmt = connection.prepareStatement(softDelete)) {
+
+			/*
+			 * Soft-delete the selected thread.
+			 */
+			String softDelete =
+				"UPDATE Threads " +
+				"SET isDeleted = TRUE, " +
+				"modifiedDate = CURRENT_TIMESTAMP " +
+				"WHERE threadID = ?";
+
+			try (PreparedStatement pstmt =
+					connection.prepareStatement(softDelete)) {
+
 				pstmt.setInt(1, threadID);
 				pstmt.executeUpdate();
 			}
+
 			return true;
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -2252,41 +2296,50 @@ public class Database {
 	
 	/*******
 	 * <p> Method: getPostsForThread() </p>
-	 * <p> Description: Returns all non-deleted posts belonging to the given
-	 * thread, looked up by threadID. Internally resolves the thread's title
-	 * and filters posts by that category string, since posts are currently
-	 * associated to threads via the category field rather than a threadID
-	 * foreign key. Returns an empty list if the thread does not exist. </p>
+	 *
+	 * <p> Description: Returns all non-deleted posts associated with the
+	 * supplied thread ID. Posts are matched directly using the threadID
+	 * foreign key stored in the Posts table. </p>
+	 *
 	 * @param threadID the unique ID of the thread
-	 * @return ArrayList of Post objects belonging to this thread
+	 * @return an ArrayList containing all active posts in the thread
 	 */
 	public ArrayList<Post> getPostsForThread(int threadID) {
+
 		ArrayList<Post> posts = new ArrayList<>();
 
-		Thread thread = getThreadByID(threadID);
-		if (thread == null) {
-			return posts;
-		}
+		String query =
+			"SELECT * FROM Posts " +
+			"WHERE threadID = ? AND isDeleted = FALSE " +
+			"ORDER BY createdDate DESC";
 
-		String query = "SELECT * FROM posts WHERE category = ? AND isDeleted = FALSE ORDER BY createdDate DESC";
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setString(1, thread.getTitle());
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				posts.add(new Post(
-					rs.getInt("postID"),
-					rs.getString("title"),
-					rs.getString("body"),
-					rs.getString("category"),
-					rs.getString("author"),
-					rs.getTimestamp("createdDate"),
-					rs.getTimestamp("modifiedDate"),
-					rs.getString("staffFeedback")
-				));
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			pstmt.setInt(1, threadID);
+
+			ResultSet result = pstmt.executeQuery();
+
+			while (result.next()) {
+
+				Post post = new Post(
+					result.getInt("postID"),
+					result.getString("title"),
+					result.getString("body"),
+					result.getString("category"),
+					result.getString("author"),
+					result.getTimestamp("createdDate"),
+					result.getTimestamp("modifiedDate"),
+					result.getString("staffFeedback")
+				);
+
+				posts.add(post);
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 		return posts;
 	}
 
