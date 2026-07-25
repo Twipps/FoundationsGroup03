@@ -60,6 +60,15 @@ public class ReplyList {
     }
     
     /**
+     * Returns the current collection of replies.
+     *
+     * @return the ArrayList containing all loaded replies
+     */
+    public ArrayList<Reply> getReplyList() {
+        return replyList;
+    }
+    
+    /**
      * Gets all replies associated with the specified parent post.
      *
      * @param postID the unique identifier of the parent post
