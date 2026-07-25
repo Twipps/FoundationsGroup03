@@ -145,6 +145,7 @@ public class Database {
 		
 		String postTable = "CREATE TABLE IF NOT EXISTS posts ("
 		        + "postID INT AUTO_INCREMENT PRIMARY KEY, "
+		        + "threadID INT NOT NULL, "
 		        + "title VARCHAR(255), "
 		        + "body TEXT, "
 		        + "author VARCHAR(255), "
@@ -1337,16 +1338,20 @@ public class Database {
 	 * @param body the body text of the post
 	 * @param author the author who created the post
 	 * @param category the category assigned to the post
+	 * @param threadID the thread the post belongs to
 	 */
-	public void addPost(String title, String body, String author, String category) {
-	    String query = "INSERT INTO Posts (title, body, author, category, createdDate, modifiedDate) " +
-	                   "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+	public void addPost(String title, String body, String author,
+	                    String category, int threadID) {
+
+	    String query = "INSERT INTO Posts (threadID, title, body, author, category, createdDate, modifiedDate) " +
+	                   "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        pstmt.setString(1, title);
-	        pstmt.setString(2, body);
-	        pstmt.setString(3, author);
-	        pstmt.setString(4, category);
+	        pstmt.setInt(1, threadID);
+	        pstmt.setString(2, title);
+	        pstmt.setString(3, body);
+	        pstmt.setString(4, author);
+	        pstmt.setString(5, category);
 
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
@@ -1382,6 +1387,25 @@ public class Database {
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newTitle);
 	        pstmt.setInt(2, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	/**
+	 * Updates the thread associated with a post.
+	 *
+	 * @param postID the ID of the post to update
+	 * @param threadID the ID of the new thread
+	 */
+	public void updatePostThreadID(int postID, int threadID) {
+	    String query = "UPDATE Posts SET threadID = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, threadID);
+	        pstmt.setInt(2, postID);
+
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();

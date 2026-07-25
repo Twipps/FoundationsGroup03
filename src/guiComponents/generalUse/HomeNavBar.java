@@ -152,7 +152,9 @@ public class HomeNavBar {
         Button logout = createLogOutButton(theStage);
         
         Button posts = createNavBarButton(theStage, "Posts");
+        Button threads = createNavBarButton(theStage, "Threads");
         Button adminRequests = createNavBarButton(theStage, "Admin Requests");
+        Button postReport = createNavBarButton(theStage, "Post Report");
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -187,7 +189,9 @@ public class HomeNavBar {
         home.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
         posts.setStyle(navButtonStyle);
+        threads.setStyle(navButtonStyle);
         adminRequests.setStyle(navButtonStyle);
+        postReport.setStyle(navButtonStyle);
         
         home.setOnAction(e -> {
             titleBar.setText("Instructor/Staff Home");
@@ -208,6 +212,12 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create a post."));
         });
         
+        threads.setOnAction(e->{
+        	titleBar.setText("Threads");
+        	contentPane.setLeft(guiComponents.staffHome.StaffThreadNavBar.createThreadNavBar(theStage, contentPane));
+        	contentPane.setCenter(null);
+        });
+        
         adminRequests.setOnAction(e->{
         	titleBar.setText("Admin Requests");
         	
@@ -219,7 +229,14 @@ public class HomeNavBar {
 
         	contentPane.setLeft(requestNav);
         	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
-        });
+        });  
+        
+        postReport.setOnAction(e->{
+        	titleBar.setText("Post Report");
+
+        	contentPane.setLeft(null);
+        	contentPane.setCenter(null);
+        }); 
         
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
@@ -229,8 +246,8 @@ public class HomeNavBar {
         instructorBar.setAlignment(Pos.TOP_CENTER);
         
         instructorBar.setStyle(brandColorNav);
-        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), adminRequests,
-        		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
+        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), threads, createSeparator(),
+        		adminRequests, createSeparator(), postReport, createSeparator(), spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
         		accountSettings, createSeparator(), logout);
 
     	return instructorBar;

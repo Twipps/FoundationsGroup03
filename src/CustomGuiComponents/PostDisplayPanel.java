@@ -116,7 +116,7 @@ public class PostDisplayPanel {
 
 		edit.setOnAction(e -> {
 			// REQ-05: Navigate to edit panel for this post
-			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID));
+			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID, 1));
 		});
 
 		delete.setOnAction(e -> {
