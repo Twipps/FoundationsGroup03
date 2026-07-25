@@ -2342,6 +2342,118 @@ public class Database {
 
 		return posts;
 	}
+	
+	/*******
+	 * <p>Method: getAllStudentUsers()</p>
+	 *
+	 * <p>Description: Returns all users who currently have the Student role.
+	 * A user may have additional roles and will still be included.</p>
+	 *
+	 * @return a list containing all student users
+	 */
+	public List<User> getAllStudentUsers() {
+
+		List<User> students = new ArrayList<>();
+
+		String query =
+			"SELECT * FROM userDB " +
+			"WHERE newRole1 = TRUE " +
+			"ORDER BY userName";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			ResultSet result = pstmt.executeQuery();
+
+			while (result.next()) {
+
+				User user = new User(
+					result.getString("userName"),
+					result.getString("password"),
+					result.getString("firstName"),
+					result.getString("middleName"),
+					result.getString("lastName"),
+					result.getString("preferredFirstName"),
+					result.getString("emailAddress"),
+					result.getBoolean("adminRole"),
+					result.getBoolean("newRole1"),
+					result.getBoolean("newRole2")
+				);
+
+				students.add(user);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return students;
+	}
+	
+	/*******
+	 * <p>Method: getStudentsWithRepliesOnAtLeastThreeDistinctPosts()</p>
+	 *
+	 * <p>Description: Returns student users who have authored replies on at
+	 * least three different parent posts. Multiple replies by the same user on
+	 * the same post only count as one distinct post.</p>
+	 *
+	 * @return a list containing qualifying student users
+	 */
+	public List<User>
+			getStudentsWithRepliesOnAtLeastThreeDistinctPosts() {
+
+		List<User> students = new ArrayList<>();
+
+		String query =
+			"SELECT u.* " +
+			"FROM userDB u " +
+			"INNER JOIN replies r " +
+			"ON u.userName = r.author " +
+			"WHERE u.newRole1 = TRUE " +
+			"GROUP BY " +
+				"u.id, " +
+				"u.userName, " +
+				"u.password, " +
+				"u.firstName, " +
+				"u.middleName, " +
+				"u.lastName, " +
+				"u.preferredFirstName, " +
+				"u.emailAddress, " +
+				"u.adminRole, " +
+				"u.newRole1, " +
+				"u.newRole2 " +
+			"HAVING COUNT(DISTINCT r.parentPostID) >= 3 " +
+			"ORDER BY u.userName";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			ResultSet result = pstmt.executeQuery();
+
+			while (result.next()) {
+
+				User user = new User(
+					result.getString("userName"),
+					result.getString("password"),
+					result.getString("firstName"),
+					result.getString("middleName"),
+					result.getString("lastName"),
+					result.getString("preferredFirstName"),
+					result.getString("emailAddress"),
+					result.getBoolean("adminRole"),
+					result.getBoolean("newRole1"),
+					result.getBoolean("newRole2")
+				);
+
+				students.add(user);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return students;
+	}
 
 	/*******
 	 * <p> Debugging method</p>

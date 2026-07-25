@@ -247,12 +247,13 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
         });  
         
-        postReport.setOnAction(e->{
+        postReport.setOnAction(e -> {
         	titleBar.setText("Student Data Viewer");
 
         	contentPane.setLeft(null);
-        	contentPane.setCenter(null);
-        }); 
+
+        	contentPane.setCenter(guiComponents.staffHome.StaffStudentDataViewerPanelBundle.createStudentDataViewerPanel(theStage, contentPane));
+        });
         
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
