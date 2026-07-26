@@ -2,7 +2,7 @@
  * FoundationsGroup03 module — CSE 360 Team 3 TP2 project.
  * Requires JavaFX controls and graphics, and the Java SQL module.
  */
-module FoundationsGroup03 {
+module Foundations26{
 	requires javafx.controls;
 	requires java.sql;
 	requires javafx.graphics;

@@ -81,7 +81,7 @@ public class PostNavBar {
 
 		createPost.setOnAction(e -> {
 			// REQ-01: postID=-1 signals PostReplyEditPanel to create a new post
-			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, -1));
+			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, -1, 1));
 		});
 
 		// TP3: Manual refresh button — reloads the post list (and reply counts)

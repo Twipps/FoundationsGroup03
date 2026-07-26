@@ -145,6 +145,7 @@ public class Database {
 		
 		String postTable = "CREATE TABLE IF NOT EXISTS posts ("
 		        + "postID INT AUTO_INCREMENT PRIMARY KEY, "
+		        + "threadID INT NOT NULL, "
 		        + "title VARCHAR(255), "
 		        + "body TEXT, "
 		        + "author VARCHAR(255), "
@@ -1337,16 +1338,20 @@ public class Database {
 	 * @param body the body text of the post
 	 * @param author the author who created the post
 	 * @param category the category assigned to the post
+	 * @param threadID the thread the post belongs to
 	 */
-	public void addPost(String title, String body, String author, String category) {
-	    String query = "INSERT INTO Posts (title, body, author, category, createdDate, modifiedDate) " +
-	                   "VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+	public void addPost(String title, String body, String author,
+	                    String category, int threadID) {
+
+	    String query = "INSERT INTO Posts (threadID, title, body, author, category, createdDate, modifiedDate) " +
+	                   "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-	        pstmt.setString(1, title);
-	        pstmt.setString(2, body);
-	        pstmt.setString(3, author);
-	        pstmt.setString(4, category);
+	        pstmt.setInt(1, threadID);
+	        pstmt.setString(2, title);
+	        pstmt.setString(3, body);
+	        pstmt.setString(4, author);
+	        pstmt.setString(5, category);
 
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
@@ -1382,6 +1387,25 @@ public class Database {
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, newTitle);
 	        pstmt.setInt(2, postID);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	/**
+	 * Updates the thread associated with a post.
+	 *
+	 * @param postID the ID of the post to update
+	 * @param threadID the ID of the new thread
+	 */
+	public void updatePostThreadID(int postID, int threadID) {
+	    String query = "UPDATE Posts SET threadID = ?, modifiedDate = CURRENT_TIMESTAMP WHERE postID = ?";
+
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setInt(1, threadID);
+	        pstmt.setInt(2, postID);
+
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -1813,31 +1837,75 @@ public class Database {
 
 	/*******
 	 * <p> Method: deleteThread() </p>
-	 * <p> Description: Soft-deletes a thread (isDeleted=TRUE). All posts in the
-	 * deleted thread are migrated to General first. General cannot be deleted.
-	 * Satisfies STAFF-REQ-04. </p>
-	 * @param threadID the ID of the thread to soft-delete
-	 * @return true if soft-deleted, false if blocked
+	 *
+	 * <p> Description: Soft-deletes a discussion thread. Before the thread is
+	 * deleted, every post associated with it is reassigned to the General
+	 * thread. The General thread itself cannot be deleted. </p>
+	 *
+	 * @param threadID the ID of the thread to delete
+	 * @return true if the thread was deleted, or false if deletion failed
 	 */
 	public boolean deleteThread(int threadID) {
+
 		Thread existing = getThreadByID(threadID);
-		if (existing == null) return false;
-		if ("General".equals(existing.getTitle())) {
-			System.err.println("deleteThread: General thread cannot be deleted.");
+
+		if (existing == null) {
 			return false;
 		}
+
+		if (existing.isGeneral()) {
+			System.err.println(
+				"deleteThread: General thread cannot be deleted."
+			);
+			return false;
+		}
+
+		Thread generalThread = getThreadByTitle("General");
+
+		if (generalThread == null) {
+			System.err.println(
+				"deleteThread: General thread could not be found."
+			);
+			return false;
+		}
+
 		try {
-			String migratePosts = "UPDATE posts SET category = 'General' WHERE category = ?";
-			try (PreparedStatement pstmt = connection.prepareStatement(migratePosts)) {
-				pstmt.setString(1, existing.getTitle());
+
+			/*
+			 * Reassign every post in the deleted thread to the
+			 * General thread before deleting it.
+			 */
+			String migratePosts =
+				"UPDATE Posts " +
+				"SET threadID = ?, modifiedDate = CURRENT_TIMESTAMP " +
+				"WHERE threadID = ?";
+
+			try (PreparedStatement pstmt =
+					connection.prepareStatement(migratePosts)) {
+
+				pstmt.setInt(1, generalThread.getThreadID());
+				pstmt.setInt(2, threadID);
 				pstmt.executeUpdate();
 			}
-			String softDelete = "UPDATE threads SET isDeleted = TRUE, modifiedDate = CURRENT_TIMESTAMP WHERE threadID = ?";
-			try (PreparedStatement pstmt = connection.prepareStatement(softDelete)) {
+
+			/*
+			 * Soft-delete the selected thread.
+			 */
+			String softDelete =
+				"UPDATE Threads " +
+				"SET isDeleted = TRUE, " +
+				"modifiedDate = CURRENT_TIMESTAMP " +
+				"WHERE threadID = ?";
+
+			try (PreparedStatement pstmt =
+					connection.prepareStatement(softDelete)) {
+
 				pstmt.setInt(1, threadID);
 				pstmt.executeUpdate();
 			}
+
 			return true;
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -2276,42 +2344,163 @@ public class Database {
 	
 	/*******
 	 * <p> Method: getPostsForThread() </p>
-	 * <p> Description: Returns all non-deleted posts belonging to the given
-	 * thread, looked up by threadID. Internally resolves the thread's title
-	 * and filters posts by that category string, since posts are currently
-	 * associated to threads via the category field rather than a threadID
-	 * foreign key. Returns an empty list if the thread does not exist. </p>
+	 *
+	 * <p> Description: Returns all non-deleted posts associated with the
+	 * supplied thread ID. Posts are matched directly using the threadID
+	 * foreign key stored in the Posts table. </p>
+	 *
 	 * @param threadID the unique ID of the thread
-	 * @return ArrayList of Post objects belonging to this thread
+	 * @return an ArrayList containing all active posts in the thread
 	 */
 	public ArrayList<Post> getPostsForThread(int threadID) {
+
 		ArrayList<Post> posts = new ArrayList<>();
 
-		Thread thread = getThreadByID(threadID);
-		if (thread == null) {
-			return posts;
-		}
+		String query =
+			"SELECT * FROM Posts " +
+			"WHERE threadID = ? AND isDeleted = FALSE " +
+			"ORDER BY createdDate DESC";
 
-		String query = "SELECT * FROM posts WHERE category = ? AND isDeleted = FALSE ORDER BY createdDate DESC";
-		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-			pstmt.setString(1, thread.getTitle());
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				posts.add(new Post(
-					rs.getInt("postID"),
-					rs.getString("title"),
-					rs.getString("body"),
-					rs.getString("category"),
-					rs.getString("author"),
-					rs.getTimestamp("createdDate"),
-					rs.getTimestamp("modifiedDate"),
-					rs.getString("staffFeedback")
-				));
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			pstmt.setInt(1, threadID);
+
+			ResultSet result = pstmt.executeQuery();
+
+			while (result.next()) {
+
+				Post post = new Post(
+					result.getInt("postID"),
+					result.getString("title"),
+					result.getString("body"),
+					result.getString("category"),
+					result.getString("author"),
+					result.getTimestamp("createdDate"),
+					result.getTimestamp("modifiedDate"),
+					result.getString("staffFeedback")
+				);
+
+				posts.add(post);
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 		return posts;
+	}
+	
+	/*******
+	 * <p>Method: getAllStudentUsers()</p>
+	 *
+	 * <p>Description: Returns all users who currently have the Student role.
+	 * A user may have additional roles and will still be included.</p>
+	 *
+	 * @return a list containing all student users
+	 */
+	public List<User> getAllStudentUsers() {
+
+		List<User> students = new ArrayList<>();
+
+		String query =
+			"SELECT * FROM userDB " +
+			"WHERE newRole1 = TRUE " +
+			"ORDER BY userName";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			ResultSet result = pstmt.executeQuery();
+
+			while (result.next()) {
+
+				User user = new User(
+					result.getString("userName"),
+					result.getString("password"),
+					result.getString("firstName"),
+					result.getString("middleName"),
+					result.getString("lastName"),
+					result.getString("preferredFirstName"),
+					result.getString("emailAddress"),
+					result.getBoolean("adminRole"),
+					result.getBoolean("newRole1"),
+					result.getBoolean("newRole2")
+				);
+
+				students.add(user);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return students;
+	}
+	
+	/*******
+	 * <p>Method: getStudentsWithRepliesOnAtLeastThreeDistinctPosts()</p>
+	 *
+	 * <p>Description: Returns student users who have authored replies on at
+	 * least three different parent posts. Multiple replies by the same user on
+	 * the same post only count as one distinct post.</p>
+	 *
+	 * @return a list containing qualifying student users
+	 */
+	public List<User>
+			getStudentsWithRepliesOnAtLeastThreeDistinctPosts() {
+
+		List<User> students = new ArrayList<>();
+
+		String query =
+			"SELECT u.* " +
+			"FROM userDB u " +
+			"INNER JOIN replies r " +
+			"ON u.userName = r.author " +
+			"WHERE u.newRole1 = TRUE " +
+			"GROUP BY " +
+				"u.id, " +
+				"u.userName, " +
+				"u.password, " +
+				"u.firstName, " +
+				"u.middleName, " +
+				"u.lastName, " +
+				"u.preferredFirstName, " +
+				"u.emailAddress, " +
+				"u.adminRole, " +
+				"u.newRole1, " +
+				"u.newRole2 " +
+			"HAVING COUNT(DISTINCT r.parentPostID) >= 3 " +
+			"ORDER BY u.userName";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			ResultSet result = pstmt.executeQuery();
+
+			while (result.next()) {
+
+				User user = new User(
+					result.getString("userName"),
+					result.getString("password"),
+					result.getString("firstName"),
+					result.getString("middleName"),
+					result.getString("lastName"),
+					result.getString("preferredFirstName"),
+					result.getString("emailAddress"),
+					result.getBoolean("adminRole"),
+					result.getBoolean("newRole1"),
+					result.getBoolean("newRole2")
+				);
+
+				students.add(user);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return students;
 	}
 
 	/*******

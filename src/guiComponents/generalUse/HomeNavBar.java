@@ -2,6 +2,7 @@ package guiComponents.generalUse;
 
 import javafx.scene.layout.BorderPane;
 
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -157,14 +158,14 @@ public class HomeNavBar {
         Button accountSettings = createUserSettingsButton(theStage, contentPane, titleBar, user);
         Button logout = createLogOutButton(theStage);
         
+        Button myPosts = createNavBarButton(theStage, "My Posts");
         Button posts = createNavBarButton(theStage, "Posts");
-        Button adminRequests = createNavBarButton(theStage, "Admin Requests");
-       
+        Button threads = createNavBarButton(theStage, "Threads");
+        Button adminRequests = createNavBarButton(theStage, "Admin Requests"); 
         //added by jchacko
-        Button studentActivity =
-                createNavBarButton(theStage, "Student Activity");
-        
+        Button studentActivity = createNavBarButton(theStage, "Student Activity");   
         //end 
+        Button postReport = createNavBarButton(theStage, "Student Data Viewer");
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -198,8 +199,11 @@ public class HomeNavBar {
         accountSettings.setStyle(navButtonStyle);
         home.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
+        myPosts.setStyle(navButtonStyle);
         posts.setStyle(navButtonStyle);
+        threads.setStyle(navButtonStyle);
         adminRequests.setStyle(navButtonStyle);
+        postReport.setStyle(navButtonStyle);
         
         //added by jchacko
         studentActivity.setStyle(navButtonStyle);
@@ -209,6 +213,19 @@ public class HomeNavBar {
             titleBar.setText("Instructor/Staff Home");
             contentPane.setCenter(null);
             contentPane.setLeft(null); // removing the post nav bar
+        });
+        
+        myPosts.setOnAction(e->{
+        	titleBar.setText("My Posts");
+        	
+        	contentPane.setCenter(null);
+            contentPane.setLeft(null);
+        	
+        	HBox myPostsContent = 
+        			guiComponents.staffHome.StaffSelfPostCommentViewPanelBundle.
+        			createInstructorMyPostsPanels(theStage, contentPane, user);
+
+        	contentPane.setCenter(myPostsContent);
         });
         
         posts.setOnAction(e->{
@@ -224,6 +241,12 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create a post."));
         });
         
+        threads.setOnAction(e->{
+        	titleBar.setText("Threads");
+        	contentPane.setLeft(guiComponents.staffHome.StaffThreadNavBar.createThreadNavBar(theStage, contentPane));
+        	contentPane.setCenter(null);
+        });
+        
         adminRequests.setOnAction(e->{
         	titleBar.setText("Admin Requests");
      	
@@ -236,6 +259,14 @@ public class HomeNavBar {
 
         	contentPane.setLeft(requestNav);
         	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
+        });  
+        
+        postReport.setOnAction(e -> {
+        	titleBar.setText("Student Data Viewer");
+
+        	contentPane.setLeft(null);
+
+        	contentPane.setCenter(guiComponents.staffHome.StaffStudentDataViewerPanelBundle.createStudentDataViewerPanel(theStage, contentPane));
         });
         
         // start added by jchacko
@@ -260,21 +291,11 @@ public class HomeNavBar {
         instructorBar.setAlignment(Pos.TOP_CENTER);
         
         instructorBar.setStyle(brandColorNav);
-       // instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), adminRequests,
-       //	spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
-        // accountSettings, createSeparator(), logout);
-        
-        // start added by jchacko 
-        instructorBar.getChildren().addAll(
-        	    home,   createSeparator(),  posts, createSeparator(),  adminRequests, createSeparator(),
-        	    studentActivity,    spacer,   placeHolderIcon,  userName,
-        	    roleLabel,  createSeparator(),  accountSettings,
-        	    createSeparator(),
-        	    logout);
-        
-        //end 
-        
-       
+
+        instructorBar.getChildren().addAll(home, createSeparator(), myPosts, createSeparator(), posts, createSeparator(), threads, createSeparator(),
+        		adminRequests, createSeparator(), postReport, createSeparator(), studentActivity, spacer, placeHolderIcon,  userName, roleLabel, 
+        		createSeparator(), accountSettings, createSeparator(), logout);
+
     	return instructorBar;
     }
     
