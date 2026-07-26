@@ -155,6 +155,25 @@ public class Database {
 		        + "modifiedDate TIMESTAMP DEFAULT NULL, "
 		        + "isDeleted BOOLEAN DEFAULT FALSE)";
 		statement.execute(postTable);
+
+		// Defensive migration: if this database was created before threadID/
+		// staffFeedback existed on posts (DROP ALL OBJECTS is commented out
+		// above so old local databases persist across schema changes),
+		// CREATE TABLE IF NOT EXISTS is a no-op and the columns would be
+		// missing, crashing addPost()/getAllPosts() with a "column not found"
+		// error. These ALTER statements patch any pre-existing posts table
+		// so every teammate's local database self-heals on next run instead
+		// of requiring everyone to manually delete their local DB file.
+		try {
+			statement.execute("ALTER TABLE posts ADD COLUMN IF NOT EXISTS threadID INT");
+		} catch (SQLException e) {
+			System.err.println("Migration note (threadID): " + e.getMessage());
+		}
+		try {
+			statement.execute("ALTER TABLE posts ADD COLUMN IF NOT EXISTS staffFeedback TEXT");
+		} catch (SQLException e) {
+			System.err.println("Migration note (staffFeedback): " + e.getMessage());
+		}
 		
 		String replyTable = "CREATE TABLE IF NOT EXISTS replies ("
 				+ "replyID INT AUTO_INCREMENT PRIMARY KEY, "
@@ -203,6 +222,19 @@ public class Database {
 				+ "readAt TIMESTAMP DEFAULT NULL, "
 				+ "UNIQUE(username, postID))";
 		statement.execute(readTrackingTable);
+
+		// ── Reply read tracking table (TP3 — Kyle Kim) ───────────────────────
+		// Separate from postReadStatus because the requirement tracks read/unread
+		// at the REPLY level, not just the post level — a student needs to see
+		// which specific replies to their posts they have and have not read,
+		// not just whether they've opened the post at all.
+		String replyReadTrackingTable = "CREATE TABLE IF NOT EXISTS replyReadStatus ("
+				+ "readStatusID INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "username VARCHAR(255), "
+				+ "replyID INT, "
+				+ "readAt TIMESTAMP DEFAULT NULL, "
+				+ "UNIQUE(username, replyID))";
+		statement.execute(replyReadTrackingTable);
 	}
 
 
@@ -2019,6 +2051,113 @@ public class Database {
 		return 0;
 	}
 
+	/*******
+	 * <p> Method: markReplyAsRead() </p>
+	 * <p> Description: Records that a user has read a specific reply. Used so
+	 * a post author can see which replies to their posts they have and have
+	 * not yet read. Safe to call multiple times — MERGE prevents duplicates.
+	 * Satisfies the Student User Story: "I can see...how many of [my replies]
+	 * I have not yet read." </p>
+	 * @param username the user marking the reply as read (typically the post author)
+	 * @param replyID  the reply being marked as read
+	 */
+	public void markReplyAsRead(String username, int replyID) {
+		String query = "MERGE INTO replyReadStatus (username, replyID, readAt) KEY(username, replyID) VALUES (?, ?, CURRENT_TIMESTAMP)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			pstmt.setInt(2, replyID);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*******
+	 * <p> Method: hasUserReadReply() </p>
+	 * <p> Description: Returns true if the given user has read the specified
+	 * reply. </p>
+	 * @param username the username to check
+	 * @param replyID  the reply ID to check
+	 * @return true if the user has read this reply
+	 */
+	public boolean hasUserReadReply(String username, int replyID) {
+		String query = "SELECT COUNT(*) AS cnt FROM replyReadStatus WHERE username = ? AND replyID = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			pstmt.setInt(2, replyID);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt") > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/*******
+	 * <p> Method: getUnreadReplyCountForPost() </p>
+	 * <p> Description: Returns the number of replies on a specific post that
+	 * the given user has not yet read. Used to show "how many [replies] I
+	 * have not yet read" per post in the student's own-posts list. </p>
+	 * @param username the post author checking their unread replies
+	 * @param postID   the post to check replies for
+	 * @return the number of unread replies on this post
+	 */
+	public int getUnreadReplyCountForPost(String username, int postID) {
+		String query = "SELECT COUNT(*) AS cnt FROM replies r WHERE r.parentPostID = ? "
+				+ "AND NOT EXISTS (SELECT 1 FROM replyReadStatus rs WHERE rs.username = ? AND rs.replyID = r.replyID)";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setInt(1, postID);
+			pstmt.setString(2, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/*******
+	 * <p> Method: getRepliesReceivedByUser() </p>
+	 * <p> Description: Returns all replies made to any post authored by the
+	 * given user — i.e. the replies that user has "received." Optionally
+	 * filters to only unread replies. Satisfies the Student User Story:
+	 * "I can list all the replies I have received or just those I have not
+	 * read." </p>
+	 * @param username   the post author whose received replies are being retrieved
+	 * @param unreadOnly if true, only replies not yet read by username are returned
+	 * @return ArrayList of Reply objects received by this user, newest first
+	 */
+	public ArrayList<Reply> getRepliesReceivedByUser(String username, boolean unreadOnly) {
+		ArrayList<Reply> replies = new ArrayList<>();
+		String query = "SELECT r.* FROM replies r "
+				+ "JOIN posts p ON r.parentPostID = p.postID "
+				+ "WHERE p.author = ? AND p.isDeleted = FALSE"
+				+ (unreadOnly
+					? " AND NOT EXISTS (SELECT 1 FROM replyReadStatus rs WHERE rs.username = ? AND rs.replyID = r.replyID)"
+					: "")
+				+ " ORDER BY r.createdDate DESC";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			if (unreadOnly) {
+				pstmt.setString(2, username);
+			}
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				replies.add(new Reply(
+					rs.getInt("replyID"),
+					rs.getInt("parentPostID"),
+					rs.getString("body"),
+					rs.getString("author"),
+					rs.getTimestamp("createdDate"),
+					rs.getTimestamp("modifiedDate")
+				));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return replies;
+	}
+
 	// =========================================================================
 	// ADMIN REQUEST CRUD — TP3 (Rob Taylor)
 	// =========================================================================
@@ -2438,70 +2577,12 @@ public class Database {
 		return students;
 	}
 	
-	/*******
-	 * <p>Method: getStudentsWithRepliesOnAtLeastThreeDistinctPosts()</p>
-	 *
-	 * <p>Description: Returns student users who have authored replies on at
-	 * least three different parent posts. Multiple replies by the same user on
-	 * the same post only count as one distinct post.</p>
-	 *
-	 * @return a list containing qualifying student users
-	 */
-	public List<User>
-			getStudentsWithRepliesOnAtLeastThreeDistinctPosts() {
-
-		List<User> students = new ArrayList<>();
-
-		String query =
-			"SELECT u.* " +
-			"FROM userDB u " +
-			"INNER JOIN replies r " +
-			"ON u.userName = r.author " +
-			"WHERE u.newRole1 = TRUE " +
-			"GROUP BY " +
-				"u.id, " +
-				"u.userName, " +
-				"u.password, " +
-				"u.firstName, " +
-				"u.middleName, " +
-				"u.lastName, " +
-				"u.preferredFirstName, " +
-				"u.emailAddress, " +
-				"u.adminRole, " +
-				"u.newRole1, " +
-				"u.newRole2 " +
-			"HAVING COUNT(DISTINCT r.parentPostID) >= 3 " +
-			"ORDER BY u.userName";
-
-		try (PreparedStatement pstmt =
-				connection.prepareStatement(query)) {
-
-			ResultSet result = pstmt.executeQuery();
-
-			while (result.next()) {
-
-				User user = new User(
-					result.getString("userName"),
-					result.getString("password"),
-					result.getString("firstName"),
-					result.getString("middleName"),
-					result.getString("lastName"),
-					result.getString("preferredFirstName"),
-					result.getString("emailAddress"),
-					result.getBoolean("adminRole"),
-					result.getBoolean("newRole1"),
-					result.getBoolean("newRole2")
-				);
-
-				students.add(user);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return students;
-	}
+	// Note: getStudentsWithRepliesOnAtLeastThreeDistinctPosts() was removed.
+	// It duplicated getDistinctStudentsRepliedTo() / hasMetReplyEngagementRequirement()
+	// above with a different (and buggier) definition — it counted distinct POSTS
+	// replied to rather than distinct STUDENTS, and did not exclude self-replies,
+	// so a student replying multiple times to their own post could incorrectly
+	// qualify. The verified, tested version above is used instead.
 
 	/*******
 	 * <p> Debugging method</p>

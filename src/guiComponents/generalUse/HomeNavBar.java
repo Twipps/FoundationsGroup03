@@ -165,7 +165,10 @@ public class HomeNavBar {
         //added by jchacko
         Button studentActivity = createNavBarButton(theStage, "Student Activity");   
         //end 
-        Button postReport = createNavBarButton(theStage, "Student Data Viewer");
+        // Note: "Student Data Viewer" (postReport) button removed — it duplicated
+        // Jacob's Student Activity panel below, with a less accurate implementation
+        // of the engagement requirement (counted distinct posts replied to rather
+        // than distinct students, and did not exclude self-replies).
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -203,7 +206,6 @@ public class HomeNavBar {
         posts.setStyle(navButtonStyle);
         threads.setStyle(navButtonStyle);
         adminRequests.setStyle(navButtonStyle);
-        postReport.setStyle(navButtonStyle);
         
         //added by jchacko
         studentActivity.setStyle(navButtonStyle);
@@ -261,14 +263,6 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
         });  
         
-        postReport.setOnAction(e -> {
-        	titleBar.setText("Student Data Viewer");
-
-        	contentPane.setLeft(null);
-
-        	contentPane.setCenter(guiComponents.staffHome.StaffStudentDataViewerPanelBundle.createStudentDataViewerPanel(theStage, contentPane));
-        });
-        
         // start added by jchacko
         studentActivity.setOnAction(e -> {
 
@@ -293,7 +287,7 @@ public class HomeNavBar {
         instructorBar.setStyle(brandColorNav);
 
         instructorBar.getChildren().addAll(home, createSeparator(), myPosts, createSeparator(), posts, createSeparator(), threads, createSeparator(),
-        		adminRequests, createSeparator(), postReport, createSeparator(), studentActivity, spacer, placeHolderIcon,  userName, roleLabel, 
+        		adminRequests, createSeparator(), studentActivity, spacer, placeHolderIcon,  userName, roleLabel, 
         		createSeparator(), accountSettings, createSeparator(), logout);
 
     	return instructorBar;
