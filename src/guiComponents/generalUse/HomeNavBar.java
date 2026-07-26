@@ -1,6 +1,7 @@
 package guiComponents.generalUse;
 
 import javafx.scene.layout.BorderPane;
+
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -19,6 +20,11 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+
+// added by jchacko 
+import guiComponents.staffHome.staffUserActivityParamPanel;
+import javafx.scene.layout.VBox;
+// 
 
 /**
  * <p>Title: HomeNavBar Class</p>
@@ -153,6 +159,12 @@ public class HomeNavBar {
         
         Button posts = createNavBarButton(theStage, "Posts");
         Button adminRequests = createNavBarButton(theStage, "Admin Requests");
+       
+        //added by jchacko
+        Button studentActivity =
+                createNavBarButton(theStage, "Student Activity");
+        
+        //end 
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -189,6 +201,10 @@ public class HomeNavBar {
         posts.setStyle(navButtonStyle);
         adminRequests.setStyle(navButtonStyle);
         
+        //added by jchacko
+        studentActivity.setStyle(navButtonStyle);
+        // end 
+        
         home.setOnAction(e -> {
             titleBar.setText("Instructor/Staff Home");
             contentPane.setCenter(null);
@@ -210,6 +226,7 @@ public class HomeNavBar {
         
         adminRequests.setOnAction(e->{
         	titleBar.setText("Admin Requests");
+     	
         	
         	VBox requestNav = guiComponents.requestFunctionality.RequestNavBar.createRequestNavBar(theStage, contentPane);
         	
@@ -221,6 +238,20 @@ public class HomeNavBar {
         	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
         });
         
+        // start added by jchacko
+        studentActivity.setOnAction(e -> {
+
+            titleBar.setText("Student Activity");
+
+            contentPane.setLeft(null);
+            contentPane.setRight(null);
+
+            contentPane.setCenter(
+                staffUserActivityParamPanel.createUserActivityParamPanel(theStage)
+            );
+        });
+        // end added by jchacko
+        
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
                 
@@ -229,10 +260,21 @@ public class HomeNavBar {
         instructorBar.setAlignment(Pos.TOP_CENTER);
         
         instructorBar.setStyle(brandColorNav);
-        instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), adminRequests,
-        		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
-        		accountSettings, createSeparator(), logout);
-
+       // instructorBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), adminRequests,
+       //	spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
+        // accountSettings, createSeparator(), logout);
+        
+        // start added by jchacko 
+        instructorBar.getChildren().addAll(
+        	    home,   createSeparator(),  posts, createSeparator(),  adminRequests, createSeparator(),
+        	    studentActivity,    spacer,   placeHolderIcon,  userName,
+        	    roleLabel,  createSeparator(),  accountSettings,
+        	    createSeparator(),
+        	    logout);
+        
+        //end 
+        
+       
     	return instructorBar;
     }
     
