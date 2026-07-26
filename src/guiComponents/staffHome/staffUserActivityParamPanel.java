@@ -36,7 +36,7 @@ public class staffUserActivityParamPanel {
         ComboBox<String> userComboBox =
                 new ComboBox<>(FXCollections.observableArrayList(usernames));
 
-        userComboBox.setPromptText("<Select a User>");
+       // userComboBox.setPromptText("<Select a User>");
 
         Button viewActivityButton = new Button("View User Activity");
 
@@ -44,11 +44,11 @@ public class staffUserActivityParamPanel {
 
             String selectedUsername = userComboBox.getValue();
 
-            if (selectedUsername == null) {
+            if (selectedUsername == null || selectedUsername.equals("<Select a User>")) {
                 messageLabel.setText("Please select a user.");
                 return;
             }
-
+            
             Stage auditStage = new Stage();
 
             VBox auditPanel =
