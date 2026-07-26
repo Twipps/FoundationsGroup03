@@ -32,11 +32,25 @@ public class staffUserActivityAuditPanel {
         int replyCount = theDatabase.getReplyCountForUser(username);
         List<Post> userPosts = theDatabase.getPostsForUser(username);
 
+        // TP3: Staff Statistics engagement requirement — replied to 3+ distinct students
+        int distinctStudentsRepliedTo = theDatabase.getDistinctStudentsRepliedTo(username);
+        boolean metEngagementRequirement = theDatabase.hasMetReplyEngagementRequirement(username);
+
         Label postCountLabel =
                 new Label("Number of posts: " + postCount);
 
         Label replyCountLabel =
                 new Label("Number of replies: " + replyCount);
+
+        Label engagementLabel = new Label(
+                "Replied to " + distinctStudentsRepliedTo + " distinct student"
+                + (distinctStudentsRepliedTo == 1 ? "" : "s")
+                + " — engagement requirement (3+): "
+                + (metEngagementRequirement ? "\u2705 Met" : "\u274C Not met")
+        );
+        engagementLabel.setStyle(metEngagementRequirement
+                ? "-fx-text-fill: green; -fx-font-weight: bold;"
+                : "-fx-text-fill: red; -fx-font-weight: bold;");
 
         Label postsHeading =
                 new Label("Posts created by this student:");
@@ -46,6 +60,7 @@ public class staffUserActivityAuditPanel {
                 usernameLabel,
                 postCountLabel,
                 replyCountLabel,
+                engagementLabel,
                 postsHeading
         );
 

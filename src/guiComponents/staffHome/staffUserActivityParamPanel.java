@@ -8,10 +8,12 @@ package guiComponents.staffHome;
  * @version 1.0.0 - Jchacko (Team 3) - Initial implementation
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 import applicationMain.FoundationsMain;
 import database.Database;
+import entityClasses.User;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -31,12 +33,24 @@ public class staffUserActivityParamPanel {
         Label titleLabel = new Label("Select a student");
         Label messageLabel = new Label("");
 
-        List<String> usernames = theDatabase.getUserList();
+        // TP3: Filter to students only (newRole1) — previously listed every
+        // user including staff/admin, which didn't make sense for a
+        // student-activity audit tool
+        List<User> allUsers = theDatabase.getAllUsers();
+        List<String> studentUsernames = new ArrayList<>();
+        for (User user : allUsers) {
+            if (user.getNewStudent()) {
+                studentUsernames.add(user.getUserName());
+            }
+        }
 
         ComboBox<String> userComboBox =
-                new ComboBox<>(FXCollections.observableArrayList(usernames));
+                new ComboBox<>(FXCollections.observableArrayList(studentUsernames));
 
-        userComboBox.setPromptText("<Select a User>");
+        // Note: getAllUsers() does not prepend a placeholder item (unlike
+        // getUserList()), so setPromptText() alone is sufficient here —
+        // no duplicate "<Select a User>" entry will appear in the dropdown
+        userComboBox.setPromptText("<Select a Student>");
 
         Button viewActivityButton = new Button("View User Activity");
 

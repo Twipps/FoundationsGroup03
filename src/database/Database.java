@@ -103,7 +103,7 @@ public class Database {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			statement = connection.createStatement(); 
 			// You can use this command to clear the database and restart from fresh.
-			// statement.execute("DROP ALL OBJECTS");
+			statement.execute("DROP ALL OBJECTS");
 
 			createTables();  // Create the necessary tables if they don't exist
 		} catch (ClassNotFoundException e) {
@@ -2224,6 +2224,54 @@ public class Database {
 			e.printStackTrace();
 		}
 		return posts;
+	}
+
+	/*******
+	 * <p> Method: getDistinctStudentsRepliedTo() </p>
+	 * <p> Description: Returns the number of DISTINCT other students whose posts
+	 * a given user has replied to. Used to evaluate the Staff Statistics
+	 * engagement requirement ("replied to posts from at least 3 different
+	 * students"). Replies to the user's own posts are excluded — replying to
+	 * yourself does not count toward engagement with classmates.
+	 *
+	 * Implementation note: a simple COUNT(*) on replies would overcount a
+	 * student who replies many times to the same one or two classmates.
+	 * COUNT(DISTINCT p.author) is required so repeated replies to the same
+	 * person only count once — this is why a JOIN against posts is needed
+	 * rather than just counting rows in the replies table. </p>
+	 *
+	 * @param username the student whose engagement is being measured
+	 * @return the count of distinct other students this user has replied to
+	 */
+	public int getDistinctStudentsRepliedTo(String username) {
+		String query = "SELECT COUNT(DISTINCT p.author) AS cnt "
+				+ "FROM replies r "
+				+ "JOIN posts p ON r.parentPostID = p.postID "
+				+ "WHERE r.author = ? AND p.author <> ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+			pstmt.setString(2, username); // exclude replies to the user's own posts
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) return rs.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/*******
+	 * <p> Method: hasMetReplyEngagementRequirement() </p>
+	 * <p> Description: Returns true if the user has replied to posts from at
+	 * least 3 distinct other students. This is the boolean form of
+	 * getDistinctStudentsRepliedTo(), intended for direct display in the
+	 * Staff Statistics View (e.g. as a checkmark/badge per student) without
+	 * requiring the GUI layer to know the threshold value itself. </p>
+	 *
+	 * @param username the student whose engagement is being measured
+	 * @return true if the user has replied to 3 or more distinct other students
+	 */
+	public boolean hasMetReplyEngagementRequirement(String username) {
+		return getDistinctStudentsRepliedTo(username) >= 3;
 	}
 	
 	/*******
