@@ -179,6 +179,17 @@ public class PostDisplayPanel {
 
 		postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
 
+		// TP3: Staff Private Feedback — only staff/instructor accounts can
+		// view and edit this field. Backend (Post.getStaffFeedback(),
+		// Database.updateStaffFeedback()) already existed but had no GUI
+		// anywhere in the codebase, so staff had no way to actually use
+		// this feature. Hidden entirely for soft-deleted posts and for
+		// non-staff viewers, since this is meant to be private staff-facing
+		// commentary, not shown to the general post view.
+		if (!isDeleted && applicationMain.FoundationsMain.database.getCurrentNewRole2()) {
+			postStack.getChildren().add(createStaffFeedbackSection(postID, post));
+		}
+
 		// REQ-02: Only show reply input if post is not soft-deleted
 		if (!isDeleted) {
 			postStack.getChildren().add(createReplyInput(contentPane, postID, theStage));
@@ -193,6 +204,56 @@ public class PostDisplayPanel {
 
 		postReplyStack.setContent(postStack);
 		return postReplyStack;
+	}
+
+	/*******
+	 * <p> Method: createStaffFeedbackSection() </p>
+	 *
+	 * <p> Description: Builds the Staff Private Feedback panel shown below a
+	 * post, visible only to staff/instructor accounts. Displays any existing
+	 * feedback for editing and provides a Save button that persists changes
+	 * via Database.updateStaffFeedback(). </p>
+	 *
+	 * <p> Satisfies the Staff Epic: "As a staff member, I can review
+	 * students' posts and replies, and I can provide private feedback to
+	 * students and other staff." The backend for this (Post.staffFeedback,
+	 * Database.updateStaffFeedback()) already existed; this method provides
+	 * the missing GUI to actually use it. </p>
+	 *
+	 * @param postID the unique ID of the post this feedback is attached to
+	 * @param post   the Post object, used to pre-populate any existing feedback
+	 * @return a VBox containing the staff feedback label, text area, and Save button
+	 */
+	private static VBox createStaffFeedbackSection(int postID, Post post) {
+		VBox rBox = new VBox(8);
+		rBox.setPadding(new Insets(10));
+		rBox.setStyle("-fx-border-color: #9c3535; -fx-border-width: 1; -fx-border-radius: 5;");
+
+		Label sectionLabel = new Label("Staff Private Feedback");
+		sectionLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #9c3535;");
+
+		Label helperText = new Label("Visible only to staff and instructors.");
+		helperText.setStyle("-fx-text-fill: gray; -fx-font-size: 11px; -fx-font-style: italic;");
+
+		TextArea feedbackInput = new TextArea();
+		feedbackInput.setWrapText(true);
+		feedbackInput.setPrefRowCount(3);
+		String existingFeedback = post.getStaffFeedback();
+		feedbackInput.setText(existingFeedback == null ? "" : existingFeedback);
+
+		Label savedConfirmation = new Label();
+		savedConfirmation.setStyle("-fx-text-fill: green; -fx-font-size: 11px;");
+
+		Button save = new Button("Save Feedback");
+		save.setOnAction(e -> {
+			applicationMain.FoundationsMain.database.updateStaffFeedback(
+				postID, feedbackInput.getText()
+			);
+			savedConfirmation.setText("Saved.");
+		});
+
+		rBox.getChildren().addAll(sectionLabel, helperText, feedbackInput, save, savedConfirmation);
+		return rBox;
 	}
 
 	/*
