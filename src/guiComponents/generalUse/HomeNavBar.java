@@ -81,6 +81,7 @@ public class HomeNavBar {
         Button logout = createLogOutButton(theStage);
         
         Button posts = createNavBarButton(theStage, "Posts");
+        Button myReplies = createNavBarButton(theStage, "My Replies");
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Student"); 
@@ -115,6 +116,7 @@ public class HomeNavBar {
         accountSettings.setStyle(navButtonStyle);
         logout.setStyle(navButtonStyle);
         posts.setStyle(navButtonStyle);
+        myReplies.setStyle(navButtonStyle);
         
         home.setOnAction(e -> {
             titleBar.setText("Student Home");
@@ -134,6 +136,17 @@ public class HomeNavBar {
         	contentPane.setLeft(postNav);
         	contentPane.setCenter(new Label("Select or create a post."));
         });
+
+        // TP3: My Replies — student view of replies received, with
+        // unread-only filter and search. Satisfies the Student User Story
+        // on read/unread reply tracking.
+        myReplies.setOnAction(e -> {
+        	titleBar.setText("My Replies");
+        	contentPane.setLeft(null);
+        	contentPane.setCenter(
+        		guiComponents.postFunctionality.MyRepliesPanel.createMyRepliesPanel(theStage, contentPane)
+        	);
+        });
         
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
@@ -143,7 +156,7 @@ public class HomeNavBar {
         studentBar.setAlignment(Pos.TOP_CENTER);
         
         studentBar.setStyle(brandColorNav);
-        studentBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(),
+        studentBar.getChildren().addAll(home, createSeparator(), posts, createSeparator(), myReplies, createSeparator(),
         		spacer, placeHolderIcon,  userName, roleLabel, createSeparator(), 
         		accountSettings, createSeparator(), logout);
 
@@ -262,6 +275,7 @@ public class HomeNavBar {
         	contentPane.setLeft(requestNav);
         	contentPane.setCenter(new Label("Select or create an Admin Action Request."));
         });  
+        
         
         // start added by jchacko
         studentActivity.setOnAction(e -> {

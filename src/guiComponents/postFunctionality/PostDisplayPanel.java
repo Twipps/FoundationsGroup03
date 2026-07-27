@@ -1,6 +1,5 @@
 package guiComponents.postFunctionality;
 
-import applicationMain.FoundationsMain;
 import entityClasses.Post;
 import entityClasses.PostList;
 import entityClasses.Reply;
@@ -108,8 +107,18 @@ public class PostDisplayPanel {
 		Button delete = new Button("Delete");
 
 		edit.setOnAction(e -> {
-			// REQ-05: Navigate to edit panel for this post
-			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID, 1)); // 1 is gen thread
+			// REQ-05: Navigate to edit panel for this post.
+			// TP3: createPostEditPanel now also requires an initial threadID.
+			// Post objects don't carry threadID directly (only the category
+			// string), so resolve the thread by matching the post's current
+			// category to a thread title, falling back to General if no
+			// match is found — same fallback PostReplyEditPanel uses internally.
+			entityClasses.Thread postThread =
+				applicationMain.FoundationsMain.database.getThreadByTitle(post.getCategory());
+			int editThreadID = (postThread != null) ? postThread.getThreadID() : -1;
+			contentPane.setCenter(
+				PostReplyEditPanel.createPostEditPanel(theStage, contentPane, postID, editThreadID)
+			);
 		});
 
 		// Hide edit and delete buttons for soft-deleted posts
@@ -167,53 +176,8 @@ public class PostDisplayPanel {
 			body = new Label(post.getBody());
 		}
 		body.setWrapText(true);
-		
-		// Private Staff Feedback UI
-		VBox staffFeedbackVBox = new VBox(10);
-		HBox staffFeedbackHBox = new HBox(10);
-		Label feedbackLabel = new Label("Private Staff Feedback: ");
-		Button staffFeedbackSaveButton = new Button("Save");
-		Button staffFeedbackEditButton = new Button("Edit");
-		TextArea feedbackTextArea = new TextArea(post.getStaffFeedback());
-		Label feedbackBodyLabel = new Label(post.getStaffFeedback());
-		
-		// Allow UI to reclaim space when element is hidden
-		staffFeedbackSaveButton.managedProperty().bind(staffFeedbackSaveButton.visibleProperty());
-		staffFeedbackEditButton.managedProperty().bind(staffFeedbackEditButton.visibleProperty());
-		feedbackBodyLabel.managedProperty().bind(feedbackBodyLabel.visibleProperty());
-		feedbackTextArea.managedProperty().bind(feedbackTextArea.visibleProperty());
-		
-		// Only show these when editing
-		feedbackTextArea.setVisible(false);
-		staffFeedbackSaveButton.setVisible(false);
-		
-		staffFeedbackHBox.getChildren().addAll(feedbackLabel, spacer, staffFeedbackEditButton, staffFeedbackSaveButton);
-		staffFeedbackVBox.getChildren().addAll(staffFeedbackHBox, feedbackBodyLabel, feedbackTextArea);
-		
-		staffFeedbackSaveButton.setOnAction(e -> {
-			FoundationsMain.database.updateStaffFeedback(postID, feedbackTextArea.getText());
-			post.updateStaffFeedback(feedbackTextArea.getText());
-			staffFeedbackSaveButton.setVisible(false);
-			staffFeedbackEditButton.setVisible(true);
-			feedbackBodyLabel.setVisible(true);
-			feedbackBodyLabel.setText(feedbackTextArea.getText());
-			feedbackTextArea.setVisible(false);
-		});
-		
-		staffFeedbackEditButton.setOnAction(e -> {
-			staffFeedbackSaveButton.setVisible(true);
-			staffFeedbackEditButton.setVisible(false);
-			feedbackBodyLabel.setVisible(false);
-			feedbackTextArea.setVisible(true);
-		});
 
-		// only Admin can see the private staff feedback box
-		if (FoundationsMain.activeRole == 3) {		// 3 is the role for Admin
-			postStack.getChildren().addAll(titleRow, author, category, createdDate, body,
-					new Separator(), staffFeedbackVBox, new Separator());
-		} else {
-			postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
-		}
+		postStack.getChildren().addAll(titleRow, author, category, createdDate, body, new Separator());
 
 		// REQ-02: Only show reply input if post is not soft-deleted
 		if (!isDeleted) {
@@ -297,8 +261,34 @@ public class PostDisplayPanel {
 
 		// REQ-02: Load all replies for this post from the database
 		ReplyList replies = new ReplyList();
+		java.util.ArrayList<Reply> replyList = replies.getRepliesForPost(postID);
 
-		for (Reply reply : replies.getRepliesForPost(postID)) {
+		String currentUser = applicationMain.FoundationsMain.database.getCurrentUsername();
+
+		// TP3: Count unread replies for the currently logged-in viewer so the
+		// "Mark all as read" button only appears when there's something to mark
+		int unreadCount = 0;
+		for (Reply reply : replyList) {
+			if (!applicationMain.FoundationsMain.database.hasUserReadReply(currentUser, reply.getReplyID())) {
+				unreadCount++;
+			}
+		}
+
+		if (unreadCount > 0) {
+			Button markAllRead = new Button("Mark all " + unreadCount
+				+ (unreadCount == 1 ? " reply" : " replies") + " as read");
+			markAllRead.setOnAction(e -> {
+				for (Reply reply : replyList) {
+					applicationMain.FoundationsMain.database.markReplyAsRead(currentUser, reply.getReplyID());
+				}
+				// Refresh both center (to update indicators) and left nav (to update unread counts)
+				contentPane.setCenter(createPostDisplayPanel(theStage, contentPane, postID));
+				contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
+			});
+			rBox.getChildren().add(markAllRead);
+		}
+
+		for (Reply reply : replyList) {
 			rBox.getChildren().add(createReplyRow(theStage, contentPane, reply));
 		}
 
@@ -309,22 +299,34 @@ public class PostDisplayPanel {
 	 * <p> Method: createReplyRow() </p>
 	 *
 	 * <p> Description: Builds and returns a single reply row showing the reply
-	 * author, creation date, body text, and a Delete button. </p>
+	 * author, creation date, body text, an unread indicator, a Mark as Read
+	 * button, and a Delete button. </p>
 	 *
-	 * <p> Satisfies REQ-02 (view reply) and REQ-08 (delete own reply). </p>
+	 * <p> Satisfies REQ-02 (view reply), REQ-08 (delete own reply), and the
+	 * Student User Story on read/unread reply tracking — replies can be
+	 * marked read directly from the post view, not just from My Replies. </p>
 	 *
 	 * @param theStage    the primary application stage
 	 * @param contentPane the main content pane used by the post interface
 	 * @param reply       the Reply object to display
-	 * @return a VBox containing the reply information and delete control
+	 * @return a VBox containing the reply information and controls
 	 */
 	public static VBox createReplyRow(Stage theStage, BorderPane contentPane, Reply reply) {
 		VBox rBox = new VBox(6);
 		rBox.setPadding(new Insets(10));
 		rBox.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5;");
 
-		// REQ-02: Display reply author and timestamp
-		Label author = new Label("Reply by: " + reply.getAuthor());
+		String currentUser = applicationMain.FoundationsMain.database.getCurrentUsername();
+		boolean isRead = applicationMain.FoundationsMain.database.hasUserReadReply(currentUser, reply.getReplyID());
+
+		// TP3: Unread replies show a bold blue author label with a dot indicator,
+		// same visual pattern used for unread posts in PostNavBar
+		Label author = new Label((isRead ? "" : "\u25CF ") + "Reply by: " + reply.getAuthor());
+		author.setStyle(isRead ? "" : "-fx-font-weight: bold;");
+		if (!isRead) {
+			author.setTextFill(javafx.scene.paint.Color.web("#2266cc"));
+		}
+
 		Label created = new Label("Created: " + reply.getCreatedDate());
 
 		// REQ-02: Display reply body text
@@ -334,9 +336,24 @@ public class PostDisplayPanel {
 		Region spacer = new Region();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 
+		HBox topRow = new HBox(10);
+		topRow.getChildren().addAll(author, spacer);
+
+		// TP3: Mark as Read button — only shown for unread replies, lets a
+		// viewer mark a specific reply read without having to click into it
+		// or navigate to the My Replies panel
+		if (!isRead) {
+			Button markRead = new Button("Mark as Read");
+			markRead.setOnAction(e -> {
+				applicationMain.FoundationsMain.database.markReplyAsRead(currentUser, reply.getReplyID());
+				contentPane.setCenter(createPostDisplayPanel(theStage, contentPane, reply.getParentPostID()));
+				contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
+			});
+			topRow.getChildren().add(markRead);
+		}
+
 		// REQ-08: Delete button removes this reply from the database
 		Button delete = new Button("Delete");
-
 		delete.setOnAction(e -> {
 			// REQ-08: Delete the reply and refresh the post display
 			ReplyList replies = new ReplyList();
@@ -346,9 +363,7 @@ public class PostDisplayPanel {
 			// TP3: Also refresh the left nav bar so the reply count updates immediately
 			contentPane.setLeft(PostNavBar.createPostNavBar(theStage, contentPane));
 		});
-
-		HBox topRow = new HBox(10);
-		topRow.getChildren().addAll(author, spacer, delete);
+		topRow.getChildren().add(delete);
 
 		rBox.getChildren().addAll(topRow, created, body);
 		return rBox;

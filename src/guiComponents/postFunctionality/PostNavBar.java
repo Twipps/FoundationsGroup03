@@ -80,8 +80,16 @@ public class PostNavBar {
 		createPost.setMaxWidth(Double.MAX_VALUE);
 
 		createPost.setOnAction(e -> {
-			// REQ-01: postID=-1 signals PostReplyEditPanel to create a new post
-			contentPane.setCenter(PostReplyEditPanel.createPostEditPanel(theStage, contentPane, -1, 1));
+			// REQ-01: postID=-1 signals PostReplyEditPanel to create a new post.
+			// TP3: createPostEditPanel now also requires an initial threadID
+			// (schema migration added threadID as a real FK on posts) — default
+			// to General since "Create Post" has no thread context of its own.
+			entityClasses.Thread generalThread =
+				applicationMain.FoundationsMain.database.getThreadByTitle("General");
+			int defaultThreadID = (generalThread != null) ? generalThread.getThreadID() : -1;
+			contentPane.setCenter(
+				PostReplyEditPanel.createPostEditPanel(theStage, contentPane, -1, defaultThreadID)
+			);
 		});
 
 		// TP3: Manual refresh button — reloads the post list (and reply counts)
@@ -250,8 +258,22 @@ public class PostNavBar {
 		rBox.setPadding(new Insets(8));
 		rBox.setStyle("-fx-border-color: lightgray;");
 
+		String currentUser = applicationMain.FoundationsMain.database.getCurrentUsername();
+		// TP3: Read/unread tracking — REQ: "I can see which [posts] I have
+		// read and which I have not."
+		boolean isRead = applicationMain.FoundationsMain.database.hasUserReadPost(currentUser, post.getPostID());
+
 		HBox titleRow = new HBox(10);
-		Label title = new Label(post.getTitle()); // REQ-03: show post title
+
+		// TP3: Unread posts show a bold title with a small blue dot indicator;
+		// read posts show a normal-weight title. This mirrors the pattern most
+		// students already expect from email/forum unread indicators.
+		Label title = new Label((isRead ? "" : "\u25CF ") + post.getTitle()); // REQ-03: show post title
+		title.setStyle(isRead ? "" : "-fx-font-weight: bold;");
+		if (!isRead) {
+			title.setTextFill(javafx.scene.paint.Color.web("#2266cc"));
+		}
+
 		Label category = new Label("[" + post.getCategory() + "]"); // REQ-12: show thread
 
 		// TP3: Show reply count on each post row
@@ -261,20 +283,34 @@ public class PostNavBar {
 
 		titleRow.getChildren().addAll(title, category, replyLabel);
 
+		// TP3: If this post belongs to the current user, also show how many
+		// of the replies they've received on it are unread. Satisfies:
+		// "As a student, I can see a list of my posts, the number of
+		// replies, [and] how many of them I have not yet read."
+		if (post.getAuthor() != null && post.getAuthor().equals(currentUser) && replyCount > 0) {
+			int unreadReplies = applicationMain.FoundationsMain.database
+				.getUnreadReplyCountForPost(currentUser, post.getPostID());
+			if (unreadReplies > 0) {
+				Label unreadRepliesLabel = new Label("(" + unreadReplies + " unread)");
+				unreadRepliesLabel.setStyle("-fx-text-fill: #cc3333; -fx-font-size: 11px; -fx-font-weight: bold;");
+				titleRow.getChildren().add(unreadRepliesLabel);
+			}
+		}
+
 		// REQ-03: Show a truncated preview of the post body (max 80 chars)
 		Label sampleString = new Label(makeSample(post.getBody()));
 		sampleString.setWrapText(true);
 
 		// REQ-04: Clicking the row loads the full post in PostDisplayPanel
-		// TP3: Mark post as read when clicked
+		// TP3: Mark post as read when clicked, and immediately refresh the
+		// left nav bar so the unread indicator clears right away instead of
+		// requiring navigation away and back to see the updated read state
 		rBox.setOnMouseClicked(e -> {
-			applicationMain.FoundationsMain.database.markPostAsRead(
-				applicationMain.FoundationsMain.database.getCurrentUsername(),
-				post.getPostID()
-			);
+			applicationMain.FoundationsMain.database.markPostAsRead(currentUser, post.getPostID());
 			contentPane.setCenter(PostDisplayPanel.createPostDisplayPanel(
 				theStage, contentPane, post.getPostID()
 			));
+			contentPane.setLeft(createPostNavBar(theStage, contentPane));
 		});
 
 		rBox.getChildren().addAll(titleRow, sampleString);
