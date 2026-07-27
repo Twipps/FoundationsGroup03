@@ -283,11 +283,14 @@ public class PostNavBar {
 
 		titleRow.getChildren().addAll(title, category, replyLabel);
 
-		// TP3: If this post belongs to the current user, also show how many
-		// of the replies they've received on it are unread. Satisfies:
-		// "As a student, I can see a list of my posts, the number of
-		// replies, [and] how many of them I have not yet read."
-		if (post.getAuthor() != null && post.getAuthor().equals(currentUser) && replyCount > 0) {
+		// TP3: Show unread reply count on any post with replies. Satisfies
+		// both halves of the Student User Stories: "I can see a list of my
+		// posts... how many of [replies] I have not yet read" AND "I can see
+		// a list of posts from others... the number [of replies] that I have
+		// not read." Not restricted to the current user's own posts —
+		// getUnreadReplyCountForPost() is scoped by viewing username, not
+		// post authorship, so this works correctly for any post.
+		if (replyCount > 0) {
 			int unreadReplies = applicationMain.FoundationsMain.database
 				.getUnreadReplyCountForPost(currentUser, post.getPostID());
 			if (unreadReplies > 0) {
