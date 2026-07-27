@@ -194,7 +194,7 @@ public class RequestNavBar {
 	 * meaning all requests are shown when no specific category is selected. </p>
 	 *
 	 * @param request   the request being checked
-	 * @param category 	the selected category filter (may be null or "All")
+	 * @param status 	the selected status filter (may be null or "All")
 	 * @return true if the request matches the filter, false otherwise
 	 */
 	public static boolean matchesCategory(Request request, String status) {

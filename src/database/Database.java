@@ -2337,7 +2337,7 @@ public class Database {
 	 * <p> Method: updateRequestType() </p>
 	 * <p> Description: Updates the type of a request. </p>
 	 * @param requestID the ID of the request to update
-	 * @param newTitle   the updated type — must not be null or blank
+	 * @param newType   the updated type — must not be null or blank
 	 * @return true if update succeeded
 	 */
 	public boolean updateRequestType(int requestID, String newType) {
