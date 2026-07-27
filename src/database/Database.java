@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import entityClasses.EvaluationParameter;
 import entityClasses.Post;
 import entityClasses.Reply;
 import entityClasses.Request;
@@ -155,6 +156,19 @@ public class Database {
 		        + "modifiedDate TIMESTAMP DEFAULT NULL, "
 		        + "isDeleted BOOLEAN DEFAULT FALSE)";
 		statement.execute(postTable);
+		
+		String evaluationParameterTable =
+				"CREATE TABLE IF NOT EXISTS EvaluationParameters ("
+					+ "parameterID INT AUTO_INCREMENT PRIMARY KEY, "
+					+ "staffUsername VARCHAR(255), "
+					+ "name VARCHAR(255), "
+					+ "metric VARCHAR(255), "
+					+ "comparisonOperator VARCHAR(255), "
+					+ "threshold INT, "
+					+ "description TEXT, "
+					+ "threadID INT DEFAULT NULL, "
+					+ "isActive BOOLEAN DEFAULT TRUE)";
+			statement.execute(evaluationParameterTable);
 
 		// Defensive migration: if this database was created before threadID/
 		// staffFeedback existed on posts (DROP ALL OBJECTS is commented out
@@ -2583,6 +2597,425 @@ public class Database {
 	// replied to rather than distinct STUDENTS, and did not exclude self-replies,
 	// so a student replying multiple times to their own post could incorrectly
 	// qualify. The verified, tested version above is used instead.
+	
+	/*******
+	 * <p> Method: getEvaluationParametersForStaff() </p>
+	 *
+	 * <p> Description: Retrieves all evaluation parameters owned by the specified
+	 * staff user and reconstructs them as EvaluationParameter objects. </p>
+	 *
+	 * @param staffUsername the username of the staff member
+	 * @return an ArrayList containing the staff member's evaluation parameters
+	 */
+	public ArrayList<EvaluationParameter> getEvaluationParametersForStaff(
+			String staffUsername) {
+
+		ArrayList<EvaluationParameter> parameterList = new ArrayList<>();
+
+		String query =
+			"SELECT parameterID, staffUsername, name, metric, "
+			+ "comparisonOperator, threshold, description, threadID, isActive "
+			+ "FROM EvaluationParameters "
+			+ "WHERE staffUsername = ? "
+			+ "ORDER BY parameterID";
+
+		try (PreparedStatement preparedStatement =
+				connection.prepareStatement(query)) {
+
+			preparedStatement.setString(1, staffUsername);
+
+			try (ResultSet resultSet =
+					preparedStatement.executeQuery()) {
+
+				while (resultSet.next()) {
+
+					/*
+					 * getObject() is used because threadID may be NULL.
+					 * Calling getInt() alone would return 0 for a NULL value.
+					 */
+					Integer threadID =
+						resultSet.getObject("threadID", Integer.class);
+
+					EvaluationParameter parameter = new EvaluationParameter(
+							resultSet.getInt("parameterID"),
+							resultSet.getString("staffUsername"),
+							resultSet.getString("name"),
+							resultSet.getString("metric"),
+							resultSet.getString("comparisonOperator"),
+							resultSet.getInt("threshold"),
+							resultSet.getString("description"),
+							threadID,
+							resultSet.getBoolean("isActive")
+						);
+
+					parameterList.add(parameter);
+				}
+			}
+
+		} catch (SQLException exception) {
+			System.err.println(
+				"Error retrieving evaluation parameters for staff user: "
+				+ staffUsername
+			);
+
+			exception.printStackTrace();
+		}
+
+		return parameterList;
+	}
+	
+	/*******
+	 * <p> Method: deleteEvaluationParameter() </p>
+	 *
+	 * <p> Description: Deletes an evaluation parameter from the database.
+	 * The staffUsername condition ensures that a staff member can only delete
+	 * a parameter that belongs to them. </p>
+	 *
+	 * @param parameterID the unique ID of the parameter to delete
+	 * @param staffUsername the username of the staff member deleting it
+	 * @return true if a parameter was deleted, or false if no matching parameter
+	 *         was found
+	 */
+	public boolean deleteEvaluationParameter(
+			int parameterID,
+			String staffUsername) {
+
+		String query =
+			"DELETE FROM EvaluationParameters "
+			+ "WHERE parameterID = ? AND staffUsername = ?";
+
+		try (PreparedStatement preparedStatement =
+				connection.prepareStatement(query)) {
+
+			preparedStatement.setInt(1, parameterID);
+			preparedStatement.setString(2, staffUsername);
+
+			int affectedRows = preparedStatement.executeUpdate();
+
+			return affectedRows > 0;
+
+		} catch (SQLException exception) {
+			System.err.println(
+				"Error deleting evaluation parameter: "
+				+ parameterID
+			);
+
+			exception.printStackTrace();
+			return false;
+		}
+	}
+	
+	/*******
+	 * <p> Method: addEvaluationParameter() </p>
+	 *
+	 * <p> Description: Inserts a new evaluation parameter into the database. </p>
+	 *
+	 * @param staffUsername the owning staff username
+	 * @param name the parameter name
+	 * @param metric the metric being evaluated
+	 * @param comparisonOperator the comparison operator
+	 * @param threshold the required threshold
+	 * @param description optional description
+	 * @param threadID optional thread scope
+	 * @param active whether the parameter is active
+	 * @return true if the insert succeeded
+	 */
+	public boolean addEvaluationParameter(
+			String staffUsername,
+			String name,
+			String metric,
+			String comparisonOperator,
+			int threshold,
+			String description,
+			Integer threadID,
+			boolean active) {
+
+		String sql =
+			"INSERT INTO EvaluationParameters "
+			+ "(staffUsername, name, metric, "
+			+ "comparisonOperator, threshold, "
+			+ "description, threadID, isActive) "
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement statement =
+				connection.prepareStatement(sql)) {
+
+			statement.setString(1, staffUsername);
+			statement.setString(2, name);
+			statement.setString(3, metric);
+			statement.setString(4, comparisonOperator);
+			statement.setInt(5, threshold);
+			statement.setString(6, description);
+
+			if (threadID == null) {
+				statement.setNull(7, java.sql.Types.INTEGER);
+			}
+			else {
+				statement.setInt(7, threadID);
+			}
+
+			statement.setBoolean(8, active);
+
+			return statement.executeUpdate() > 0;
+
+		}
+		catch (SQLException exception) {
+			exception.printStackTrace();
+			return false;
+		}
+	}
+	
+	/*******
+	 * <p> Method: updateEvaluationParameter() </p>
+	 *
+	 * <p> Description: Updates an existing evaluation parameter. </p>
+	 *
+	 * @param parameterID the parameter being updated
+	 * @param staffUsername the owning staff username
+	 * @param name the parameter name
+	 * @param metric the metric being evaluated
+	 * @param comparisonOperator the comparison operator
+	 * @param threshold the required threshold
+	 * @param description optional description
+	 * @param threadID optional thread scope
+	 * @param active whether the parameter is active
+	 * @return true if the update succeeded
+	 */
+	public boolean updateEvaluationParameter(
+			int parameterID,
+			String staffUsername,
+			String name,
+			String metric,
+			String comparisonOperator,
+			int threshold,
+			String description,
+			Integer threadID,
+			boolean active) {
+
+		String sql =
+			"UPDATE EvaluationParameters "
+			+ "SET name = ?, "
+			+ "metric = ?, "
+			+ "comparisonOperator = ?, "
+			+ "threshold = ?, "
+			+ "description = ?, "
+			+ "threadID = ?, "
+			+ "isActive = ? "
+			+ "WHERE parameterID = ? "
+			+ "AND staffUsername = ?";
+
+		try (PreparedStatement statement =
+				connection.prepareStatement(sql)) {
+
+			statement.setString(1, name);
+			statement.setString(2, metric);
+			statement.setString(3, comparisonOperator);
+			statement.setInt(4, threshold);
+			statement.setString(5, description);
+
+			if (threadID == null) {
+				statement.setNull(6, java.sql.Types.INTEGER);
+			}
+			else {
+				statement.setInt(6, threadID);
+			}
+
+			statement.setBoolean(7, active);
+			statement.setInt(8, parameterID);
+			statement.setString(9, staffUsername);
+
+			return statement.executeUpdate() > 0;
+
+		}
+		catch (SQLException exception) {
+			exception.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns the number of non-deleted posts created by a student.
+	 * When threadID is null, posts from every thread are counted.
+	 *
+	 * @param username the student's username
+	 * @param threadID optional thread to restrict the count to
+	 * @return number of posts created by the student
+	 */
+	public int getStudentPostCount(
+			String username,
+			Integer threadID) {
+
+		if (threadID == null) {
+			return getPostCountForUser(username);
+		}
+
+		String query =
+			"SELECT COUNT(*) AS cnt "
+			+ "FROM posts "
+			+ "WHERE author = ? "
+			+ "AND threadID = ? "
+			+ "AND isDeleted = FALSE";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			pstmt.setString(1, username);
+			pstmt.setInt(2, threadID);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt("cnt");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+	
+	/**
+	 * Returns the number of replies created by a student.
+	 * When threadID is supplied, only replies on posts in that thread
+	 * are counted.
+	 *
+	 * @param username the student's username
+	 * @param threadID optional thread to restrict the count to
+	 * @return number of replies created by the student
+	 */
+	public int getStudentReplyCount(
+			String username,
+			Integer threadID) {
+
+		if (threadID == null) {
+			return getReplyCountForUser(username);
+		}
+
+		String query =
+			"SELECT COUNT(*) AS cnt "
+			+ "FROM replies r "
+			+ "JOIN posts p "
+			+ "ON r.parentPostID = p.postID "
+			+ "WHERE r.author = ? "
+			+ "AND p.threadID = ? "
+			+ "AND p.isDeleted = FALSE";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			pstmt.setString(1, username);
+			pstmt.setInt(2, threadID);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt("cnt");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+	
+	/**
+	 * Returns the number of distinct threads in which a student has
+	 * participated by either creating a post or writing a reply.
+	 *
+	 * @param username the student's username
+	 * @return number of distinct threads participated in
+	 */
+	public int getStudentThreadParticipationCount(
+			String username) {
+
+		String query =
+			"SELECT COUNT(DISTINCT activity.threadID) AS cnt "
+			+ "FROM ("
+			+ "    SELECT p.threadID "
+			+ "    FROM posts p "
+			+ "    WHERE p.author = ? "
+			+ "    AND p.isDeleted = FALSE "
+			+ "    UNION "
+			+ "    SELECT p.threadID "
+			+ "    FROM replies r "
+			+ "    JOIN posts p "
+			+ "    ON r.parentPostID = p.postID "
+			+ "    WHERE r.author = ? "
+			+ "    AND p.isDeleted = FALSE"
+			+ ") activity";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			pstmt.setString(1, username);
+			pstmt.setString(2, username);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt("cnt");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+	
+	/**
+	 * Returns the number of distinct other students whose posts the
+	 * specified student has replied to.
+	 *
+	 * When threadID is supplied, only interactions in that thread are
+	 * counted. Replies to the student's own posts are excluded.
+	 *
+	 * @param username the student whose engagement is being measured
+	 * @param threadID optional thread to restrict the count to
+	 * @return number of distinct students engaged with
+	 */
+	public int getDistinctStudentsEngagedCount(
+			String username,
+			Integer threadID) {
+
+		if (threadID == null) {
+			return getDistinctStudentsRepliedTo(username);
+		}
+
+		String query =
+			"SELECT COUNT(DISTINCT p.author) AS cnt "
+			+ "FROM replies r "
+			+ "JOIN posts p "
+			+ "ON r.parentPostID = p.postID "
+			+ "JOIN userDB u "
+			+ "ON p.author = u.userName "
+			+ "WHERE r.author = ? "
+			+ "AND p.author <> ? "
+			+ "AND p.threadID = ? "
+			+ "AND p.isDeleted = FALSE "
+			+ "AND u.newRole1 = TRUE";
+
+		try (PreparedStatement pstmt =
+				connection.prepareStatement(query)) {
+
+			pstmt.setString(1, username);
+			pstmt.setString(2, username);
+			pstmt.setInt(3, threadID);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt("cnt");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
 
 	/*******
 	 * <p> Debugging method</p>
