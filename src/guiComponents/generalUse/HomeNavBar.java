@@ -21,7 +21,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-
+import guiComponents.staffHome.StaffReportParamListPanel;
+import guiComponents.staffHome.StaffReportResultDisplayPanel;
 // added by jchacko 
 import guiComponents.staffHome.staffUserActivityParamPanel;
 import javafx.scene.layout.VBox;
@@ -182,6 +183,7 @@ public class HomeNavBar {
         // Jacob's Student Activity panel below, with a less accurate implementation
         // of the engagement requirement (counted distinct posts replied to rather
         // than distinct students, and did not exclude self-replies).
+        Button engagementReport = createNavBarButton(theStage, "Engagement Report");
         
         Label userName = new Label(user.getFirstName() + " " + user.getLastName());
         Label roleLabel = new Label("Instructor"); 
@@ -219,6 +221,7 @@ public class HomeNavBar {
         posts.setStyle(navButtonStyle);
         threads.setStyle(navButtonStyle);
         adminRequests.setStyle(navButtonStyle);
+        engagementReport.setStyle(navButtonStyle);
         
         //added by jchacko
         studentActivity.setStyle(navButtonStyle);
@@ -291,6 +294,24 @@ public class HomeNavBar {
         });
         // end added by jchacko
         
+        engagementReport.setOnAction(e -> {
+
+            titleBar.setText("Engagement Report");
+
+            contentPane.setLeft(
+                StaffReportParamListPanel.createReportParamListPanel(
+                    theStage,
+                    contentPane
+                )
+            );
+
+            contentPane.setCenter(
+                StaffReportResultDisplayPanel.createReportResultDisplayPanel(
+                    theStage
+                )
+            );
+        });
+        
         Region spacer = new Region(); // to space the logout button to the bottom
         VBox.setVgrow(spacer, Priority.ALWAYS); // tells the spacer to grow with prefHeight
                 
@@ -301,7 +322,7 @@ public class HomeNavBar {
         instructorBar.setStyle(brandColorNav);
 
         instructorBar.getChildren().addAll(home, createSeparator(), myPosts, createSeparator(), posts, createSeparator(), threads, createSeparator(),
-        		adminRequests, createSeparator(), studentActivity, spacer, placeHolderIcon,  userName, roleLabel, 
+        		adminRequests, createSeparator(), studentActivity, createSeparator(), engagementReport, createSeparator(), spacer, placeHolderIcon,  userName, roleLabel, 
         		createSeparator(), accountSettings, createSeparator(), logout);
 
     	return instructorBar;
